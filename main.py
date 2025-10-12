@@ -107,7 +107,16 @@ def format_structured_content(data_dict: Dict[str, Any]) -> str:
             lines.append(f"- {key.replace('_', ' ').capitalize()}: {value}")
     return "\n".join(lines)
 
-def load_knowledge_base() -> Tuple[Dict, Dict, List, Dict, str]:
+def format_uredba_summary(uredba_data: Dict[str, Any]) -> str:
+    """Pretvori podatke iz UredbaObjekti.json v tekstovno predstavitev."""
+    if not uredba_data:
+        return "Podatki iz UredbaObjekti.json niso na voljo."
+    try:
+        return json.dumps(uredba_data, ensure_ascii=False, indent=2)
+    except Exception:
+        return str(uredba_data)
+
+def load_knowledge_base() -> Tuple[Dict, Dict, List, Dict, str, str]:
     """Naloži celotno bazo znanja: OPN, priloge in slovar izrazov."""
     try:
         with open("OPN.json", "r", encoding="utf-8") as f: opn_katalog = json.load(f)
@@ -133,20 +142,30 @@ def load_knowledge_base() -> Tuple[Dict, Dict, List, Dict, str]:
                 print(f"⚠️ Napaka pri nalaganju {f}: {e}.")
                 if f == "priloga3-4.json": priloge.update({'priloga3': {}, 'priloga4': {}})
                 else: priloge[f.split('.')[0]] = {}
-        
+
+        try:
+            with open("UredbaObjekti.json", "r", encoding="utf-8") as f:
+                uredba_data = json.load(f)
+            print("✅ Uspešno naložena datoteka: UredbaObjekti.json")
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"⚠️ Napaka pri nalaganju UredbaObjekti.json: {e}.")
+            uredba_data = {}
+
         all_eups = [item.get("enota_urejanja", "") for item in priloge.get('priloga2', {}).get('table_entries', [])]
         all_eups.extend([item.get("urejevalna_enota", "") for item in priloge.get('priloga3', {}).get('entries', [])])
         unique_eups = sorted(list(set(filter(None, all_eups))), key=len, reverse=True)
 
         izrazi_data = priloge.get('Izrazi', {})
         izrazi_text = "\n".join([f"- **{term['term']}**: {term['definition']}" for term in izrazi_data.get("terms", [])])
-        
+
+        uredba_text = format_uredba_summary(uredba_data)
+
         print("✅ Baza znanja uspešno naložena.")
-        return opn_katalog, priloge, unique_eups, clen_data_map, izrazi_text
+        return opn_katalog, priloge, unique_eups, clen_data_map, izrazi_text, uredba_text
     except Exception as e:
         raise RuntimeError(f"❌ Kritična napaka pri nalaganju baze znanja: {e}")
 
-OPN_KATALOG, PRILOGE, ALL_EUPS, CLEN_DATA_MAP, IZRAZI_TEXT = load_knowledge_base()
+OPN_KATALOG, PRILOGE, ALL_EUPS, CLEN_DATA_MAP, IZRAZI_TEXT, UREDBA_TEXT = load_knowledge_base()
 
 # =============================================================================
 # INTELIGENTNA ANALIZA IN SESTAVA ZAHTEV
@@ -235,6 +254,12 @@ def call_gemini_for_key_data(project_text: str, images: List[Image.Image]) -> Di
     
     # Definiranje vseh 16 ključnih podatkovnih točk za ekstrakcijo
     KEY_DATA_PROMPT_MAP = {
+        "glavni_objekt": "Natančen opis glavnega objekta (npr. enostanovanjska hiša, gospodarski objekt, opiši funkcijo).",
+        "vrsta_gradnje": "Vrsta gradnje (npr. novogradnja, dozidava, nadzidava, rekonstrukcija, sprememba namembnosti).",
+        "klasifikacija_cc_si": "CC-SI oziroma druga uradna klasifikacija objekta, če je navedena.",
+        "nezahtevni_objekti": "Ali projekt vključuje nezahtevne objekte (navedi katere in njihove dimenzije).",
+        "enostavni_objekti": "Ali projekt vključuje enostavne objekte (navedi katere in njihove dimenzije).",
+        "vzdrzevalna_dela": "Opiši načrtovana vzdrževalna dela ali manjše rekonstrukcije, če so predvidene.",
         "parcela_objekta": "Številka gradbene/osnovne parcele (npr. 123/5).",
         "stevilke_parcel_ko": "Vse parcele in katastrska občina, ki so del projekta (npr. 123/5, 124/6, k.o. Litija).",
         "velikost_parcel": "Skupna velikost vseh parcel (npr. 1500 m2).",
@@ -539,7 +564,7 @@ def convert_pdf_pages_to_images(pdf_bytes: bytes, pages_to_render_str: Optional[
 # =============================================================================
 # PROMPT
 # =============================================================================
-def build_prompt(project_text: str, zahteve: List[Dict[str, Any]], izrazi_text: str) -> str:
+def build_prompt(project_text: str, zahteve: List[Dict[str, Any]], izrazi_text: str, uredba_text: str) -> str:
     """Zgenerira glavni prompt za AI analizo."""
     
     zahteve_text = "".join(f"\nID: {z['id']}\nZahteva: {z['naslov']}\nBesedilo zahteve: {z['besedilo']}\n---" for z in zahteve)
@@ -562,8 +587,11 @@ Ko končaš z analizo besedila, uporabi priložene slike oz. grafične priloge z
         - **Faktor zazidanosti (FZ) in faktor izrabe (FI):** Preveri, ali so na grafikah tabele s temi izračuni.
     b) **Preverjanje NESKLADIJ:** Če si v besedilu našel podatek (npr. "odmik od meje je 4.0 m"), preveri na grafiki (situaciji), ali je ta podatek skladen z vrisanim stanjem. Če odkriješ neskladje, to jasno navedi v obrazložitvi.
 
-**RAZLAGA IZRAZOV:**
-{izrazi_text}
+**RAZLAGA IZRAZOV (OPN):**
+{izrazi_text or "Ni dodatnih izrazov."}
+
+**UREDBA O RAZVRŠČANJU OBJEKTOV (KLJUČNE INFORMACIJE):**
+{uredba_text or "Podatki niso na voljo."}
 ---
 **ZAHTEVE:**
 {zahteve_text}
@@ -1082,6 +1110,43 @@ def frontend():
             background: rgba(220, 53, 69, 0.18);
         }
 
+        .key-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+
+        .key-summary .summary-item {
+            background: rgba(15, 23, 42, 0.04);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            border: 1px solid rgba(15, 23, 42, 0.06);
+        }
+
+        .key-summary .summary-item span {
+            display: block;
+            font-size: 0.8rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: rgba(15, 23, 42, 0.65);
+        }
+
+        .key-summary .summary-item strong {
+            display: block;
+            margin-top: 6px;
+            font-size: 1rem;
+            color: #0f172a;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+        .key-summary .summary-item.empty strong {
+            color: rgba(15, 23, 42, 0.55);
+            font-style: italic;
+            font-weight: 500;
+        }
+
         .key-data-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -1205,14 +1270,26 @@ def frontend():
 
     // KLJUČNI SLOVAR PODATKOV ZA DINAMIČNO GENERIRANJE POLJ
     const keyLabels = {
+        'glavni_objekt': 'OBJEKT (opis funkcije)', 'vrsta_gradnje': 'VRSTA GRADNJE',
+        'klasifikacija_cc_si': 'CC-SI klasifikacija', 'nezahtevni_objekti': 'Nezahtevni objekti v projektu',
+        'enostavni_objekti': 'Enostavni objekti v projektu', 'vzdrzevalna_dela': 'Vzdrževalna dela / manjša rekonstrukcija',
         'parcela_objekta': 'Gradbena parcela (št.)', 'stevilke_parcel_ko': 'Vse parcele in k.o.',
         'velikost_parcel': 'Skupna velikost parcel', 'velikost_obstojecega_objekta': 'Velikost obstoječega objekta',
         'tlorisne_dimenzije': 'Nove tlorisne dimenzije', 'gabariti_etaznost': 'Novi gabarit/Etažnost',
         'faktor_zazidanosti_fz': 'Faktor zazidanosti (FZ)', 'faktor_izrabe_fi': 'Faktor izrabe (FI)',
-        'zelene_povrsine': 'Zelene površine (FZP/m²)', 'naklon_strehe': 'Naklon strehe', 
+        'zelene_povrsine': 'Zelene površine (FZP/m²)', 'naklon_strehe': 'Naklon strehe',
         'kritina_barva': 'Kritina/Barva', 'materiali_gradnje': 'Materiali gradnje (npr. les)',
         'smer_slemena': 'Smer slemena', 'visinske_kote': 'Višinske kote (k.p., k.s.)',
         'odmiki_parcel': 'Odmiki od parcelnih mej', 'komunalni_prikljucki': 'Komunalni priključki/Oskrba'
+    };
+
+    const summaryLabels = {
+        'glavni_objekt': 'OBJEKT',
+        'vrsta_gradnje': 'VRSTA GRADNJE',
+        'klasifikacija_cc_si': 'CC-SI',
+        'nezahtevni_objekti': 'NEZAHTEVNI OBJEKTI',
+        'enostavni_objekti': 'ENOSTAVNI OBJEKTI',
+        'vzdrzevalna_dela': 'VZDRŽEVALNA DELA'
     };
     
     function renderKeyDataFields(data) {
@@ -1242,14 +1319,41 @@ def frontend():
         if (existingMetaDiv) {
             existingMetaDiv.remove();
         }
+        const existingSummaryDiv = analyzeForm.querySelector('.key-summary');
+        if (existingSummaryDiv) {
+            existingSummaryDiv.remove();
+        }
         keyDataFields.insertAdjacentElement('beforebegin', metaDiv);
+
+        // Povzetek ključnih opisnih podatkov (read-only kartice)
+        const summaryDiv = document.createElement('div');
+        summaryDiv.className = 'key-summary';
+
+        for (const key in summaryLabels) {
+            const rawValue = typeof data[key] === 'string' ? data[key].trim() : '';
+            const value = rawValue ? rawValue : 'Ni podatka v dokumentaciji';
+            const item = document.createElement('div');
+            item.className = 'summary-item';
+            if (value === 'Ni podatka v dokumentaciji') {
+                item.classList.add('empty');
+            }
+            const labelSpan = document.createElement('span');
+            labelSpan.textContent = summaryLabels[key];
+            const valueStrong = document.createElement('strong');
+            valueStrong.textContent = value;
+            item.appendChild(labelSpan);
+            item.appendChild(valueStrong);
+            summaryDiv.appendChild(item);
+        }
+
+        metaDiv.insertAdjacentElement('afterend', summaryDiv);
 
 
         // Prikaz in urejanje razširjenih ključnih podatkov
         for (const key in keyLabels) {
             const label = keyLabels[key];
-            const value = data[key] || "Ni podatka v dokumentaciji";
-            const isTextArea = ['stevilke_parcel_ko', 'odmiki_parcel', 'komunalni_prikljucki'].includes(key);
+            const value = (typeof data[key] === 'string' && data[key].trim()) ? data[key].trim() : "Ni podatka v dokumentaciji";
+            const isTextArea = ['stevilke_parcel_ko', 'odmiki_parcel', 'komunalni_prikljucki', 'nezahtevni_objekti', 'enostavni_objekti', 'vzdrzevalna_dela'].includes(key);
 
             const div = document.createElement("div");
             div.className = "data-item";
@@ -1293,6 +1397,10 @@ def frontend():
         const existingMetaDiv = analyzeForm.querySelector('.key-data-grid[style*="1fr"]');
         if (existingMetaDiv) {
             existingMetaDiv.remove();
+        }
+        const existingSummaryDiv = analyzeForm.querySelector('.key-summary');
+        if (existingSummaryDiv) {
+            existingSummaryDiv.remove();
         }
     }
 
@@ -1450,6 +1558,12 @@ async def analyze_report(
     final_eup_list: List[str] = Form(None),
     final_raba_list: List[str] = Form(None),
     # Podatki B (Ključni podatki) - VSE
+    glavni_objekt: str = Form("Ni podatka v dokumentaciji"),
+    vrsta_gradnje: str = Form("Ni podatka v dokumentaciji"),
+    klasifikacija_cc_si: str = Form("Ni podatka v dokumentaciji"),
+    nezahtevni_objekti: str = Form("Ni podatka v dokumentaciji"),
+    enostavni_objekti: str = Form("Ni podatka v dokumentaciji"),
+    vzdrzevalna_dela: str = Form("Ni podatka v dokumentaciji"),
     parcela_objekta: str = Form("Ni podatka v dokumentaciji"),
     stevilke_parcel_ko: str = Form("Ni podatka v dokumentaciji"),
     velikost_parcel: str = Form("Ni podatka v dokumentaciji"),
@@ -1495,6 +1609,9 @@ async def analyze_report(
         
         # 3. Priprava prompta za AI analizo - Vključitev VSEH končnih (potrjenih/popravljenih) ključnih podatkov
         final_key_data = {
+            "glavni_objekt": glavni_objekt, "vrsta_gradnje": vrsta_gradnje,
+            "klasifikacija_cc_si": klasifikacija_cc_si, "nezahtevni_objekti": nezahtevni_objekti,
+            "enostavni_objekti": enostavni_objekti, "vzdrzevalna_dela": vzdrzevalna_dela,
             "parcela_objekta": parcela_objekta, "stevilke_parcel_ko": stevilke_parcel_ko,
             "velikost_parcel": velikost_parcel, "velikost_obstojecega_objekta": velikost_obstojecega_objekta,
             "tlorisne_dimenzije": tlorisne_dimenzije, "gabariti_etaznost": gabariti_etaznost,
@@ -1519,7 +1636,7 @@ async def analyze_report(
         """
         
         # Pravilen klic funkcije: Uporabimo le 3 zahtevane argumente.
-        prompt = build_prompt(modified_project_text, zahteve, IZRAZI_TEXT) 
+        prompt = build_prompt(modified_project_text, zahteve, IZRAZI_TEXT, UREDBA_TEXT)
         ai_response = call_gemini(prompt, data["images"])
         results_map = parse_ai_response(ai_response, zahteve)
         
