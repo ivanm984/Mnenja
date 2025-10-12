@@ -913,6 +913,18 @@ def frontend():
             gap: 28px;
         }
 
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .section-header .section-title {
+            margin: 0;
+        }
+
         .section-title {
             font-size: 1.15rem;
             font-weight: 700;
@@ -936,6 +948,11 @@ def frontend():
             font-weight: 600;
         }
 
+        .btn-inline {
+            width: auto;
+            padding: 12px 20px;
+        }
+
         .upload-section {
             border: 2px dashed rgba(37, 99, 235, 0.25);
             border-radius: var(--radius-md);
@@ -944,6 +961,55 @@ def frontend():
             background: rgba(248, 250, 255, 0.8);
             display: grid;
             gap: 18px;
+        }
+
+        .upload-intro {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .selected-files {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .selected-files .file-item {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+        }
+
+        .selected-files .file-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .selected-files .file-name {
+            font-weight: 600;
+            color: var(--text-color);
+            word-break: break-word;
+        }
+
+        .selected-files .file-meta {
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        .selected-files .file-pages label {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--muted);
+        }
+
+        .selected-files .file-pages input {
+            margin-top: 6px;
         }
 
         .upload-section:hover,
@@ -994,6 +1060,10 @@ def frontend():
             color: var(--muted);
             margin: 4px 0 0 0;
             line-height: 1.55;
+        }
+
+        .subtitle.muted {
+            color: rgba(15, 23, 42, 0.55);
         }
 
         .btn {
@@ -1354,17 +1424,19 @@ def frontend():
 
         <main class="main-card">
             <div>
-                <div class="section-title"><span class="step-badge">1</span> Priprava dokumentacije</div>
+                <div class="section-header">
+                    <div class="section-title"><span class="step-badge">1</span> Priprava dokumentacije</div>
+                    <button type="button" class="btn btn-tertiary btn-inline" id="openSavedBtn">Odpri shranjeno analizo</button>
+                </div>
                 <form id="uploadForm">
                     <div class="upload-section" id="dropZone">
-                        <div>
-                            <label for="pdfFile">Izberi projektno dokumentacijo (PDF):</label>
-                            <input type="file" id="pdfFile" accept=".pdf" required>
+                        <div class="upload-intro">
+                            <label for="pdfFiles">Izberi projektno dokumentacijo (PDF datoteke):</label>
+                            <input type="file" id="pdfFiles" accept=".pdf" multiple required>
+                            <p class="subtitle">Dodajte vse tekstualne in grafične priloge projekta. Spodaj lahko za vsako datoteko določite strani za grafični pregled.</p>
                         </div>
-                        <div>
-                            <label for="pages">Strani z grafikami (neobvezno, za boljšo ekstrakcijo):</label>
-                            <input type="text" id="pages" placeholder="Npr: 16-25, 30, 32">
-                            <p class="subtitle">Namig: Za več EUP lahko dodate več razponov ločenih z vejico.</p>
+                        <div id="selectedFilesList" class="selected-files">
+                            <p class="subtitle muted">Po dodajanju datotek lahko pri posamezni prilogi vnesete strani (npr. 2, 4-6), ki naj se pretvorijo v slike za vizualno analizo.</p>
                         </div>
                     </div>
                     <button type="submit" class="btn" id="submitBtn">Ekstrahiraj ključne podatke in EUP/Rabe</button>
@@ -1661,19 +1733,47 @@ def frontend():
     }
     
     // --- KORAK 1: Ekstrakcija podatkov ---
+    if (pdfFilesInput) {
+        pdfFilesInput.addEventListener("change", renderSelectedFilesList);
+        renderSelectedFilesList();
+    }
+
     uploadForm.addEventListener("submit", async e => {
         e.preventDefault();
-        
-        const pdfFile = document.getElementById("pdfFile").files[0];
-        if (!pdfFile) { showStatus("Prosim naloži PDF datoteko!", "error"); return; }
-        
+
+        const pdfFiles = pdfFilesInput && pdfFilesInput.files ? Array.from(pdfFilesInput.files) : [];
+        if (!pdfFiles.length) { showStatus("Prosim naloži vsaj eno PDF datoteko!", "error"); return; }
+
         const formData = new FormData();
-        formData.append('pdf_file', pdfFile);
-        formData.append('pages_to_render', document.getElementById('pages').value.trim());
+        const filesMeta = [];
+
+        pdfFiles.forEach((file, index) => {
+            formData.append('pdf_files', file);
+            let pagesValue = '';
+            if (selectedFilesList) {
+                const row = selectedFilesList.querySelector(`.file-item[data-index="${index}"]`);
+                if (row) {
+                    const input = row.querySelector('.file-pages-input');
+                    if (input && typeof input.value === 'string' && input.value.trim()) {
+                        pagesValue = input.value.trim();
+                    }
+                }
+            }
+            filesMeta.push({
+                name: file.name || `Dokument_${index + 1}`,
+                pages: pagesValue
+            });
+        });
+
+        try {
+            formData.append('files_meta_json', JSON.stringify(filesMeta));
+        } catch (err) {
+            console.warn('Ne morem pripraviti meta podatkov o datotekah:', err);
+        }
 
         showStatus("Analiziram dokumente in ekstrahiram ključne podatke...", "loading");
         submitBtn.disabled = true;
-        
+
         try {
             const response = await fetch("/extract-data", { method: "POST", body: formData });
             
@@ -1811,22 +1911,70 @@ def frontend():
 
 @app.post("/extract-data")
 async def extract_data(
-    pdf_file: UploadFile = File(...),
-    pages_to_render: Optional[str] = Form(None),
+    pdf_files: List[UploadFile] = File(...),
+    files_meta_json: Optional[str] = Form(None),
 ):
     """Prvi korak: Ekstrahira ključne podatke in jih shrani za kasnejšo analizo."""
     try:
         session_id = str(datetime.now().timestamp())
-        
+
         print(f"\n{'='*60}\n📤 Korak 1: Ekstrakcija podatkov (ID: {session_id})\n{'='*60}\n")
-        pdf_bytes = await pdf_file.read()
-        
-        project_text = parse_pdf(pdf_bytes)
-        images = convert_pdf_pages_to_images(pdf_bytes, pages_to_render)
-        
+        if not pdf_files:
+            raise HTTPException(status_code=400, detail="Dodajte vsaj eno PDF datoteko za analizo.")
+
+        page_overrides: Dict[str, str] = {}
+        if files_meta_json:
+            try:
+                parsed = json.loads(files_meta_json)
+                if isinstance(parsed, list):
+                    for entry in parsed:
+                        if isinstance(entry, dict):
+                            name = entry.get("name")
+                            pages = entry.get("pages")
+                            if name and isinstance(pages, str) and pages.strip():
+                                page_overrides[name] = pages.strip()
+                else:
+                    raise ValueError
+            except (json.JSONDecodeError, ValueError):
+                raise HTTPException(status_code=400, detail="Neveljavni podatki o straneh za grafični pregled.")
+
+        combined_text_parts: List[str] = []
+        all_images: List[Image.Image] = []
+        files_manifest: List[Dict[str, Any]] = []
+
+        for index, upload in enumerate(pdf_files):
+            pdf_bytes = await upload.read()
+            if not pdf_bytes:
+                continue
+
+            file_label = upload.filename or f"Dokument_{index + 1}.pdf"
+            print(f"🔄 Obdelujem datoteko: {file_label} ({len(pdf_bytes)} bajtov)")
+
+            text = parse_pdf(pdf_bytes)
+            if text:
+                combined_text_parts.append(f"=== VIR: {file_label} ===\n{text}")
+
+            page_hint = page_overrides.get(upload.filename) or page_overrides.get(file_label)
+            if page_hint:
+                images_for_file = convert_pdf_pages_to_images(pdf_bytes, page_hint)
+                if images_for_file:
+                    all_images.extend(images_for_file)
+
+            files_manifest.append({
+                "filename": file_label,
+                "pages": page_hint or "",
+                "size": len(pdf_bytes),
+            })
+
+        if not combined_text_parts:
+            raise HTTPException(status_code=400, detail="Iz naloženih datotek ni bilo mogoče prebrati besedila.")
+
+        project_text = "\n\n".join(combined_text_parts)
+        images = all_images
+
         # 1. AI Detektiv (EUP/Raba)
         ai_details = call_gemini_for_details(project_text, images)
-        
+
         # 2. AI Arhivar (Metapodatki)
         metadata = call_gemini_for_metadata(project_text) 
         
@@ -1840,15 +1988,17 @@ async def extract_data(
             "metadata": metadata,
             "ai_details": ai_details,
             "key_data": key_data,
+            "source_files": files_manifest,
         }
-        
+
         # 5. Priprava povratnega JSON za frontend
         response_data = {
             "session_id": session_id,
-            "eup": ai_details.get("eup", []), 
+            "eup": ai_details.get("eup", []),
             "namenska_raba": ai_details.get("namenska_raba", []),
             **metadata,
             **key_data, # Vključeni vsi razširjeni podatki
+            "uploaded_files": files_manifest,
         }
         
         return response_data
