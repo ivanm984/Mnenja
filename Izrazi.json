@@ -1,0 +1,364 @@
+{
+    "terms": [
+        {
+            "number": 1,
+            "term": "Atrijska hiša",
+            "definition": "je stanovanjska stavba z enim stanovanjem in z osrednjim ograjenim notranjim dvoriščem (atrijem), h kateremu so obrnjeni stanovanjski prostori."
+        },
+        {
+            "number": 2,
+            "term": "Bruto tlorisna površina (BEP) stavbe",
+            "definition": "je skupna površina vseh etaž nad nivojem terena, s svetlo višino nad 2,20 m, izračunana po sistemu SIST ISO 9836. Pri izračunu BEP se ne upoštevajo površine nepokritih balkonov in odprtih teras."
+        },
+        {
+            "number": 3,
+            "term": "Dozidava oziroma nadzidava objekta",
+            "definition": "je izvedba gradbenih in drugih del, kadar se k obstoječemu objektu dozida ali nadzida nov del objekta do največ 50% obstoječe BEP objekta. Dozidava ali nadzidava večja od 50% obstoječe BEP oziroma dozidava ali nadzidava z drugo namembnostjo, kakor jo ima osnovni objekt, pomeni novogradnjo objekta. Dozidan oziroma nadzidan del objekta je potrebno priključiti na komunalno infrastrukturo preko obstoječih priključkov objekta."
+        },
+        {
+            "number": 4,
+            "term": "Drevnina",
+            "definition": "so drevesa, grmi in vzpenjavke z olesenelimi nadzemnimi deli."
+        },
+        {
+            "number": 5,
+            "term": "Dvojček",
+            "definition": "je prosto stoječa stanovanjska stavba. Sestavljata ga dve enaki stanovanjski hiši s po enim stanovanjem, ki stojita druga ob drugi (loči ju le skupni požarni zid) in imata ločeni parceli objekta in ločena vhoda."
+        },
+        {
+            "number": 6,
+            "term": "Enodružinska hiša",
+            "definition": "je prosto stoječ stanovanjski objekt, ki obsega največ dve stanovanji s skupnim vhodom, ter lahko ima do 50% BEP namenjene za okolje nemoteči poslovni dejavnosti in je po obliki in strukturi prilagojen gradbeni strukturi enodružinskih hiš."
+        },
+        {
+            "number": 7,
+            "term": "Enota urejanja prostora (v nadaljevanju: EUP)",
+            "definition": "je območje, ki obsega naselje, del naselja ali del odprtega prostora, na katerem se določi namenska raba prostora in dopustna izraba prostora ter omejitve, povezane z varstvom okolja, ohranjanjem narave in varstvom kulturne dediščine ter za posamezne vrste posegov v prostor določijo enotni prostorski izvedbeni pogoji oziroma usmeritve ter pogoji in omejitve za izdelavo občinskega podrobnega prostorskega načrta, če je ta predviden."
+        },
+        {
+            "number": 8,
+            "term": "Etaža",
+            "definition": "je del stavbe med dvema stropoma, ki ima višino obodnega zidu v najnižjem delu višjo od 1,20 m."
+        },
+        {
+            "number": 9,
+            "term": "Etažnost objekta",
+            "definition": "je določena s številom etaž nad terenom, pri čemer se kot etaža štejejo pritličje (P), mansarda (M), terasa (T) in nadstropje (N)."
+        },
+        {
+            "number": 10,
+            "term": "Faktor gradbene prostornine na parcelo, namenjeno gradnji (v nadaljevanju: FP)",
+            "definition": "se določi kot razmerje med bruto prostornino objekta in površino celotne parcele, namenjene gradnji, pri čemer je bruto prostornina objekta zmnožek zazidane površine objekta in povprečne višine objekta nad nivojem terena."
+        },
+        {
+            "number": 11,
+            "term": "Faktor izrabe parcele, namenjene gradnji (v nadaljevanju: FI)",
+            "definition": "se določi kot razmerje med bruto etažno površino objekta (BEP) in celotno površino parcele, namenjene gradnji."
+        },
+        {
+            "number": 12,
+            "term": "Faktor odprtih javnih površin (v nadaljevanju: FJP)",
+            "definition": "je razmerje med površino zelenih oziroma odprtih javnih površin (zelenice, parki, trgi), ki služijo skupni rabi prebivalcev obravnavanega območja (enote urejanja prostora, naselja) ter ne služijo kot javne prometne površine oziroma niso del odprtih bivalnih površin objektov, ter celotno površino obravnavanega območja."
+        },
+        {
+            "number": 13,
+            "term": "Faktor zazidanosti parcele, namenjene gradnji (v nadaljevanju: FZ)",
+            "definition": "je razmerje med zazidano tlorisno površino vseh objektov (vključno z enostavnimi objekti) in celotno površino parcele, namenjene gradnji."
+        },
+        {
+            "number": 14,
+            "term": "Faktor zelenih površin (v nadaljevanju: FZP)",
+            "definition": "se izrazi v odstotkih odprtih bivalnih površin glede na faktor izrabe parcele, namenjene gradnji objekta. Za odprte bivalne površine se štejejo zelene površine in tlakovane površine, namenjene zunanjemu bivanju, ki ne služijo kot prometne površine ali komunalne funkcionalne površine (npr. dostopi, dovozi, parkirišča, prostori za ekološke otoke)."
+        },
+        {
+            "number": 15,
+            "term": "Frčada",
+            "definition": "je funkcionalni strešni arhitekturni element za osvetlitev mansardnih ali podstrešnih prostorov."
+        },
+        {
+            "number": 16,
+            "term": "Funkcionalno drevo",
+            "definition": "je drevo z obsegom debla min. od 18-20 cm na višini 1,0 m od tal po saditvi in višino debla min. 2,2 m."
+        },
+        {
+            "number": 17,
+            "term": "Gospodarska javna infrastruktura",
+            "definition": "so objekti ali omrežja, ki so namenjeni opravljanju gospodarskih javnih služb skladno z zakonom ter tista gospodarska infrastruktura, ki je kot taka določena z zakonom ali odlokom lokalne skupnosti, kakor tudi drugi objekti in omrežja v splošni rabi. Gospodarska javna infrastruktura je državnega in lokalnega pomena."
+        },
+        {
+            "number": 18,
+            "term": "Gostinski vrt",
+            "definition": "je prostor zunaj gostinskega objekta, namenjen gostinski dejavnosti."
+        },
+        {
+            "number": 19,
+            "term": "Gradnja",
+            "definition": "je izvedba gradbenih in drugih del in obsega gradnjo novega objekta, rekonstrukcijo objekta in odstranitev objekta."
+        },
+        {
+            "number": 20,
+            "term": "Grajeno javno dobro",
+            "definition": "so zemljišča in na njih zgrajeni objekti, ki so skladno s predpisi namenjeni splošni rabi in so dostopni vsem pod enakimi pogoji."
+        },
+        {
+            "number": 21,
+            "term": "Kap objekta",
+            "definition": "je najnižja točka strešine objekta. V primeru, ko predvideni objekt leži južno, jugovzhodno ali jugozahodno od obstoječega objekta, se kot kap štejejo tudi vsi horizontalni lomi strešine, ki presegajo polovico celotne horizontalne dolžine najnižje kapi te strešine."
+        },
+        {
+            "number": 22,
+            "term": "Klet (v nadaljevanju: K)",
+            "definition": "je del stavbe, katere prostori se nahajajo od pritličja navzdol in kjer je več kot 50% bruto volumna vkopanega."
+        },
+        {
+            "number": 23,
+            "term": "Komunalna oprema",
+            "definition": "so: - objekti in omrežja infrastrukture za izvajanje obveznih lokalnih gospodarskih javnih služb varstva okolja po predpisih, ki urejajo varstvo okolja, - objekti in omrežja infrastrukture za izvajanje izbirnih lokalnih gospodarskih javnih služb po predpisih, ki urejajo energetiko, na območjih, kjer je priključitev obvezna, - objekti grajenega javnega dobra (občinske ceste, javna parkirišča in druge javne površine ...)."
+        },
+        {
+            "number": 24,
+            "term": "Legalno zgrajeni objekt",
+            "definition": "je objekt, za katerega gradnjo je bilo izdano predpisano upravno dovoljenje ali je zgrajen pred 31. decembrom 1967."
+        },
+        {
+            "number": 25,
+            "term": "Lice stanovanjske stavbe",
+            "definition": "je fasada, kjer so odprtine dnevnih bivalnih prostorov stanovanja, kot so dnevna soba, kuhinja."
+        },
+        {
+            "number": 26,
+            "term": "Mansarda (v nadaljevanju: M)",
+            "definition": "je podstrešje namenjeno bivanju."
+        },
+        {
+            "number": 27,
+            "term": "Nadstropja (v nadaljevanju: N)",
+            "definition": "so vse etaže stavbe nad pritličjem. Nadstropje v zadnji etaži se lahko izdela tudi kot mansarda ali terasa."
+        },
+        {
+            "number": 28,
+            "term": "Naselje",
+            "definition": "je s prostorskim aktom določeno območje strnjeno grajenih stavb različnih namembnosti s pripadajočimi površinami, potrebnimi za njihovo uporabo in območje površin, predvidenih za širitev."
+        },
+        {
+            "number": 29,
+            "term": "Nelegalna gradnja",
+            "definition": "pomeni, da se gradnja oziroma dela, za katera je predpisano gradbeno dovoljenje, izvajajo oziroma so izvedena brez veljavnega gradbenega dovoljenja, kakor tudi da se se objekt, za katerega je bila z gradbenim dovoljenjem dovoljena nadomestna gradnja, v predpisanem roku ni odstranil."
+        },
+        {
+            "number": 30,
+            "term": "Nestanovanjska stavba",
+            "definition": "je objekt v katerem ni stanovanjskih površin."
+        },
+        {
+            "number": 31,
+            "term": "Objekt",
+            "definition": "je s tlemi povezana stavba ali gradbeni inženirski objekt, narejen iz gradbenih proizvodov in naravnih materialov, skupaj z vgrajenimi inštalacijami in tehnološkimi napravami."
+        },
+        {
+            "number": 32,
+            "term": "Odstranitev objekta",
+            "definition": "je izvedba del, s katerimi se objekt odstrani, poruši ali razgradi."
+        },
+        {
+            "number": 33,
+            "term": "Okoljska infrastruktura",
+            "definition": "so objekti, vodi in naprave za izvajanje dejavnosti gospodarskih služb s področja oskrbe z vodo, za čiščenje in odvajanje odpadnih vod, za ravnanje z odpadki in za odlaganje odpadkov."
+        },
+        {
+            "number": 34,
+            "term": "Oskrbovana stanovanja",
+            "definition": "so stanovanja za starejše, ki so arhitektonsko prilagojena starejšim in gibalno omejenim ljudem z lastnim gospodinjstvom v večstanovanjski stavbi ali v drugi obliki strnjene gradnje."
+        },
+        {
+            "number": 35,
+            "term": "Osnovna oskrba prebivalcev",
+            "definition": "vključuje osnovno šolo, vrtec, trgovino, storitvene in servisne dejavnosti."
+        },
+        {
+            "number": 36,
+            "term": "Otroško igrišče",
+            "definition": "je prostor za potrebe otroške igre, opremljen z urbano opremo in zasajen z drevesno in grmovno vegetacijo; lahko je namenjeno eni ali različnim starostnim skupinam, lahko je samostojna ureditev ali ureditev načrtovana v sklopu parka ali drugega območja."
+        },
+        {
+            "number": 37,
+            "term": "Parcela objekta",
+            "definition": "je zemljišče, sestavljeno iz ene ali več zemljiških parcel, na katerem stoji objekt vključno z urejenimi površinami, ki služijo temu objektu oziroma na katerem je predviden objekt vključno z urejenimi površinami, ki bodo služila temu objektu. Kot parcela objekta se štejejo tudi gradbene parcele objektov oziroma funkcionalna zemljišča objektov po prejšnjih predpisih."
+        },
+        {
+            "number": 38,
+            "term": "Podstrešje",
+            "definition": "je prostor pod poševno streho, z višino kapnega zidu največ 1,20 m. Če je kapni zid višji, se podstrešje šteje za etažo."
+        },
+        {
+            "number": 39,
+            "term": "Poseg v prostor",
+            "definition": "je poseg v ali na zemljišče z namenom gradnje objekta po predpisih o graditvi objektov in drug poseg v fizične strukture na zemeljskem površju ter pod njim."
+        },
+        {
+            "number": 40,
+            "term": "Praviloma",
+            "definition": "izraz pomeni, da je potrebno upoštevati določila odloka, da pa je dovoljeno odstopanje od njih, če jih zaradi utemeljenih razlogov in omejitev ni možno upoštevati, kar je potrebno obrazložiti in utemeljiti v postopku za pridobitev gradbenega dovoljenja."
+        },
+        {
+            "number": 41,
+            "term": "Pretežno",
+            "definition": "pomeni najmanj 70%."
+        },
+        {
+            "number": 42,
+            "term": "Priobalno zemljišče",
+            "definition": "je zemljišče, ki neposredno meji na vodno zemljišče. Zunanja meja priobalnih zemljišč sega na vodah 1. reda 15 m od meje vodnega zemljišča, zunaj območij naselja pa najmanj 40 m od meje vodnega zemljišča, na vodah 2. reda pa 5 m od meje vodnega zemljišča."
+        },
+        {
+            "number": 43,
+            "term": "Pritličje (v nadaljevanju: P)",
+            "definition": "je del stavbe, katerega prostori se nahajajo neposredno nad zemeljsko površino ali največ 1,4 m nad njo, merjeno od najvišje kote terena ob objektu."
+        },
+        {
+            "number": 44,
+            "term": "Raščen teren",
+            "definition": "so površine, ki ohranjajo neposreden stik z geološko podlago in s tem sposobnost zadrževanja in ponikanja vode."
+        },
+        {
+            "number": 45,
+            "term": "Regulacijske črte (regulacijska linija, gradbena meja in gradbena linija)",
+            "definition": "se praviloma uporabljajo za določevanje meja javnega prostora, do katerega se lahko načrtujejo in gradijo objekti. - regulacijska linija (v nadaljevanju: RL) je črta, ki ločuje obstoječe in predvidene odprte ali grajene javne površine od površin v privatni lasti in praviloma sovpadajo z linijo prometnih ali zelenih površin ter z linijo grajenega javnega dobra; - gradbena meja (v nadaljevanju: GM) je črta, ki je novozgrajeni oziroma načrtovani objekti ne smejo presegati, lahko pa se je dotikajo ali pa so od nje odmaknjeni v notranjost zemljišča; - gradbena linija (v nadaljevanju: GL) je črta, na katero morajo biti z enim robom - s fasado postavljeni objekti, ki se gradijo na zemljišču ob tej črti; - gradbena meja v nadstropju (v nadaljevanju: GMn) je črta nad pritlično etažo, ki je novozgrajeni oziroma načrtovani objekti ne smejo presegati, lahko pa se je dotikajo ali pa so od nje odmaknjeni v notranjost zemljišča; - okvirno načrtovano območje javnega dobra je območje, praviloma predstavlja območje varovalnega"
+        },
+        {
+            "number": 46,
+            "term": "Rekonstrukcija objekta",
+            "definition": "je spreminjanje tehničnih značilnosti obstoječega objekta in prilagajanje objekta spremenjeni namembnosti ali spremenjenim potrebam oziroma izvedba del, s katerimi se bistveno ne spremeni velikost, spreminjajo pa se njegovi konstrukcijski elementi, zmogljivost ter izvedejo druge njegove izboljšave, pri čemer pri stavbah ne gre za bistveno spremembo v zvezi z velikostjo, če se njena prostornina ne spremeni za več kakor 10 %."
+        },
+        {
+            "number": 47,
+            "term": "Sleme",
+            "definition": "je vrhnji rob ostrešja ali stični rob strešin in je hkrati najvišja točka strehe."
+        },
+        {
+            "number": 48,
+            "term": "Sonaravno urejanje vodotokov",
+            "definition": "je urejanje vodotokov ob upoštevanju hidroloških, ekoloških, krajinskih in drugih vidikov."
+        },
+        {
+            "number": 49,
+            "term": "Sprememba namembnosti",
+            "definition": "je izvedba del, ki niso gradnja in zaradi katerih ni potrebna rekonstrukcija ter s katerimi se ne spreminja zunanjega videza objekta, predstavljajo pa takšno spremembo namena objekta oziroma njegovega dela, da se povečajo vplivi objekta na okolico."
+        },
+        {
+            "number": 50,
+            "term": "Spremljajoča dejavnost",
+            "definition": "je tista dejavnost, ki ni zajeta v osnovni namenski rabi, a se jo nanjo lahko umešča pod pogojem, da na osnovno namensko rabo nima negativnih vplivov."
+        },
+        {
+            "number": 51,
+            "term": "Stanovanjska stavba",
+            "definition": "je objekt, v katerem je več kot polovica površin namenjenih bivanju."
+        },
+        {
+            "number": 52,
+            "term": "Stanovanjska stavba za posebni namen",
+            "definition": "je stavba, namenjena začasnemu reševanju stanovanjskih potreb socialno ogroženih oseb, starejših, študentov ali otrok, kot so dijaški in študentski domovi, delavski domovi, domovi za starejše, domovi za terapevtske skupine, zavetišče za brezdomce, vzgojni domovi, domovi za skupnosti ter druge stavbe, namenjene za izvajanje socialnih programov, ki vključujejo bivanje."
+        },
+        {
+            "number": 53,
+            "term": "Strnjena gradnja",
+            "definition": "je gradnja stanovanjskih objektov, ki se med seboj stikajo z vsaj eno stranico ali njenim delom."
+        },
+        {
+            "number": 54,
+            "term": "Svetla višina prostora",
+            "definition": "je merjena od gotovega poda do gotovega stropa."
+        },
+        {
+            "number": 55,
+            "term": "Trg",
+            "definition": "je odprt prostor, delno ali v celoti obdan s stavbami, primeren za sestajanje, zbiranje ljudi."
+        },
+        {
+            "number": 56,
+            "term": "Varovalni koridor gospodarske javne infrastrukture",
+            "definition": "obsega prostor, v katerem gradnja objektov pred izgradnjo objektov, katerim so koridorji namenjeni, ni dopustna. Dopustni so posegi v prostor pod pogoji tega odloka in s posebnim soglasjem pristojnega organa oziroma upravljavca v skladu s predpisi."
+        },
+        {
+            "number": 57,
+            "term": "Varovalni pas gospodarske javne infrastrukture",
+            "definition": "obsega prostor določen v skladu s predpisi, v katerem so gradbeni posegi dopustni le s soglasjem pristojnega organa oziroma upravljavca."
+        },
+        {
+            "number": 58,
+            "term": "Večstanovanjska stavba",
+            "definition": "je stanovanjska stavba s tremi ali več stanovanji (vila blok, stanovanjski blok, stolpič, stolpnica in podobni stanovanjski objekti)."
+        },
+        {
+            "number": 59,
+            "term": "Veduta",
+            "definition": "je poudarjen pogled iz določenega mesta opazovanja (praviloma javne površine) z jasno določeno smerjo in prostorsko zaokroženim ciljem opazovanja, ki je lahko objekt ali območje."
+        },
+        {
+            "number": 60,
+            "term": "Vila blok",
+            "definition": "je do šest stanovanjski objekt višine do P+2 (oziroma do P+1+M, P+1+T). Zasnova objekta in zunanja ureditev izražata individualne programske posebnosti (velika površina bivalnih prostorov, bogata stopnišča, balkoni in terase, oblikovan vrt ipd.). Vila ima poudarjen reprezentativni in simbolni značaj ter izraža arhitekturno-oblikovne značilnosti obdobja, v katerem je bila zgrajena."
+        },
+        {
+            "number": 61,
+            "term": "Višina objekta",
+            "definition": "ki je določena s tem odlokom, se meri od najnižje kote terena ob objektu do kote najvišje točke strehe."
+        },
+        {
+            "number": 62,
+            "term": "Vodno zemljišče",
+            "definition": "je zemljišče, na katerem je voda trajno ali občasno prisotna in se zato oblikujejo posebne hidrološke, geomorfološke in biološke razmere, ki določajo vodni in obvodni ekosistem. Vodno zemljišče tekočih voda obsega osnovno strugo tekočih voda, vključno z bregom, do izrazite geomorfološke spremembe. Vodno zemljišče stoječih voda obsega dno stoječih voda, vključno z bregom, do najvišjega zabeleženega vodostaja. Za vodno zemljišče se štejejo tudi opuščene struge in prodišča, ki jih voda občasno še poplavlja, močvirja in zemljišče, ki ga je poplavila voda zaradi posega v prostor."
+        },
+        {
+            "number": 63,
+            "term": "Vrstna hiša",
+            "definition": "je stanovanjska stavba z enim stanovanjem, zgrajena v strnjenem nizu najmanj treh zaporedno zgrajenih hiš enakih gabaritov."
+        },
+        {
+            "number": 64,
+            "term": "Vrtiček",
+            "definition": "je površina za pridelovanje vrtnin in gojenje okrasnih rastlin za lastne potrebe."
+        },
+        {
+            "number": 65,
+            "term": "Vrtičkarstvo",
+            "definition": "je prostočasna dejavnost, ki vključuje pridelovanje vrtnin in gojenje okrasnih rastlin za lastne potrebe, in se izvaja na posebej za tako dejavnost urejenih površinah."
+        },
+        {
+            "number": 66,
+            "term": "Vzdrževanje objekta",
+            "definition": "je izvedba del, s katerimi se ohranja objekt v dobrem stanju in omogoča njegova uporaba. Pri vzdrževanju je potrebno ohraniti oziroma zagotoviti prvotne kakovostne fasadne elemente. Vzdrževanje obsega redna vzdrževalna dela, investicijska vzdrževalna dela in vzdrževalna dela v javno korist."
+        },
+        {
+            "number": 67,
+            "term": "Zadrževalni bazen",
+            "definition": "je objekt, ki zadržuje viške padavinske vode."
+        },
+        {
+            "number": 68,
+            "term": "Zazidana površina objekta",
+            "definition": "je površina vseh etaž objekta nad terenom, ki so večje od 50% BEP objekta."
+        },
+        {
+            "number": 69,
+            "term": "Zemljišče pod stavbo",
+            "definition": "je del površine stavbe, ki je neposredno v stiku s tlemi."
+        },
+        {
+            "number": 70,
+            "term": "Zemljiška parcela",
+            "definition": "je enota zemljiškega katastra, ki je del zemeljskega površja, omejena s parcelnimi mejami in označena s parcelno številko."
+        },
+        {
+            "number": 71,
+            "term": "Zemljišče",
+            "definition": "je del zemeljskega površja, ki je v naravi določen s pravno določenimi mejami ali s pravno določeno namembnostjo."
+        },
+        {
+            "number": 72,
+            "term": "Zeleni pasovi",
+            "definition": "so zelenice, parki, zeleni koridorji, zeleni sistemi, ki so lahko namenjeni zaščitni ali drugi funkciji."
+        }
+    ]
+}

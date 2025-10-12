@@ -1,0 +1,1660 @@
+{
+  "priloga3": {
+    "title": "Seznam enot urejanja prostora:",
+    "description": "Seznam enot urejanja prostora razvrščen po naseljih",
+    "entries": [
+      {
+        "ime_naselja": "BERINJEK",
+        "urejevalna_enota": "KE5-A 113",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BISTRICA",
+        "urejevalna_enota": "KE5-A 100",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BISTRICA",
+        "urejevalna_enota": "KE5-A 108",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BISTRICA",
+        "urejevalna_enota": "KE5-A 119",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BISTRICA",
+        "urejevalna_enota": "KE5-A 123",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BISTRICA",
+        "urejevalna_enota": "KE5-A 572",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BISTRICA",
+        "urejevalna_enota": "KE5-A 573",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BISTRICA",
+        "urejevalna_enota": "KE5-A 96",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BITIČE",
+        "urejevalna_enota": "BT-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BITIČE",
+        "urejevalna_enota": "BT-01 SK na delu",
+        "nacin_urejanja": "DPN"
+      },
+      {
+        "ime_naselja": "BOLTIJA",
+        "urejevalna_enota": "BL-01 SK",
+        "nacin_urejanja": "DPN"
+      },
+      {
+        "ime_naselja": "BOLTIJA",
+        "urejevalna_enota": "BL-02 SK na delu",
+        "nacin_urejanja": "DPN"
+      },
+      {
+        "ime_naselja": "BOLTIJA",
+        "urejevalna_enota": "BL-03 ZS",
+        "nacin_urejanja": "OPPN in DPN"
+      },
+      {
+        "ime_naselja": "BOLTIJA",
+        "urejevalna_enota": "BL-04 BT",
+        "nacin_urejanja": "OPPN"
+      },
+      {
+        "ime_naselja": "BOLTIJA",
+        "urejevalna_enota": "KE1-A 299",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BOLTIJA",
+        "urejevalna_enota": "KE1-A 303",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BOLTIJA",
+        "urejevalna_enota": "KE1-A 310",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BOROVAK PRI POLŠNIKU",
+        "urejevalna_enota": "BP-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BOROVAK PRI POLŠNIKU",
+        "urejevalna_enota": "KE5-A 135",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BREG PRI LITIJI",
+        "urejevalna_enota": "BR-01 PO*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "BREG PRI LITIJI",
+        "urejevalna_enota": "BR-02 IG",
+        "nacin_urejanja": "OPPN"
+      },
+      {
+        "ime_naselja": "BREG PRI LITIJI",
+        "urejevalna_enota": "BR-03 IG",
+        "nacin_urejanja": "OPPN"
+      },
+      {
+        "ime_naselja": "BREG PRI LITIJI",
+        "urejevalna_enota": "BR-04 SSe",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BREG PRI LITIJI",
+        "urejevalna_enota": "BR-05 IK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BREG PRI LITIJI",
+        "urejevalna_enota": "BR-06 SKj",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BREG PRI LITIJI",
+        "urejevalna_enota": "BR-07 SSe",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BREG PRI LITIJI",
+        "urejevalna_enota": "BR-08 ZS",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BREG PRI LITIJI",
+        "urejevalna_enota": "BR-09 ZD",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BREG PRI LITIJI",
+        "urejevalna_enota": "KE2-A 157",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BREG PRI LITIJI",
+        "urejevalna_enota": "KE2-A 513",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BREG PRI LITIJI",
+        "urejevalna_enota": "KE2-A 514",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BREG PRI LITIJI",
+        "urejevalna_enota": "KE2-A 520",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BREZJE PRI KUMPOLJU",
+        "urejevalna_enota": "BK-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BREZJE PRI KUMPOLJU",
+        "urejevalna_enota": "KE6-A 28",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BREZOVO",
+        "urejevalna_enota": "BZ-01 SKj",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BREZOVO",
+        "urejevalna_enota": "BZ-02 SSa",
+        "nacin_urejanja": "OPPN"
+      },
+      {
+        "ime_naselja": "BREZOVO",
+        "urejevalna_enota": "BZ-03 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BREZOVO",
+        "urejevalna_enota": "BZ-04 LN",
+        "nacin_urejanja": "OPPN"
+      },
+      {
+        "ime_naselja": "BREZOVO",
+        "urejevalna_enota": "KE6-A 571",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "BRGLEZ",
+        "urejevalna_enota": "BG-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "CIRKUŠE",
+        "urejevalna_enota": "CI-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "CIRKUŠE",
+        "urejevalna_enota": "KE1-A 304",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "CIRKUŠE",
+        "urejevalna_enota": "KE1-A 320",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "CIRKUŠE",
+        "urejevalna_enota": "KE1-A 335",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "CIRKUŠE",
+        "urejevalna_enota": "KE1-A 341",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "CIRKUŠE",
+        "urejevalna_enota": "KE1-A 479",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "ČATEŠKA GORA",
+        "urejevalna_enota": "KE6-A (CDk) 372",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "ČATEŠKA GORA",
+        "urejevalna_enota": "KE6-A 13",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "ČATEŠKA GORA",
+        "urejevalna_enota": "KE6-A 14",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "ČATEŠKA GORA",
+        "urejevalna_enota": "KE6-A 16",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "ČATEŠKA GORA",
+        "urejevalna_enota": "KE6-A 18",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "ČATEŠKA GORA",
+        "urejevalna_enota": "KE6-A 19",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "ČATEŠKA GORA",
+        "urejevalna_enota": "KE6-A 22",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "ČATEŠKA GORA",
+        "urejevalna_enota": "KE6-A 386*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "ČATEŠKA GORA",
+        "urejevalna_enota": "KE6-A 389",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "ČATEŠKA GORA",
+        "urejevalna_enota": "KE6-A 589",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "ČATEŠKA GORA",
+        "urejevalna_enota": "KE6-A 590",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "ČATEŠKA GORA",
+        "urejevalna_enota": "KE6-A 591",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "ČATEŠKA GORA",
+        "urejevalna_enota": "KE6-A 592",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "ČATEŠKA GORA",
+        "urejevalna_enota": "KE6-A 593",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "ČATEŠKA GORA",
+        "urejevalna_enota": "KE6-A 594",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "ČEPLJE",
+        "urejevalna_enota": "ČE-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOBJE",
+        "urejevalna_enota": "DJ-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOBOVICA",
+        "urejevalna_enota": "DB-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOBOVICA",
+        "urejevalna_enota": "KE5-A 122",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOBOVICA",
+        "urejevalna_enota": "KE5-A 140",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOBOVICA",
+        "urejevalna_enota": "KE5-A 146",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOBOVICA",
+        "urejevalna_enota": "KE5-A 533",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOBOVICA",
+        "urejevalna_enota": "KE5-K 616",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOLE PRI LITIJI",
+        "urejevalna_enota": "DL-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOLE PRI LITIJI",
+        "urejevalna_enota": "DL-02 SSe",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOLE PRI LITIJI",
+        "urejevalna_enota": "DL-03 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOLE PRI LITIJI",
+        "urejevalna_enota": "DL-04 SSe",
+        "nacin_urejanja": "OPPN"
+      },
+      {
+        "ime_naselja": "DOLE PRI LITIJI",
+        "urejevalna_enota": "DL-05 ZK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOLE PRI LITIJI",
+        "urejevalna_enota": "DL-06 SSe",
+        "nacin_urejanja": "OPPN"
+      },
+      {
+        "ime_naselja": "DOLE PRI LITIJI",
+        "urejevalna_enota": "DL-07 SSe",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOLE PRI LITIJI",
+        "urejevalna_enota": "DL-08 IG",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOLE PRI LITIJI",
+        "urejevalna_enota": "DL-09 CU",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOLE PRI LITIJI",
+        "urejevalna_enota": "DL-10 CU",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOLE PRI LITIJI",
+        "urejevalna_enota": "DL-11 CDi",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOLE PRI LITIJI",
+        "urejevalna_enota": "DL-12 K*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "DOLE PRI LITIJI",
+        "urejevalna_enota": "KE5-A 93",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOLGO BRDO",
+        "urejevalna_enota": "DR-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOLGO BRDO",
+        "urejevalna_enota": "KE5-A 132",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOLGO BRDO",
+        "urejevalna_enota": "KE5-A 136",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOLGO BRDO",
+        "urejevalna_enota": "KE5-A 144",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "DOLGO BRDO",
+        "urejevalna_enota": "KE5-A 511",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "GA-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "GA-02 SSa",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "GA-03 CU",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "GA-04 SSe",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "GA-05 IG",
+        "nacin_urejanja": "OPPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "GA-06 CU",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "GA-07 ZK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "GA-08 CD",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "GA-09 SSa",
+        "nacin_urejanja": "OPPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "GA-10 SSv",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "GA-11 SSe",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "GA-12 SSe",
+        "nacin_urejanja": "OPPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "GA-13 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "GA-14 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "GA-15 O",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "KE6-A 391",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "KE6-A 45",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "KE6-A 48",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "KE6-A 595",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "KE6-A 596",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "KE6-A 597",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "KE6-A 598",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABROVKA",
+        "urejevalna_enota": "KE6-A 599",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 29",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 30",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 31",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 34",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 35",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 36",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 37",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 38",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 40",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 41",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 42",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 43",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 44",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 583",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 584",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 585",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 586",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 587",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A 588",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-A7 (CDk) 4*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "GABRSKA GORA",
+        "urejevalna_enota": "KE6-K 619",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOBNIK",
+        "urejevalna_enota": "KE6-A6 1*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "GOBNIK",
+        "urejevalna_enota": "KE6-A6 2*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "GOBNIK",
+        "urejevalna_enota": "KE6-A6 3*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "GOBNIK",
+        "urejevalna_enota": "KE6-A6 434*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "GOBNIK",
+        "urejevalna_enota": "KE6-A6 435*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "GOBNIK",
+        "urejevalna_enota": "KE6-A6 436*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "GOBNIK",
+        "urejevalna_enota": "KE6-A6 437*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "GOBNIK",
+        "urejevalna_enota": "KE6-A6 438*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "GOBNIK",
+        "urejevalna_enota": "KE6-A6 439*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "GOBNIK",
+        "urejevalna_enota": "KE6-A6 440*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "GOBNIK",
+        "urejevalna_enota": "KE6-A6 441*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "GOBNIK",
+        "urejevalna_enota": "KE6-A6 448*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "GL-01 SSe",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "GL-02 SP",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "GL-03 ZD",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "GL-04 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 184",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 191",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 193",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 194",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 195",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 205",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 208",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 209",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 210",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 216",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 217",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 218",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 219",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 222",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 225",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 382",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 387*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 406",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 465",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 468",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 472",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 473*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "GOLIŠČE",
+        "urejevalna_enota": "KE3-A 607",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GORENJE JELENJE",
+        "urejevalna_enota": "GJ-01 SKj",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GORENJE JELENJE",
+        "urejevalna_enota": "GJ-02 CDk",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GORNJE RAVNE",
+        "urejevalna_enota": "KE6-A 11",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GORNJE RAVNE",
+        "urejevalna_enota": "KE6-A 12",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GORNJE RAVNE",
+        "urejevalna_enota": "KE6-A 5",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GORNJE RAVNE",
+        "urejevalna_enota": "KE6-A 6",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GORNJE RAVNE",
+        "urejevalna_enota": "KE6-A 7",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GRADIŠČE - K.O.ŠT.LOVRENC",
+        "urejevalna_enota": "GE-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GRADIŠČE - K.O.ŠT.LOVRENC",
+        "urejevalna_enota": "GE-02 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GRADIŠČE - K.O.ŠT.LOVRENC",
+        "urejevalna_enota": "KE5-A 111",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GRADIŠČE - K.O.ŠT.LOVRENC",
+        "urejevalna_enota": "KE5-A 374",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "GRADIŠČE - K.O.ŠT.LOVRENC",
+        "urejevalna_enota": "KE5-A4 420*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "HOHOVICA",
+        "urejevalna_enota": "KE6-A 554",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "HOHOVICA",
+        "urejevalna_enota": "KE6-A 555",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "HOHOVICA",
+        "urejevalna_enota": "KE6-A 59",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "HOHOVICA",
+        "urejevalna_enota": "KE6-A 68",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "HUDE RAVNE",
+        "urejevalna_enota": "KE5-A 64",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "HUDE RAVNE",
+        "urejevalna_enota": "KE5-A 69",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "HUDE RAVNE",
+        "urejevalna_enota": "KE5-A 75",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "HUDE RAVNE",
+        "urejevalna_enota": "KE5-A 80",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "HUDE RAVNE",
+        "urejevalna_enota": "KE5-A 574",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "HUDE RAVNE",
+        "urejevalna_enota": "KE5-A 72",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "HUDE RAVNE",
+        "urejevalna_enota": "KE5-A 76",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "HUDE RAVNE",
+        "urejevalna_enota": "KE5-A 78",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JAVORJE PRI GABROVKI",
+        "urejevalna_enota": "JG-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JAVORJE PRI GABROVKI",
+        "urejevalna_enota": "JG-02 CDk",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JAVORJE PRI GABROVKI",
+        "urejevalna_enota": "KE5-A 107",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JAVORJE PRI GABROVKI",
+        "urejevalna_enota": "KE5-A 396*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "JAVORJE PRI GABROVKI",
+        "urejevalna_enota": "KE5-A 537",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JAVORJE PRI GABROVKI",
+        "urejevalna_enota": "KE5-A 611",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JAVORJE PRI GABROVKI",
+        "urejevalna_enota": "KE6-A 538",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JELENSKA REBER",
+        "urejevalna_enota": "JR-01 SP",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JELENSKA REBER",
+        "urejevalna_enota": "JR-02 ZD",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JESENJE",
+        "urejevalna_enota": "JE-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JESENJE",
+        "urejevalna_enota": "KE1-A 336",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JESENJE",
+        "urejevalna_enota": "KE1-A 338 na delu",
+        "nacin_urejanja": "DPN"
+      },
+      {
+        "ime_naselja": "JESENJE",
+        "urejevalna_enota": "KE1-A 339 na delu",
+        "nacin_urejanja": "DPN"
+      },
+      {
+        "ime_naselja": "JESENJE",
+        "urejevalna_enota": "KE2-A 315",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JESENJE",
+        "urejevalna_enota": "KE2-A 318",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JEVNICA",
+        "urejevalna_enota": "JV-01 SSe",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JEVNICA",
+        "urejevalna_enota": "JV-02 ZS*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "JEVNICA",
+        "urejevalna_enota": "JV-03 ZS*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "JEVNICA",
+        "urejevalna_enota": "JV-04 PŽ",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JEVNICA",
+        "urejevalna_enota": "JV-05 PO",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JEVNICA",
+        "urejevalna_enota": "JV-06 CU",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JEVNICA",
+        "urejevalna_enota": "JV-07 SSe",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JEVNICA",
+        "urejevalna_enota": "JV-08 SSe",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JEVNICA",
+        "urejevalna_enota": "JV-09 CU",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JEVNICA",
+        "urejevalna_enota": "JV-10 CU*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "JEVNICA",
+        "urejevalna_enota": "JV-11 SSe",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JEVNICA",
+        "urejevalna_enota": "JV-12 SSe",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JEVNICA",
+        "urejevalna_enota": "JV-13 SSe",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JEVNICA",
+        "urejevalna_enota": "KE2-A 463",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JEŽEVEC",
+        "urejevalna_enota": "JC-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "JEŽEVEC",
+        "urejevalna_enota": "KE5-K 617",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KAL PRI DOLAH",
+        "urejevalna_enota": "KD-01 SSe",
+        "nacin_urejanja": "OPPN"
+      },
+      {
+        "ime_naselja": "KAL PRI DOLAH",
+        "urejevalna_enota": "KD-02 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KAL PRI DOLAH",
+        "urejevalna_enota": "KD-03 SSe",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KAL PRI DOLAH",
+        "urejevalna_enota": "KD-04 SP",
+        "nacin_urejanja": "OPPN"
+      },
+      {
+        "ime_naselja": "KAL PRI DOLAH",
+        "urejevalna_enota": "KE5-A 398",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KAL PRI DOLAH",
+        "urejevalna_enota": "KE5-K 614",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KAMNI VRH",
+        "urejevalna_enota": "KE6-A6 422*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "KAMNI VRH",
+        "urejevalna_enota": "KE6-A6 423*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "KAMNI VRH",
+        "urejevalna_enota": "KE6-A6 424*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "KAMNI VRH",
+        "urejevalna_enota": "KE6-A6 427*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "KAMNI VRH",
+        "urejevalna_enota": "KE6-A6 430*",
+        "nacin_urejanja": "PPIP in DPN"
+      },
+      {
+        "ime_naselja": "KAMNI VRH",
+        "urejevalna_enota": "KE6-A6 442*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "KAMNI VRH",
+        "urejevalna_enota": "KE6-A6 443*",
+        "nacin_urejanja": "PPIP in DPN"
+      },
+      {
+        "ime_naselja": "KAMNI VRH",
+        "urejevalna_enota": "KE6-A6 444*",
+        "nacin_urejanja": "PPIP in DPN"
+      },
+      {
+        "ime_naselja": "KAMNI VRH",
+        "urejevalna_enota": "KE6-A6 445*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "KAMNI VRH",
+        "urejevalna_enota": "KE6-A6 446*",
+        "nacin_urejanja": "PPIP in DPN"
+      },
+      {
+        "ime_naselja": "KAMNI VRH",
+        "urejevalna_enota": "KE6-A6 447*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "KAMNI VRH",
+        "urejevalna_enota": "KE6-A6 578*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "KANDRŠE - DEL",
+        "urejevalna_enota": "KE1-A 369",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KANDRŠE - DEL",
+        "urejevalna_enota": "KN-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KLANEC PRI GABROVKI",
+        "urejevalna_enota": "KG-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KLANEC PRI GABROVKI",
+        "urejevalna_enota": "KG-02 PO",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KLENIK",
+        "urejevalna_enota": "KE1-A (CDk) 377",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KLENIK",
+        "urejevalna_enota": "KE1-A 351",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KLENIK",
+        "urejevalna_enota": "KE1-A 459*",
+        "nacin_urejanja": "PPIP"
+      },
+      {
+        "ime_naselja": "KLENIK",
+        "urejevalna_enota": "KK-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KONJ",
+        "urejevalna_enota": "KE1-A 270",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KONJ",
+        "urejevalna_enota": "KE1-A 274",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KONJ",
+        "urejevalna_enota": "KE1-A 276",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KONJ",
+        "urejevalna_enota": "KE1-A 300",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KONJ",
+        "urejevalna_enota": "KO-01 SK",
+        "nacin_urejanja": "OPN"
+      },
+      {
+        "ime_naselja": "KONJ",
+        "urejevalna_enota": "KO-02 O",
+        "nacin_urejanja": "OPN"
+      }
+    ]
+  },
+  "priloga4": [
+    {
+      "ime_naselja": "BREG PRI LITIJI",
+      "enote_urejanja_prostora": "BR-01 PO*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "BREG PRI LITIJI",
+      "enote_urejanja_prostora": "BR-02 IG",
+      "nacin_urejanja": "OPPN"
+    },
+    {
+      "ime_naselja": "BREG PRI LITIJI",
+      "enote_urejanja_prostora": "BR-03 IG",
+      "nacin_urejanja": "OPPN"
+    },
+    {
+      "ime_naselja": "BREG PRI LITIJI",
+      "enote_urejanja_prostora": "BR-09 ZD",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "GORNJE RAVNE",
+      "enote_urejanja_prostora": "KE6 A 6",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "JEVNICA",
+      "enote_urejanja_prostora": "JV-02 ZS*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "JEVNICA",
+      "enote_urejanja_prostora": "JV-03 ZS*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "KRESNIŠKE POLJANE",
+      "enote_urejanja_prostora": "KL-08 O",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "KRESNICE",
+      "enote_urejanja_prostora": "KR-01 PŽ",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "KRESNICE",
+      "enote_urejanja_prostora": "KR-19 IG",
+      "nacin_urejanja": "OPPN"
+    },
+    {
+      "ime_naselja": "KRESNICE",
+      "enote_urejanja_prostora": "KR-20 IP",
+      "nacin_urejanja": "OPPN"
+    },
+    {
+      "ime_naselja": "KRESNIŠKI VRH",
+      "enote_urejanja_prostora": "KE2 A 279",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-26 PŽ",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-27 ZS",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-28 IG",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-29 SSv*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-30 CU*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-31 CU*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-32 CU*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-33 IG",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-34 CU*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-35 SSe",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-36 CU",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-37 CU",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-38 CU",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-39 CDo",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-40 CU",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-43 CU",
+      "nacin_urejanja": "OPPN"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-44 SSe",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-46 E",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-47 O",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-48 ZS",
+      "nacin_urejanja": "OPPN"
+    },
+    {
+      "ime_naselja": "LITIJA",
+      "enote_urejanja_prostora": "LI-65 PO*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "MORAVČE PRI GABROVKI",
+      "enote_urejanja_prostora": "MO-04 SK",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "MORAVČE PRI GABROVKI",
+      "enote_urejanja_prostora": "MO-07 BT",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "OKROG",
+      "enote_urejanja_prostora": "KE6 A 8*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "PONOVIČE",
+      "enote_urejanja_prostora": "KE2 A 417*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "PONOVIČE",
+      "enote_urejanja_prostora": "KE2 A 481*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "PONOVIČE",
+      "enote_urejanja_prostora": "KE2 A 510",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "PONOVIČE",
+      "enote_urejanja_prostora": "PN-01 SSe",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "PONOVIČE",
+      "enote_urejanja_prostora": "PN-05 BT",
+      "nacin_urejanja": "OPPN"
+    },
+    {
+      "ime_naselja": "PONOVIČE",
+      "enote_urejanja_prostora": "PN-06 SSe",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "PODŠENTJUR",
+      "enote_urejanja_prostora": "PŠ-01 SK",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "RIBČE",
+      "enote_urejanja_prostora": "KE2 A 451",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "RIBČE",
+      "enote_urejanja_prostora": "RB-05 SK",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "RENKE",
+      "enote_urejanja_prostora": "KE2 A 413",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "SAVA",
+      "enote_urejanja_prostora": "KE2 A 281",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "SAVA",
+      "enote_urejanja_prostora": "KE2 A 285",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "SAVA",
+      "enote_urejanja_prostora": "SA-02 SK*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "SAVA",
+      "enote_urejanja_prostora": "SA-03 SSa",
+      "nacin_urejanja": "OPPN"
+    },
+    {
+      "ime_naselja": "SAVA",
+      "enote_urejanja_prostora": "SA-04 SSe",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "SAVA",
+      "enote_urejanja_prostora": "SA-05 CU",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "SAVA",
+      "enote_urejanja_prostora": "SA-08 SSe",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "SAVA",
+      "enote_urejanja_prostora": "SA-09 SSe",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "SAVA",
+      "enote_urejanja_prostora": "SA-10 ZS*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "SAVA",
+      "enote_urejanja_prostora": "SA-12 PŽ",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "SPODNJI HOTIČ",
+      "enote_urejanja_prostora": "SH-05 SK",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "SPODNJI LOG",
+      "enote_urejanja_prostora": "KE2 A 283",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "SPODNJI LOG",
+      "enote_urejanja_prostora": "KE2 A 484",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "SPODNJI LOG",
+      "enote_urejanja_prostora": "SO-01 SSe",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "SPODNJI LOG",
+      "enote_urejanja_prostora": "SO-02 PO",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "SPODNJI LOG",
+      "enote_urejanja_prostora": "SO-03 SK",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "SPODNJI LOG",
+      "enote_urejanja_prostora": "SO-04 SK",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "SPODNJI LOG",
+      "enote_urejanja_prostora": "SO-05 SSe",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "TLAKA",
+      "enote_urejanja_prostora": "KE6 A 15*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "TLAKA",
+      "enote_urejanja_prostora": "TL-03 ZS*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "VERNEK",
+      "enote_urejanja_prostora": "KE2 A 414",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "VERNEK",
+      "enote_urejanja_prostora": "VR-01 SKj*",
+      "nacin_urejanja": "PIP"
+    },
+    {
+      "ime_naselja": "VERNEK",
+      "enote_urejanja_prostora": "VR-02 IG*",
+      "nacin_urejanja": "PPIP"
+    },
+    {
+      "ime_naselja": "ZGORNJI HOTIČ",
+      "enote_urejanja_prostora": "ZH-03 IG",
+      "nacin_urejanja": "OPPN"
+    },
+    {
+      "ime_naselja": "ZGORNJI HOTIČ",
+      "enote_urejanja_prostora": "ZH-15 CU",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "ZGORNJI LOG",
+      "enote_urejanja_prostora": "KE2 A 478",
+      "nacin_urejanja": "#"
+    },
+    {
+      "ime_naselja": "ZGORNJI LOG",
+      "enote_urejanja_prostora": "KE2 A 480",
+      "nacin_urejanja": "#"
+    }
+  ]
+}
