@@ -6,6 +6,8 @@ import os
 import json
 import re
 import io
+import sqlite3
+import threading
 from typing import List, Optional, Dict, Any, Tuple
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
@@ -166,6 +168,141 @@ def load_knowledge_base() -> Tuple[Dict, Dict, List, Dict, str, str]:
         raise RuntimeError(f"❌ Kritična napaka pri nalaganju baze znanja: {e}")
 
 OPN_KATALOG, PRILOGE, ALL_EUPS, CLEN_DATA_MAP, IZRAZI_TEXT, UREDBA_TEXT = load_knowledge_base()
+
+# =============================================================================
+# LOKALNA SHRANJEVALNA BAZA (SQLite)
+# =============================================================================
+
+DB_PATH = os.path.join(os.path.dirname(__file__), "local_sessions.db")
+DB_LOCK = threading.Lock()
+
+
+def get_db_connection() -> sqlite3.Connection:
+    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def init_db() -> None:
+    with DB_LOCK:
+        conn = get_db_connection()
+        try:
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS saved_sessions (
+                    session_id TEXT PRIMARY KEY,
+                    project_name TEXT,
+                    summary TEXT,
+                    data_json TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                )
+                """
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+
+def upsert_session(session_id: str, project_name: str, summary: str, data: Dict[str, Any]) -> None:
+    payload = json.dumps(data, ensure_ascii=False)
+    timestamp = datetime.utcnow().isoformat()
+    with DB_LOCK:
+        conn = get_db_connection()
+        try:
+            conn.execute(
+                """
+                INSERT INTO saved_sessions (session_id, project_name, summary, data_json, updated_at)
+                VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT(session_id) DO UPDATE SET
+                    project_name=excluded.project_name,
+                    summary=excluded.summary,
+                    data_json=excluded.data_json,
+                    updated_at=excluded.updated_at
+                """,
+                (session_id, project_name, summary, payload, timestamp),
+            )
+            conn.commit()
+        finally:
+            conn.close()
+
+
+def delete_session(session_id: str) -> None:
+    with DB_LOCK:
+        conn = get_db_connection()
+        try:
+            conn.execute("DELETE FROM saved_sessions WHERE session_id = ?", (session_id,))
+            conn.commit()
+        finally:
+            conn.close()
+
+
+def fetch_sessions() -> List[sqlite3.Row]:
+    with DB_LOCK:
+        conn = get_db_connection()
+        try:
+            cursor = conn.execute(
+                "SELECT session_id, project_name, summary, updated_at FROM saved_sessions ORDER BY updated_at DESC"
+            )
+            return cursor.fetchall()
+        finally:
+            conn.close()
+
+
+def fetch_session(session_id: str) -> Optional[Dict[str, Any]]:
+    with DB_LOCK:
+        conn = get_db_connection()
+        try:
+            cursor = conn.execute(
+                "SELECT session_id, project_name, summary, data_json, updated_at FROM saved_sessions WHERE session_id = ?",
+                (session_id,),
+            )
+            row = cursor.fetchone()
+            if not row:
+                return None
+            data = json.loads(row["data_json"])
+            return {
+                "session_id": row["session_id"],
+                "project_name": row["project_name"],
+                "summary": row["summary"],
+                "updated_at": row["updated_at"],
+                "data": data,
+            }
+        finally:
+            conn.close()
+
+
+init_db()
+
+
+def compute_session_summary(data: Dict[str, Any]) -> str:
+    try:
+        zahteve = data.get("zahteve") or []
+        if not isinstance(zahteve, list):
+            return ""
+        total = len(zahteve)
+        results_map = data.get("resultsMap") or {}
+        if not isinstance(results_map, dict):
+            results_map = {}
+        non_compliant = 0
+        for item in zahteve:
+            if not isinstance(item, dict):
+                continue
+            result = results_map.get(item.get("id"), {})
+            status_text = (result.get("skladnost") or "").lower()
+            if "nesklad" in status_text:
+                non_compliant += 1
+        if total == 0:
+            return "Ni zahtev" if results_map else ""
+        return f"{total} zahtev, {non_compliant} neskladnih"
+    except Exception:
+        return ""
+
+
+class SaveSessionPayload(BaseModel):
+    session_id: str = Field(..., min_length=1)
+    data: Dict[str, Any]
+    project_name: Optional[str] = None
+    summary: Optional[str] = None
 
 # =============================================================================
 # INTELIGENTNA ANALIZA IN SESTAVA ZAHTEV
@@ -1908,6 +2045,84 @@ def frontend():
 </script>
 </body></html>"""
     return html.replace("YEAR_PLACEHOLDER", str(datetime.now().year))
+
+
+def infer_project_name(data: Dict[str, Any], fallback: str = "Neimenovan projekt") -> str:
+    candidates = []
+    for key in ("metadata", "keyData"):
+        section = data.get(key)
+        if isinstance(section, dict):
+            name = section.get("ime_projekta") or section.get("ime_projekta_original")
+            if name:
+                candidates.append(str(name))
+    direct_name = data.get("projectName") or data.get("project_name")
+    if direct_name:
+        candidates.insert(0, str(direct_name))
+    for value in candidates:
+        clean = value.strip()
+        if clean:
+            return clean
+    return fallback
+
+
+@app.post("/save-session")
+async def save_session(payload: SaveSessionPayload):
+    session_id = payload.session_id.strip()
+    if not session_id:
+        raise HTTPException(status_code=400, detail="Manjka veljaven ID seje.")
+
+    if not isinstance(payload.data, dict):
+        raise HTTPException(status_code=400, detail="Podatki analize morajo biti v obliki JSON objekta.")
+
+    data = payload.data
+    project_name = payload.project_name or infer_project_name(data)
+    summary = payload.summary or compute_session_summary(data)
+
+    try:
+        upsert_session(session_id, project_name, summary, data)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Shranjevanje analize ni uspelo: {exc}") from exc
+
+    return {
+        "message": "Analiza je shranjena.",
+        "session_id": session_id,
+        "project_name": project_name,
+        "summary": summary,
+    }
+
+
+@app.get("/saved-sessions")
+async def list_saved_sessions():
+    rows = fetch_sessions()
+    sessions = []
+    for row in rows:
+        sessions.append(
+            {
+                "session_id": row["session_id"],
+                "project_name": row["project_name"] or "Neimenovan projekt",
+                "summary": row["summary"] or "",
+                "updated_at": row["updated_at"],
+            }
+        )
+    return {"sessions": sessions}
+
+
+@app.get("/saved-sessions/{session_id}")
+async def get_saved_session(session_id: str):
+    record = fetch_session(session_id)
+    if not record:
+        raise HTTPException(status_code=404, detail="Shranjena analiza ne obstaja.")
+    return record
+
+
+@app.delete("/saved-sessions/{session_id}")
+async def remove_saved_session(session_id: str):
+    record = fetch_session(session_id)
+    if not record:
+        raise HTTPException(status_code=404, detail="Shranjena analiza ne obstaja.")
+    delete_session(session_id)
+    return {"message": "Shranjena analiza je izbrisana.", "session_id": session_id}
+
 
 @app.post("/extract-data")
 async def extract_data(
