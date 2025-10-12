@@ -1341,6 +1341,17 @@ def frontend():
             </div>
         </header>
 
+        <div id="restoreBanner" class="info-banner">
+            <div class="banner-text">
+                <strong>Na voljo je shranjena analiza za nadaljnjo obdelavo.</strong>
+                <span id="restoreTimestamp"></span>
+            </div>
+            <div class="banner-actions">
+                <button type="button" class="btn btn-analyze" id="restoreSessionBtn">Nadaljuj z dopolnitvijo</button>
+                <button type="button" class="btn btn-secondary" id="discardSessionBtn">Izbriši shranjeno</button>
+            </div>
+        </div>
+
         <main class="main-card">
             <div>
                 <div class="section-title"><span class="step-badge">1</span> Priprava dokumentacije</div>
@@ -1845,6 +1856,57 @@ async def extract_data(
         import traceback
         traceback.print_exc()
         if isinstance(e, HTTPException): raise
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/upload-revision")
+async def upload_revision(
+    session_id: str = Form(...),
+    revision_file: UploadFile = File(...),
+    revision_pages: Optional[str] = Form(None),
+):
+    """Posodobi besedilo in slike seje z novo (popravljeno) dokumentacijo."""
+
+    if session_id not in TEMP_STORAGE:
+        raise HTTPException(status_code=404, detail="Seja ni aktivna ali je potekla. Ponovite prvi korak nalaganja dokumentacije.")
+
+    try:
+        pdf_bytes = await revision_file.read()
+        if not pdf_bytes:
+            raise HTTPException(status_code=400, detail="Prejeta popravljena datoteka je prazna.")
+
+        project_text = parse_pdf(pdf_bytes)
+        images = convert_pdf_pages_to_images(pdf_bytes, revision_pages)
+
+        data = TEMP_STORAGE.get(session_id, {})
+        if not data:
+            raise HTTPException(status_code=404, detail="Podatki shranjene seje niso na voljo. Ponovite Korak 1.")
+
+        data["project_text"] = project_text
+        data["images"] = images
+
+        history_entry = {
+            "filename": revision_file.filename or "dopolnjen_projekt.pdf",
+            "uploaded_at": datetime.now().isoformat(),
+        }
+        revision_history = data.get("revision_history", [])
+        revision_history.append(history_entry)
+        data["revision_history"] = revision_history
+
+        TEMP_STORAGE[session_id] = data
+
+        return {
+            "status": "success",
+            "message": "Popravljena dokumentacija je naložena. Izberite neskladne zahteve in zaženite ponovno analizo.",
+            "revision_count": len(revision_history),
+            "last_revision": history_entry,
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 
