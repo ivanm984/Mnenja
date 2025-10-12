@@ -1110,6 +1110,43 @@ def frontend():
             background: rgba(220, 53, 69, 0.18);
         }
 
+        .key-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin-bottom: 12px;
+        }
+
+        .key-summary .summary-item {
+            background: rgba(15, 23, 42, 0.04);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            border: 1px solid rgba(15, 23, 42, 0.06);
+        }
+
+        .key-summary .summary-item span {
+            display: block;
+            font-size: 0.8rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: rgba(15, 23, 42, 0.65);
+        }
+
+        .key-summary .summary-item strong {
+            display: block;
+            margin-top: 6px;
+            font-size: 1rem;
+            color: #0f172a;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+        .key-summary .summary-item.empty strong {
+            color: rgba(15, 23, 42, 0.55);
+            font-style: italic;
+            font-weight: 500;
+        }
+
         .key-data-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -1233,8 +1270,8 @@ def frontend():
 
     // KLJUČNI SLOVAR PODATKOV ZA DINAMIČNO GENERIRANJE POLJ
     const keyLabels = {
-        'glavni_objekt': 'Glavni objekt / funkcija', 'vrsta_gradnje': 'Vrsta gradnje',
-        'klasifikacija_cc_si': 'CC-SI / klasifikacija', 'nezahtevni_objekti': 'Nezahtevni objekti v projektu',
+        'glavni_objekt': 'OBJEKT (opis funkcije)', 'vrsta_gradnje': 'VRSTA GRADNJE',
+        'klasifikacija_cc_si': 'CC-SI klasifikacija', 'nezahtevni_objekti': 'Nezahtevni objekti v projektu',
         'enostavni_objekti': 'Enostavni objekti v projektu', 'vzdrzevalna_dela': 'Vzdrževalna dela / manjša rekonstrukcija',
         'parcela_objekta': 'Gradbena parcela (št.)', 'stevilke_parcel_ko': 'Vse parcele in k.o.',
         'velikost_parcel': 'Skupna velikost parcel', 'velikost_obstojecega_objekta': 'Velikost obstoječega objekta',
@@ -1244,6 +1281,15 @@ def frontend():
         'kritina_barva': 'Kritina/Barva', 'materiali_gradnje': 'Materiali gradnje (npr. les)',
         'smer_slemena': 'Smer slemena', 'visinske_kote': 'Višinske kote (k.p., k.s.)',
         'odmiki_parcel': 'Odmiki od parcelnih mej', 'komunalni_prikljucki': 'Komunalni priključki/Oskrba'
+    };
+
+    const summaryLabels = {
+        'glavni_objekt': 'OBJEKT',
+        'vrsta_gradnje': 'VRSTA GRADNJE',
+        'klasifikacija_cc_si': 'CC-SI',
+        'nezahtevni_objekti': 'NEZAHTEVNI OBJEKTI',
+        'enostavni_objekti': 'ENOSTAVNI OBJEKTI',
+        'vzdrzevalna_dela': 'VZDRŽEVALNA DELA'
     };
     
     function renderKeyDataFields(data) {
@@ -1273,7 +1319,34 @@ def frontend():
         if (existingMetaDiv) {
             existingMetaDiv.remove();
         }
+        const existingSummaryDiv = analyzeForm.querySelector('.key-summary');
+        if (existingSummaryDiv) {
+            existingSummaryDiv.remove();
+        }
         keyDataFields.insertAdjacentElement('beforebegin', metaDiv);
+
+        // Povzetek ključnih opisnih podatkov (read-only kartice)
+        const summaryDiv = document.createElement('div');
+        summaryDiv.className = 'key-summary';
+
+        for (const key in summaryLabels) {
+            const rawValue = typeof data[key] === 'string' ? data[key].trim() : '';
+            const value = rawValue ? rawValue : 'Ni podatka v dokumentaciji';
+            const item = document.createElement('div');
+            item.className = 'summary-item';
+            if (value === 'Ni podatka v dokumentaciji') {
+                item.classList.add('empty');
+            }
+            const labelSpan = document.createElement('span');
+            labelSpan.textContent = summaryLabels[key];
+            const valueStrong = document.createElement('strong');
+            valueStrong.textContent = value;
+            item.appendChild(labelSpan);
+            item.appendChild(valueStrong);
+            summaryDiv.appendChild(item);
+        }
+
+        metaDiv.insertAdjacentElement('afterend', summaryDiv);
 
 
         // Prikaz in urejanje razširjenih ključnih podatkov
@@ -1324,6 +1397,10 @@ def frontend():
         const existingMetaDiv = analyzeForm.querySelector('.key-data-grid[style*="1fr"]');
         if (existingMetaDiv) {
             existingMetaDiv.remove();
+        }
+        const existingSummaryDiv = analyzeForm.querySelector('.key-summary');
+        if (existingSummaryDiv) {
+            existingSummaryDiv.remove();
         }
     }
 
