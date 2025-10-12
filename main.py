@@ -1168,10 +1168,6 @@ def frontend():
             box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12);
         }
 
-        .results-section + .revision-upload {
-            margin-top: 18px;
-        }
-
         .results-header h3 {
             margin: 0 0 6px 0;
             font-size: 1.35rem;
@@ -1283,91 +1279,6 @@ def frontend():
             flex-wrap: wrap;
             gap: 12px;
             justify-content: flex-end;
-        }
-
-        .btn-tertiary {
-            background: rgba(37, 99, 235, 0.08);
-            color: var(--primary);
-        }
-
-        .btn-tertiary:hover {
-            background: rgba(37, 99, 235, 0.14);
-        }
-
-        .info-banner {
-            display: none;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-            padding: 18px 22px;
-            border-radius: var(--radius-md);
-            border: 1px solid rgba(37, 99, 235, 0.18);
-            background: rgba(37, 99, 235, 0.1);
-            color: #0f172a;
-        }
-
-        .info-banner .banner-text {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .info-banner .banner-text span {
-            color: var(--muted);
-            font-size: 0.9rem;
-        }
-
-        .info-banner .banner-actions {
-            display: flex;
-            gap: 10px;
-            flex-shrink: 0;
-        }
-
-        .revision-upload {
-            border: 1px dashed rgba(37, 99, 235, 0.3);
-            border-radius: var(--radius-lg);
-            padding: 24px 26px;
-            background: rgba(37, 99, 235, 0.05);
-            display: none;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .revision-upload h4 {
-            margin: 0;
-            font-size: 1.15rem;
-            color: #0f172a;
-        }
-
-        .revision-upload .revision-fields {
-            display: grid;
-            gap: 8px;
-        }
-
-        .revision-upload label {
-            font-weight: 600;
-            color: #0f172a;
-        }
-
-        .revision-upload input[type="file"],
-        .revision-upload input[type="text"] {
-            padding: 10px 12px;
-            border: 1px solid rgba(15, 23, 42, 0.12);
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-            background: #fff;
-        }
-
-        .revision-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .revision-note {
-            font-size: 0.9rem;
-            color: var(--muted);
         }
 
         .btn-secondary {
@@ -1494,25 +1405,8 @@ def frontend():
                     </div>
                     <div id="resultsTable"></div>
                     <div class="results-actions">
-                        <button type="button" class="btn btn-tertiary" id="saveProgressBtn">Shrani napredek</button>
                         <button type="button" class="btn btn-secondary" id="resetSelectionBtn">Počisti izbor</button>
                         <button type="button" class="btn btn-analyze" id="rerunSelectedBtn">Ponovno preveri izbrane zahteve</button>
-                    </div>
-                </div>
-                <div id="revisionSection" class="revision-upload">
-                    <h4>Dodaj popravljeno projektno dokumentacijo</h4>
-                    <p class="subtitle">Ko prejmete dopolnjeno dokumentacijo od projektanta, jo naložite tukaj. Sistem ohrani prejšnjo analizo in ponovno preveri samo izbrane točke.</p>
-                    <div class="revision-fields">
-                        <label for="revisionFile">Popravljena dokumentacija (PDF)</label>
-                        <input type="file" id="revisionFile" accept="application/pdf">
-                    </div>
-                    <div class="revision-fields">
-                        <label for="revisionPages">Strani za podrobno analizo (neobvezno)</label>
-                        <input type="text" id="revisionPages" placeholder="npr. 2, 4-6" autocomplete="off">
-                    </div>
-                    <div class="revision-actions">
-                        <button type="button" class="btn btn-secondary" id="uploadRevisionBtn">Naloži popravek</button>
-                        <span class="revision-note" id="revisionInfo"></span>
                     </div>
                 </div>
             </div>
@@ -1533,22 +1427,10 @@ def frontend():
           rerunSelectedBtn = document.getElementById("rerunSelectedBtn"),
           resetSelectionBtn = document.getElementById("resetSelectionBtn"),
           existingResultsInput = document.getElementById("existingResults"),
-          analyzeBtn = document.getElementById("analyzeBtn"),
-          revisionSection = document.getElementById("revisionSection"),
-          revisionFileInput = document.getElementById("revisionFile"),
-          revisionPagesInput = document.getElementById("revisionPages"),
-          uploadRevisionBtn = document.getElementById("uploadRevisionBtn"),
-          revisionInfo = document.getElementById("revisionInfo"),
-          saveProgressBtn = document.getElementById("saveProgressBtn"),
-          restoreBanner = document.getElementById("restoreBanner"),
-          restoreSessionBtn = document.getElementById("restoreSessionBtn"),
-          discardSessionBtn = document.getElementById("discardSessionBtn"),
-          restoreTimestamp = document.getElementById("restoreTimestamp"),
-          sessionIdInput = document.getElementById("sessionId");
+          analyzeBtn = document.getElementById("analyzeBtn");
 
     let currentZahteve = [];
     let currentResultsMap = {};
-    const STORAGE_KEY = "mnenjaSavedState";
 
     // KLJUČNI SLOVAR PODATKOV ZA DINAMIČNO GENERIRANJE POLJ
     const keyLabels = {
@@ -1573,153 +1455,6 @@ def frontend():
         'enostavni_objekti': 'ENOSTAVNI OBJEKTI',
         'vzdrzevalna_dela': 'VZDRŽEVALNA DELA'
     };
-
-    const metadataKeys = ['ime_projekta', 'stevilka_projekta'];
-
-    function loadSavedState() {
-        if (typeof localStorage === 'undefined') { return null; }
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            if (!raw) { return null; }
-            return JSON.parse(raw);
-        } catch (err) {
-            console.warn('Shranjene seje ni mogoče prebrati:', err);
-            return null;
-        }
-    }
-
-    function updateRestoreBanner() {
-        if (!restoreBanner) { return; }
-        const saved = loadSavedState();
-        if (!saved || !saved.sessionId) {
-            restoreBanner.style.display = 'none';
-            return;
-        }
-
-        if (restoreTimestamp) {
-            const ts = saved.timestamp ? new Date(saved.timestamp) : null;
-            if (ts && !Number.isNaN(ts.getTime())) {
-                restoreTimestamp.textContent = `Zadnja shranitev: ${ts.toLocaleString('sl-SI')}`;
-            } else {
-                restoreTimestamp.textContent = '';
-            }
-        }
-
-        restoreBanner.style.display = 'flex';
-    }
-
-    function collectCurrentState() {
-        if (!sessionIdInput || !sessionIdInput.value) { return null; }
-        const eupInputs = manualInputs ? Array.from(manualInputs.querySelectorAll('input[name="final_eup_list"]')) : [];
-        const rabaInputs = manualInputs ? Array.from(manualInputs.querySelectorAll('input[name="final_raba_list"]')) : [];
-
-        const eupList = eupInputs.map(input => input.value || '');
-        const rabaList = rabaInputs.map(input => input.value || '');
-
-        const keyData = {};
-        Object.keys(keyLabels).forEach(key => {
-            const field = analyzeForm ? analyzeForm.querySelector(`[name="${key}"]`) : null;
-            if (field) { keyData[key] = field.value || ''; }
-        });
-
-        const metadata = {};
-        metadataKeys.forEach(key => {
-            const field = analyzeForm ? analyzeForm.querySelector(`[name="${key}"]`) : null;
-            if (field) { metadata[key] = field.value || ''; }
-        });
-
-        let resultsMapToStore = currentResultsMap || {};
-        if (existingResultsInput && existingResultsInput.value) {
-            try {
-                resultsMapToStore = JSON.parse(existingResultsInput.value);
-            } catch (err) {
-                console.warn('Ne morem razbrati shranjenih rezultatov, uporabim trenutno stanje.', err);
-            }
-        }
-
-        return {
-            sessionId: sessionIdInput.value,
-            timestamp: new Date().toISOString(),
-            eupList,
-            rabaList,
-            keyData,
-            metadata,
-            resultsMap: resultsMapToStore,
-            zahteve: currentZahteve,
-            existingResults: existingResultsInput ? existingResultsInput.value : null
-        };
-    }
-
-    function persistState(auto = false) {
-        if (typeof localStorage === 'undefined') { return; }
-        const state = collectCurrentState();
-        if (!state) {
-            if (!auto) { showStatus('Ni podatkov za shranjevanje (manjka ID seje).', 'error'); }
-            return;
-        }
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-            if (!auto) {
-                showStatus('Trenutna analiza je shranjena za kasnejšo dopolnitev.', 'success');
-            }
-            updateRestoreBanner();
-        } catch (err) {
-            console.error('Shranjevanje ni uspelo:', err);
-            if (!auto) { showStatus('Napaka pri shranjevanju napredka.', 'error'); }
-        }
-    }
-
-    function applySavedState(state) {
-        if (!state) { return; }
-        if (!sessionIdInput) { return; }
-
-        sessionIdInput.value = state.sessionId || '';
-
-        clearManualInputs();
-
-        const pairCount = Math.max(state.eupList ? state.eupList.length : 0, state.rabaList ? state.rabaList.length : 0);
-        if (pairCount === 0) {
-            addInputPair('', '');
-        } else {
-            for (let i = 0; i < pairCount; i++) {
-                const eup = state.eupList && state.eupList[i] ? state.eupList[i] : '';
-                const raba = state.rabaList && state.rabaList[i] ? state.rabaList[i] : '';
-                addInputPair(eup, raba);
-            }
-        }
-
-        const combinedData = Object.assign({}, state.metadata || {}, state.keyData || {});
-        renderKeyDataFields(combinedData);
-
-        Object.entries(state.keyData || {}).forEach(([key, value]) => {
-            const field = analyzeForm ? analyzeForm.querySelector(`[name="${key}"]`) : null;
-            if (field) { field.value = value || ''; }
-        });
-        Object.entries(state.metadata || {}).forEach(([key, value]) => {
-            const field = analyzeForm ? analyzeForm.querySelector(`[name="${key}"]`) : null;
-            if (field) { field.value = value || ''; }
-        });
-
-        analyzeForm.style.display = 'block';
-
-        const serializedResults = state.existingResults || (state.resultsMap ? JSON.stringify(state.resultsMap) : '');
-        if (existingResultsInput) {
-            existingResultsInput.value = serializedResults || '';
-        }
-
-        renderResults(state.zahteve || [], state.resultsMap || {});
-        showStatus('Shrajena analiza je naložena. Po potrebi naložite popravljeno dokumentacijo in izberite zahteve za ponovni pregled.', 'success');
-    }
-
-    function discardSavedState() {
-        if (typeof localStorage === 'undefined') { return; }
-        try {
-            localStorage.removeItem(STORAGE_KEY);
-        } catch (err) {
-            console.warn('Brisanje shranjenega stanja ni uspelo:', err);
-        }
-        updateRestoreBanner();
-    }
 
     function escapeHtml(value) {
         if (typeof value !== 'string') { return ''; }
@@ -1753,12 +1488,6 @@ def frontend():
             if (resultsTable) {
                 resultsTable.innerHTML = '';
             }
-            if (revisionSection) {
-                revisionSection.style.display = 'none';
-            }
-            if (revisionInfo) {
-                revisionInfo.textContent = '';
-            }
             return;
         }
 
@@ -1776,10 +1505,7 @@ def frontend():
             const escapedCategory = escapeHtml(z.kategorija);
             const escapedStatus = escapeHtml(statusText);
             const escapedNote = escapeHtml(note);
-            const normalizedStatus = (statusText || '').toLowerCase();
-            const normalizedNote = (result.predlagani_ukrep || '').toLowerCase();
-            const shouldCheck = normalizedStatus.includes('neskladno') || normalizedNote.includes('ponovna analiza');
-            const checked = shouldCheck ? 'checked' : '';
+            const checked = statusClass === 'neskladno' ? 'checked' : '';
             tableHtml += `
                 <tr class="status-${statusClass}">
                     <td><input type="checkbox" value="${z.id}" ${checked}></td>
@@ -1799,9 +1525,6 @@ def frontend():
         }
         if (resultsSection) {
             resultsSection.style.display = 'block';
-        }
-        if (revisionSection) {
-            revisionSection.style.display = 'flex';
         }
     }
 
@@ -1926,18 +1649,6 @@ def frontend():
         if (resultsTable) {
             resultsTable.innerHTML = '';
         }
-        if (revisionSection) {
-            revisionSection.style.display = 'none';
-        }
-        if (revisionInfo) {
-            revisionInfo.textContent = '';
-        }
-        if (revisionFileInput) {
-            revisionFileInput.value = '';
-        }
-        if (revisionPagesInput) {
-            revisionPagesInput.value = '';
-        }
         existingResultsInput.value = '';
         currentZahteve = [];
         currentResultsMap = {};
@@ -2056,7 +1767,6 @@ def frontend():
             }
 
             renderResults(result.zahteve || [], result.results_map || {});
-            persistState(true);
         } catch (error) {
             showStatus(`Kritična napaka pri analizi: ${error.message}`, "error");
         } finally {
@@ -2095,94 +1805,6 @@ def frontend():
             resultsTable.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = false; });
         });
     }
-
-    if (saveProgressBtn) {
-        saveProgressBtn.addEventListener("click", () => {
-            persistState(false);
-        });
-    }
-
-    if (restoreSessionBtn) {
-        restoreSessionBtn.addEventListener("click", () => {
-            const saved = loadSavedState();
-            if (!saved) {
-                showStatus('Ni shranjene analize za obnovitev.', 'error');
-                return;
-            }
-            applySavedState(saved);
-        });
-    }
-
-    if (discardSessionBtn) {
-        discardSessionBtn.addEventListener("click", () => {
-            discardSavedState();
-            showStatus('Shranjeni podatki so odstranjeni.', 'success');
-        });
-    }
-
-    if (uploadRevisionBtn) {
-        uploadRevisionBtn.addEventListener("click", async () => {
-            if (!sessionIdInput || !sessionIdInput.value) {
-                showStatus('Aktivna seja ni na voljo. Ponovite prvi korak.', 'error');
-                return;
-            }
-
-            const file = revisionFileInput && revisionFileInput.files ? revisionFileInput.files[0] : null;
-            if (!file) {
-                showStatus('Izberite popravljeno projektno dokumentacijo v PDF formatu.', 'error');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('session_id', sessionIdInput.value);
-            formData.append('revision_file', file);
-            if (revisionPagesInput && revisionPagesInput.value.trim()) {
-                formData.append('revision_pages', revisionPagesInput.value.trim());
-            }
-
-            showStatus('Nalaganje popravljenega dokumenta in osveževanje podatkov...', 'loading');
-            uploadRevisionBtn.disabled = true;
-
-            try {
-                const response = await fetch('/upload-revision', { method: 'POST', body: formData });
-
-                if (!response.ok) {
-                    let detail = 'Napaka pri nalaganju popravka.';
-                    try {
-                        const error = await response.json();
-                        detail = error.detail || detail;
-                    } catch (_) { /* ignore parsing napake */ }
-                    throw new Error(detail);
-                }
-
-                const result = await response.json();
-                const infoMessage = result.message || 'Popravek je uspešno naložen. Izberite neskladne zahteve in zaženite ponovno analizo.';
-                showStatus(infoMessage, 'success');
-
-                if (revisionInfo) {
-                    if (result.last_revision) {
-                        const ts = result.last_revision.uploaded_at ? new Date(result.last_revision.uploaded_at) : null;
-                        const formatted = ts && !Number.isNaN(ts.getTime()) ? ts.toLocaleString('sl-SI') : '';
-                        const fileName = result.last_revision.filename || file.name || 'PDF';
-                        revisionInfo.textContent = `Zadnji popravek: ${fileName}${formatted ? ` (${formatted})` : ''}`;
-                    } else {
-                        revisionInfo.textContent = 'Popravljena dokumentacija je pripravljena. Izberite zahteve in ponovno zaženite analizo.';
-                    }
-                }
-
-                if (revisionFileInput) { revisionFileInput.value = ''; }
-                persistState(true);
-            } catch (error) {
-                showStatus(error.message || 'Napaka pri nalaganju popravka.', 'error');
-            } finally {
-                uploadRevisionBtn.disabled = false;
-            }
-        });
-    }
-
-    window.addEventListener("load", () => {
-        updateRestoreBanner();
-    });
 </script>
 </body></html>"""
     return html.replace("YEAR_PLACEHOLDER", str(datetime.now().year))
