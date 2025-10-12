@@ -1,62 +1,116 @@
-"""Prompt builders for Gemini interactions."""
+"""Prompt builders for compliance checking of project documentation (OPN/OP).
+Improved for clarity, determinism, and strict JSON output.
+"""
 from __future__ import annotations
-
 from typing import Any, Dict, List
 
-
-def build_prompt(project_text: str, zahteve: List[Dict[str, Any]], izrazi_text: str, uredba_text: str) -> str:
+def build_prompt(
+    project_text: str,
+    zahteve: List[Dict[str, Any]],
+    izrazi_text: str,
+    uredba_text: str
+) -> str:
+    """
+    Zgradi navodila za LLM, da preveri skladnost projektne dokumentacije
+    z zahtevami prostorskega akta po dvofaznem postopku (besedilo -> grafike)
+    in vrne STROGO validen JSON array objektov.
+    """
     zahteve_text = "".join(
-        f"\nID: {z['id']}\nZahteva: {z['naslov']}\nBesedilo zahteve: {z['besedilo']}\n---" for z in zahteve
+        f"\nID: {z['id']}\nZahteva: {z['naslov']}\nBesedilo zahteve: {z['besedilo']}\n---"
+        for z in zahteve
     )
-    return f"""
-Ti si strokovnjak za preverjanje skladnosti projektne dokumentacije z občinskimi prostorskimi akti (OPN/OPPN/PIP). Tvoja naloga je, da natančno in sistematično preveriš skladnost priloženega projekta s prostorskim aktom.
 
-**NALOGA:**
-Za vsako od spodnjih zahtev preveri skladnost priložene projektne dokumentacije. Delaj po naslednjem dvostopenjskem postopku:
+    return f"""\
 
-**1. KORAK: ANALIZA BESEDILA**
-Najprej poskusi odgovoriti na čim več zahtev z uporabo **samo tekstovnega dela** projektne dokumentacije. Poišči eksplicitne navedbe, kot so površine, tlorisne dimenzije in mere, faktorji, etažnost, število parkirnih mest itd.
+# VLOGA IN CILJ
+Deluješ kot **nepristranski strokovnjak** za preverjanje skladnosti projektne dokumentacije
+z lokalnim prostorskim aktom (OPN/OP ipd.). Tvoja naloga je, da **za vsako zahtevo** natančno
+presodiš skladnost, navedeš **dokaze** (kjer si podatek našel) in podaš **jasen ukrep**,
+če je prisotno neskladje ali manjkajoč podatek.
 
-**2. KORAK: CILJANA ANALIZA GRAFIK OZ. SLIK**
-Ko končaš z analizo besedila, uporabi priložene slike oz. grafične priloge za dva namena:
-    a) **Iskanje MANJKAJOČIH podatkov:** Za vse zahteve, kjer v besedilu nisi našel odgovora, natančno preglej grafike. Posebej pozoren bodi na:
-        - **Odmike od parcelnih mej:** Te so skoraj vedno samo na situaciji.
-        - **Višinske kote (terena, objekta, slemena):** Te so običajno prikazane na prerezih.
-        - **Naklon strehe, višina kolenčnega zidu:** Prav tako na prerezih.
-        - **Faktor zazidanosti (FZ) in faktor izrabe (FI):** Preveri, ali so na grafikah tabele s temi izračuni.
-    b) **Preverjanje NESKLADIJ:** Če si v besedilu našel podatek (npr. "odmik od meje je 4.0 m"), preveri na grafiki (situaciji), ali je ta podatek skladen z vrisanim stanjem. Če odkriješ neskladje, to jasno navedi v obrazložitvi.
+# KLJUČNA PRAVILA
+- **Brez ugibanja**: če podatka ni v besedilu *niti* na grafičnih prilogah, obravnavaj kot **"Neskladno"**
+  in v **predlagani_ukrep** zahtevaj *dopolnitev dokumentacije* (povej točno kaj).
+- **En zaključek na zahtevo**: "Skladno", "Neskladno" ali "Ni relevantno" (samo če je jasno, da zahteva
+  ne velja za obravnavani primer).
+- **Dokazi (evidence)**: navedi konkretna mesta (npr. "Tehnično poročilo, str. 12" ali
+  "Grafika G2 – Situacija"). Če uporabiš oba vira (tekst in grafiko), navedi oba.
+- **Natančnost pred kratkostjo**: obrazložitev naj bo *konkretna* (številke, mere, kote, faktorji, odmiki, pravila).
+- **Doslednost izrazov**: uporabi terminologijo iz OPN/OP in razlage izrazov (glej spodaj).
+- **Format izhoda**: izpiši **izključno** JSON array brez kakršnegakoli dodatnega besedila ali oznak.
 
-**RAZLAGA IZRAZOV (OPN):**
+# DVOFAZNI POSTOPEK
+**1) Analiza besedila**
+Najprej izčrpno preglej projektno dokumentacijo (tekst) in poskušaj odgovoriti na čim več zahtev.
+V obrazložitvi vedno zapiši *katera* dejstva so bila najdena v besedilu (citiraj povzetke z merami/parametri).
+
+**2) Ciljana analiza grafik**
+Za vse, kjer podatki manjkajo ali so dvomljivi, preglej grafične priloge:
+- **Odmiki od parcelnih mej** (pogosto le na situaciji),
+- **Višinske kote (terena, objekta, slemena)** (prerezi),
+- **Naklon strehe, višina kolenčnega zidu** (prerezi),
+- **FZ, FI** (tabele in bilance na načrtih).
+Če grafika potrdi ali ovrže besedilo, to izrecno zapiši. Odkrita neskladja jasno označi.
+
+# POSEBNA PRAVILA (Soglasja, mnenja, odmiki)
+- Če zahteva govori o **potrebi po soglasju/mnenju** (brez preverjanja ali je že pridobljeno):
+  - `"skladnost"` = **"Skladno"**,
+  - `"predlagani_ukrep"` = navedi *katero soglasje/mnenje* je treba pridobiti.
+- Pri **odmikih** v obrazložitvi navedi **vse citirane odmike** iz dokumentacije, tudi če presegajo 4 m
+  (ne filtriraj vrednosti).
+
+# DEFINICIJE IN PRAVNI OKVIR
+**Razlaga izrazov (OPN):**
 {izrazi_text or "Ni dodatnih izrazov."}
 
-**UREDBA O RAZVRŠČANJU OBJEKTOV (KLJUČNE INFORMACIJE):**
+**Uredba o razvrščanju objektov (ključne informacije):**
 {uredba_text or "Podatki niso na voljo."}
----
-**ZAHTEVE:**
+
+# ZAHTEVE (vsaka mora biti obravnavana natanko enkrat)
 {zahteve_text}
----
-**NAVODILA ZA ODGOVOR:**
-Ko analiziraš zahteve in skladnost, pri podrobnih zahtevah (npr. členi 105, 106 itd...), v polje obrazložitev NUJNO kot prvo točko vnesi tudi tlorisne dimenzije stavbe oz. zunanje mere, višino in druge ključne značilnosti gradnje.
-*Primer dobrega povzetka:* "Na podlagi dokumentacije je razvidno, da so tlorisne dimenzije predmetne stanovanjske hiše 10,0 x 8,0 m. Vertikalni gabarit objekta je Pritličje + Nadstropje (P+N) z višino kolenčnega zidu 1,20 m. Streha je načrtovana kot simetrična dvokapnica z naklonom 40 stopinj, krita z opečno kritino v rdeči barvi. Fasada je predvidena v svetli, beli barvi."
-1.  Odgovori v obliki seznama (array) JSON objektov, brez kakršnegakoli drugega besedila ali markdown oznak (```json ... ```).
-2.  Za VSAKO zahtevo ustvari en JSON objekt z naslednjimi polji:
-    -   `"id"`: (string) ID zahteve (npr. "Z_0").
-    -   `"obrazlozitev"`: (string) **IZJEMNO PODROBEN** opis ugotovitev, ki temelji na tvoji dvostopenjski analizi. Jasno loči, katere podatke si našel v besedilu in katere na grafiki. Če najdeš neskladje, ga poudari.
-    -   `"evidence"`: (string) Natančna navedba vira: "Tehnično poročilo, stran X" ali "Grafika: Priloga C.2 - Situacija". Če si podatek potrdil iz obeh virov, navedi oba.
-    -   `"skladnost"`: (string) Ena izmed trzech vrednosti: "Skladno", "Neskladno", ali "Ni relevantno".
-    -   `"predlagani_ukrep"`: (string) Če je "Neskladno", opiši, kaj mora projektant storiti. Če je podatek manjkajoč, navedi, da ga je treba dodati. Če ukrep ni potreben, vrni "—".
 
-3.  **POMEMBNO:** Če podatka ni ne v besedilu ne na grafikah, oceni kot "Neskladno" in v `predlagani_ukrep` zahtevaj dopolnitev dokumentacije.
-
-4.  **!!! POSEBNO PRAVILO ZA SOGLASJA IN MNENJA ter ODMIKE !!!**
-    Če zahteva omenja potrebo po pridobitvi soglasja (npr. soseda, mnenjedajalca), tvoja naloga NI preverjati, ali je bilo soglasje že pridobljeno. V takih primerih:
-    -   V polje `"skladnost"` vedno vpiši **"Skladno"**.
-    -   V polje `"predlagani_ukrep"` jasno navedi, katero soglasje je potrebno pridobiti.
-    -   Pri navajanju odmikov v obrazložitev vnesi vse citirane odmike v dokumentaciji, tudi če so večji od 4m.
-
-**Projektna dokumentacija (tekst):**
+# VHODNI PODATKI
+**Projektna dokumentacija – BESEDILO (do 300.000 znakov):**
 {project_text[:300000]}
----
-**Projektna dokumentacija (grafične priloge):**
-[Grafike so priložene in jih uporabi v drugem koraku analize za iskanje manjkajočih podatkov in preverjanje neskladij.]
+
+**Projektna dokumentacija – GRAFIČNE PRILOGE:**
+[Grafike so priložene. Uporabi jih v 2. koraku za manjkajoče podatke in preverjanje neskladij.]
+
+# IZPIS (STROGO) – JSON array objektov
+Za **vsako** zahtevo vrni en JSON objekt z natančno temi polji:
+
+- "id": string — ID zahteve (npr. "Z_0").
+- "obrazlozitev": string — **zelo podrobna** obrazložitev, kaj si našel v besedilu in kaj na grafikah;
+  vključi ključne številke (mere, kote, faktorje, etažnost, parkirišča, ipd.) in jasno obrazloži logiko presoje.
+- "evidence": string — natančna navedba virov (npr. "Tehnično poročilo, str. 12; G2 – Situacija").
+- "skladnost": string — **ena** od vrednosti: "Skladno" | "Neskladno" | "Ni relevantno".
+- "predlagani_ukrep": string — če je "Neskladno", opiši *konkreten* dopolnitveni/korektivni ukrep; sicer "—".
+
+# PRAVILA ZA NEPOPOLNE PODATKE
+- Če zahteva *zahteva* specifične podatke (npr. odmiki, višinske kote, FZ/FI) in teh podatkov ni v besedilu
+  **niti** na grafikah, nastavi:
+  - "skladnost" = "Neskladno"
+  - "predlagani_ukrep" = npr. "Dopolniti dokumentacijo z [manjkajoči podatek] in ustrezno grafično prilogo."
+  - V "obrazlozitev" jasno zapiši, kje si poskušal najti podatek in da ga ni.
+
+# SAMOPREGLED FORMATOV (pred oddajo)
+- Preveri, da:
+  1) so zajeti **vsi** `id` iz seznama zahtev in **noben** dodatni,
+  2) je "skladnost" pri vseh **ena** izmed dovoljenih treh vrednosti,
+  3) je "evidence" **neprazno** in smiselno,
+  4) je "predlagani_ukrep" = "—" kadar ni neskladja.
+
+# PRIMER ENE POSTAVKE (zgolj kot vzorec strukture, NE kopiraj vsebine):
+[
+  {{
+    "id": "Z_0",
+    "obrazlozitev": "Na str. 12 tehničnega poročila je navedeno ... Na prerezu P2 je vidna višinska kota slemena ...",
+    "evidence": "Tehnično poročilo, str. 12; P2 – Prerez; G2 – Situacija",
+    "skladnost": "Skladno",
+    "predlagani_ukrep": "—"
+  }}
+]
+
+# KONČNI IZPIS
+Vrni **IZKLJUČNO** JSON array (brez uvodnega ali zaključnega besedila, brez markdown oznak).
 """.strip()
