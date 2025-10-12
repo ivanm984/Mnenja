@@ -1352,7 +1352,7 @@ def frontend():
         // Prikaz in urejanje razširjenih ključnih podatkov
         for (const key in keyLabels) {
             const label = keyLabels[key];
-            const value = (typeof data[key] === 'string' && data[key].trim()) ? data[key].trim() : "Ni podatka v dokumentaciji";
+            const value = data[key] || "Ni podatka v dokumentaciji";
             const isTextArea = ['stevilke_parcel_ko', 'odmiki_parcel', 'komunalni_prikljucki', 'nezahtevni_objekti', 'enostavni_objekti', 'vzdrzevalna_dela'].includes(key);
 
             const div = document.createElement("div");
