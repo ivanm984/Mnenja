@@ -766,58 +766,434 @@ LAST_DOCX_PATH = None
 @app.get("/", response_class=HTMLResponse)
 def frontend():
     # POSODOBLJEN HTML IN JS za 2-stopenjski proces Z UREDLJIVIMI POLJI
-    return """
-<!DOCTYPE html><html lang="sl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Avtomatsko Preverjanje Skladnosti</title>
-<style>
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f2f5;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0}
-.container{max-width:900px;width:100%;background:white;border-radius:16px;padding:40px;box-shadow:0 10px 30px rgba(0,0,0,.1)}
-h1{color:#333;margin-bottom:10px;font-size:2em}
-.subtitle{color:#666;margin-bottom:30px}
-.upload-section{margin-bottom:20px;border:2px dashed #ddd;border-radius:12px;padding:20px;transition:all .3s}
-.upload-section:hover{border-color:#007aff;background:#f8faff}
-input[type=file],input[type=text],textarea{width:100%;padding:10px;margin-top:5px;border:1px solid #ccc;border-radius:8px;box-sizing:border-box}
-textarea { resize: vertical; min-height: 50px; }
-label{font-weight:500;color:#333;display:block;margin-bottom:10px}
-.btn{width:100%;padding:15px;background-color:#007aff;color:white;border:none;border-radius:10px;font-size:1.1em;font-weight:500;cursor:pointer;transition:background-color .2s;margin-top:20px}
-.btn-analyze{background-color:#28a745;}
-.btn:hover{background-color:#0056b3}
-.btn:disabled{background-color:#aaa;cursor:not-allowed}
-#status{margin-top:20px;padding:15px;border-radius:10px;display:none}
-.status-success{background:#e6ffed;color:#006422;border:1px solid #c3e6cb}
-.status-error{background:#ffebee;color:#c62828;border:1px solid #f5c6cb}
-.status-loading{background:#e3f2fd;color:#0d47a1;border:1px solid #bee5eb}
-.manual-input-pair{display:flex;gap:10px;margin-bottom:10px;align-items:center}
-.manual-input-pair input{flex-grow:1}
-.add-btn{padding:5px 10px;background-color:#28a745;color:white;border:none;border-radius:5px;cursor:pointer}
-.remove-btn{padding:5px 10px;background-color:#dc3545;color:white;border:none;border-radius:5px;cursor:pointer}
-.input-group{border:1px solid #eee;padding:15px;border-radius:8px;margin-top:15px}
-.key-data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.key-data-grid .data-item { margin-bottom: 0; }
-.key-data-grid .data-item label { font-weight: bold; font-size: 0.9em; margin-bottom: 3px; }
-</style>
-</head><body><div class=container><h1>Avtomatsko Preverjanje Skladnosti</h1><p class=subtitle>Naloži projektno dokumentacijo (PDF) za avtomatsko analizo skladnosti s prostorskimi akti.</p><form id=uploadForm><div class=upload-section><label for=pdfFile>1. Izberi projektno dokumentacijo (PDF):</label><input type=file id=pdfFile accept=.pdf required><br><br><label for=pages>2. Vnesi strani z grafikami (neobvezno, za natančnejšo ekstrakcijo):</label><input type=text id=pages placeholder="Npr: 16-25, 30, 32"></div><button type=submit class=btn id=submitBtn>1. Ekstrahiraj ključne podatke in EUP/Rabe</button></form><div id=status></div>
+    html = """
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avtomatsko Preverjanje Skladnosti</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #eef2ff 0%, #f7f9ff 45%, #ffffff 100%);
+            --card-bg: #ffffff;
+            --border-color: #e3e8f1;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #22a06b;
+            --danger: #dc3545;
+            --text-color: #1f2937;
+            --muted: #6b7280;
+            --shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+            --radius-lg: 18px;
+            --radius-md: 12px;
+        }
 
-<form id="analyzeForm" style="display:none;">
-    <h2>4. Pregled, POPRAVEK in potrditev podatkov</h2>
-    <input type="hidden" name="session_id" id="sessionId">
+        * { box-sizing: border-box; }
 
-    <div class="input-group">
-        <label>A. EUP in Namenska raba (AI zaznava, po potrebi POPRAVITE):</label>
-        <div id=manualInputs></div>
-        <button type=button id="addEupRabaBtn" class="add-btn">+ Dodaj EUP/Rab (Popravek)</button>
-        <p class=subtitle style="margin-top:10px; margin-bottom: 0;">Opomba: Vsebina zgornjih polj se uporabi kot končni podatek za analizo.</p>
-    </div>
-    <br>
-    <div class="input-group">
-        <label>B. Ključni gabaritni podatki (AI ekstrakcija, po potrebi POPRAVITE):</label>
-        <div class="key-data-grid" id="keyDataFields">
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            padding: 40px 16px;
+        }
+
+        .page {
+            width: min(1040px, 100%);
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .hero {
+            background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(34, 160, 107, 0.14), transparent 60%),
+                        var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 32px 36px;
+            box-shadow: var(--shadow);
+            display: grid;
+            gap: 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.1rem, 2vw + 1.5rem, 2.6rem);
+            margin: 0;
+            color: #0f172a;
+        }
+
+        .hero p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .hero-steps {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.82);
+            border-radius: var(--radius-md);
+            padding: 16px 18px;
+            border: 1px solid rgba(37, 99, 235, 0.08);
+            backdrop-filter: blur(6px);
+        }
+
+        .step-card strong {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(37, 99, 235, 0.12);
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .step-card span {
+            display: block;
+            color: var(--text-color);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .step-card p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.92rem;
+            line-height: 1.5;
+        }
+
+        .main-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 32px 36px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title .step-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            background: rgba(37, 99, 235, 0.12);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .upload-section {
+            border: 2px dashed rgba(37, 99, 235, 0.25);
+            border-radius: var(--radius-md);
+            padding: 22px 24px;
+            transition: all 0.25s ease;
+            background: rgba(248, 250, 255, 0.8);
+            display: grid;
+            gap: 18px;
+        }
+
+        .upload-section:hover,
+        .upload-section.drag-active {
+            border-color: var(--primary);
+            background: rgba(248, 250, 255, 1);
+            box-shadow: 0 16px 30px rgba(37, 99, 235, 0.12);
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-color);
+            display: block;
+        }
+
+        input[type=file],
+        input[type=text],
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            margin-top: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background: #f9fbff;
+            font-size: 0.98rem;
+            transition: border 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        input[type=file] {
+            padding: 12px;
+            background: #fff;
+        }
+
+        input[type=text]:focus,
+        textarea:focus {
+            border-color: rgba(37, 99, 235, 0.65);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+            outline: none;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 70px;
+            line-height: 1.5;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            margin: 4px 0 0 0;
+            line-height: 1.55;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: none;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #fff;
+            background: var(--primary);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn:disabled {
+            background: #a6b2d7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-analyze {
+            background: var(--success);
+        }
+
+        .btn-analyze:hover {
+            background: #1c8659;
+            box-shadow: 0 12px 24px rgba(34, 160, 107, 0.26);
+        }
+
+        #status {
+            margin-top: 6px;
+            padding: 18px 20px;
+            border-radius: var(--radius-md);
+            display: none;
+            font-weight: 500;
+            line-height: 1.5;
+            border: 1px solid transparent;
+        }
+
+        #status.status-success {
+            background: #ecfdf5;
+            border-color: rgba(34, 160, 107, 0.3);
+            color: #047857;
+        }
+
+        #status.status-error {
+            background: #fef2f2;
+            border-color: rgba(220, 53, 69, 0.35);
+            color: #b91c1c;
+        }
+
+        #status.status-loading {
+            background: #eef4ff;
+            border-color: rgba(37, 99, 235, 0.35);
+            color: var(--primary);
+        }
+
+        .input-group {
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: var(--radius-md);
+            padding: 22px 24px;
+            background: rgba(248, 250, 255, 0.65);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .manual-input-pair {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            align-items: center;
+        }
+
+        .manual-input-pair button {
+            justify-self: start;
+        }
+
+        .add-btn {
+            padding: 8px 14px;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .add-btn:hover {
+            background: rgba(37, 99, 235, 0.16);
+        }
+
+        .remove-btn {
+            padding: 8px 12px;
+            background: rgba(220, 53, 69, 0.12);
+            color: var(--danger);
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .remove-btn:hover {
+            background: rgba(220, 53, 69, 0.18);
+        }
+
+        .key-data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+        }
+
+        .key-data-grid .data-item label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.9rem;
+            padding-bottom: 12px;
+        }
+
+        @media (max-width: 720px) {
+            body {
+                padding: 24px 12px 32px;
+            }
+
+            .hero,
+            .main-card {
+                padding: 24px;
+            }
+
+            .manual-input-pair {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <header class="hero">
+            <div class="hero-content">
+                <h1>Avtomatsko preverjanje skladnosti</h1>
+                <p>Digitalizirajte preverjanje projektne dokumentacije. Sistem analizira naložene PDF dokumente, prepozna EUP in
+                   namenske rabe ter pripravi ključne gabaritne podatke za končni pregled.</p>
             </div>
-    </div>
-    
-    <button type="submit" class="btn btn-analyze" id="analyzeBtn">2. Izvedi podrobno analizo in generiraj poročilo</button>
-</form>
+            <div class="hero-steps">
+                <div class="step-card">
+                    <strong>1</strong>
+                    <span>Naloži dokumente</span>
+                    <p>Dodajte projektno dokumentacijo in, če je potrebno, označite strani z grafikami.</p>
+                </div>
+                <div class="step-card">
+                    <strong>2</strong>
+                    <span>Preglej osnutek</span>
+                    <p>AI predlog EUP/rab in ključnih podatkov je pripravljen za ročni popravek.</p>
+                </div>
+                <div class="step-card">
+                    <strong>3</strong>
+                    <span>Potrdi in analiziraj</span>
+                    <p>Potrjeni podatki se uporabijo za podrobno poročilo skladnosti.</p>
+                </div>
+            </div>
+        </header>
 
-</div>
+        <main class="main-card">
+            <div>
+                <div class="section-title"><span class="step-badge">1</span> Priprava dokumentacije</div>
+                <form id="uploadForm">
+                    <div class="upload-section" id="dropZone">
+                        <div>
+                            <label for="pdfFile">Izberi projektno dokumentacijo (PDF):</label>
+                            <input type="file" id="pdfFile" accept=".pdf" required>
+                        </div>
+                        <div>
+                            <label for="pages">Strani z grafikami (neobvezno, za boljšo ekstrakcijo):</label>
+                            <input type="text" id="pages" placeholder="Npr: 16-25, 30, 32">
+                            <p class="subtitle">Namig: Za več EUP lahko dodate več razponov ločenih z vejico.</p>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn" id="submitBtn">Ekstrahiraj ključne podatke in EUP/Rabe</button>
+                </form>
+                <div id="status"></div>
+            </div>
+
+            <div>
+                <div class="section-title"><span class="step-badge">2</span> Pregled in potrditev podatkov</div>
+                <form id="analyzeForm" style="display:none;">
+                    <input type="hidden" name="session_id" id="sessionId">
+
+                    <div class="input-group">
+                        <div>
+                            <label>A. EUP in Namenska raba</label>
+                            <p class="subtitle">AI predlog lahko prilagodite. Vsaka vrstica predstavlja par EUP in pripadajočo namensko rabo.</p>
+                        </div>
+                        <div id="manualInputs"></div>
+                        <button type="button" id="addEupRabaBtn" class="add-btn">+ Dodaj EUP/Rab (popravek)</button>
+                        <p class="subtitle" style="margin-top:-8px;">Potrjene vrednosti bodo uporabljene v naslednjem koraku analize.</p>
+                    </div>
+
+                    <div class="input-group">
+                        <div>
+                            <label>B. Ključni gabaritni podatki</label>
+                            <p class="subtitle">Preglejte in po potrebi popravite podatke, ki jih je sistem zaznal iz dokumentacije.</p>
+                        </div>
+                        <div class="key-data-grid" id="keyDataFields"></div>
+                    </div>
+
+                    <button type="submit" class="btn btn-analyze" id="analyzeBtn">Izvedi podrobno analizo in pripravi poročilo</button>
+                </form>
+            </div>
+        </main>
+
+        <footer>© YEAR_PLACEHOLDER Avtomatsko preverjanje skladnosti — razvojna različica</footer>
+    </div>
 <script>
     const uploadForm = document.getElementById("uploadForm"), 
           analyzeForm = document.getElementById("analyzeForm"),
@@ -1015,6 +1391,7 @@ label{font-weight:500;color:#333;display:block;margin-bottom:10px}
     });
 </script>
 </body></html>"""
+    return html.replace("YEAR_PLACEHOLDER", str(datetime.now().year))
 
 @app.post("/extract-data")
 async def extract_data(
