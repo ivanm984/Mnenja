@@ -964,7 +964,7 @@ def frontend():
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: stretch;
+            align-items: stretch; /* raztegni glavno vsebino po celotni višini */
             padding: 40px 16px;
         }
 
