@@ -1159,6 +1159,138 @@ def frontend():
             margin-bottom: 6px;
         }
 
+        .results-section {
+            margin-top: 28px;
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 24px 26px;
+            box-shadow: 0 16px 32px rgba(15, 23, 42, 0.12);
+        }
+
+        .results-header h3 {
+            margin: 0 0 6px 0;
+            font-size: 1.35rem;
+            color: #0f172a;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 18px;
+        }
+
+        .results-table thead {
+            background: rgba(37, 99, 235, 0.08);
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+            vertical-align: top;
+            text-align: left;
+        }
+
+        .results-table tbody tr:hover {
+            background: rgba(37, 99, 235, 0.06);
+        }
+
+        .results-table tbody tr.status-neskladno {
+            background: rgba(220, 53, 69, 0.08);
+        }
+
+        .results-table tbody tr.status-neskladno:hover {
+            background: rgba(220, 53, 69, 0.12);
+        }
+
+        .results-table td strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .results-table td .category-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.08);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: rgba(15, 23, 42, 0.6);
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .status-pill::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-pill.skladno {
+            background: rgba(34, 160, 107, 0.15);
+            color: var(--success);
+        }
+
+        .status-pill.skladno::before { background: var(--success); }
+
+        .status-pill.neskladno {
+            background: rgba(220, 53, 69, 0.18);
+            color: var(--danger);
+        }
+
+        .status-pill.neskladno::before { background: var(--danger); }
+
+        .status-pill.ni-relevantno {
+            background: rgba(37, 99, 235, 0.14);
+            color: var(--primary);
+        }
+
+        .status-pill.ni-relevantno::before { background: var(--primary); }
+
+        .status-pill.neznano {
+            background: rgba(15, 23, 42, 0.12);
+            color: rgba(15, 23, 42, 0.8);
+        }
+
+        .status-pill.neznano::before { background: rgba(15, 23, 42, 0.7); }
+
+        .result-note {
+            color: rgba(15, 23, 42, 0.72);
+            font-size: 0.92rem;
+            line-height: 1.45;
+        }
+
+        .results-actions {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-secondary {
+            background: rgba(15, 23, 42, 0.08);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(15, 23, 42, 0.14);
+            color: var(--text-color);
+        }
+
         footer {
             text-align: center;
             color: var(--muted);
@@ -1233,6 +1365,7 @@ def frontend():
                 <div class="section-title"><span class="step-badge">2</span> Pregled in potrditev podatkov</div>
                 <form id="analyzeForm" style="display:none;">
                     <input type="hidden" name="session_id" id="sessionId">
+                    <input type="hidden" name="existing_results_json" id="existingResults">
 
                     <div class="input-group">
                         <div>
@@ -1254,19 +1387,39 @@ def frontend():
 
                     <button type="submit" class="btn btn-analyze" id="analyzeBtn">Izvedi podrobno analizo in pripravi poročilo</button>
                 </form>
+                <div id="resultsSection" class="results-section" style="display:none;">
+                    <div class="results-header">
+                        <h3>Rezultati analize</h3>
+                        <p class="subtitle">Preglejte spodnji povzetek. Izberite zahteve, ki so bile prej neskladne ali jih želite ponovno preveriti po popravkih, nato zaženite ponovno analizo samo zanje.</p>
+                    </div>
+                    <div id="resultsTable"></div>
+                    <div class="results-actions">
+                        <button type="button" class="btn btn-secondary" id="resetSelectionBtn">Počisti izbor</button>
+                        <button type="button" class="btn btn-analyze" id="rerunSelectedBtn">Ponovno preveri izbrane zahteve</button>
+                    </div>
+                </div>
             </div>
         </main>
 
         <footer>© YEAR_PLACEHOLDER Avtomatsko preverjanje skladnosti — razvojna različica</footer>
     </div>
 <script>
-    const uploadForm = document.getElementById("uploadForm"), 
+    const uploadForm = document.getElementById("uploadForm"),
           analyzeForm = document.getElementById("analyzeForm"),
-          status = document.getElementById("status"), 
-          submitBtn = document.getElementById("submitBtn"), 
-          manualInputs = document.getElementById("manualInputs"), 
+          status = document.getElementById("status"),
+          submitBtn = document.getElementById("submitBtn"),
+          manualInputs = document.getElementById("manualInputs"),
           addEupRabaBtn = document.getElementById("addEupRabaBtn"),
-          keyDataFields = document.getElementById("keyDataFields");
+          keyDataFields = document.getElementById("keyDataFields"),
+          resultsSection = document.getElementById("resultsSection"),
+          resultsTable = document.getElementById("resultsTable"),
+          rerunSelectedBtn = document.getElementById("rerunSelectedBtn"),
+          resetSelectionBtn = document.getElementById("resetSelectionBtn"),
+          existingResultsInput = document.getElementById("existingResults"),
+          analyzeBtn = document.getElementById("analyzeBtn");
+
+    let currentZahteve = [];
+    let currentResultsMap = {};
 
     // KLJUČNI SLOVAR PODATKOV ZA DINAMIČNO GENERIRANJE POLJ
     const keyLabels = {
@@ -1291,6 +1444,83 @@ def frontend():
         'enostavni_objekti': 'ENOSTAVNI OBJEKTI',
         'vzdrzevalna_dela': 'VZDRŽEVALNA DELA'
     };
+
+    function escapeHtml(value) {
+        if (typeof value !== 'string') { return ''; }
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+        return value.replace(/[&<>"']/g, ch => map[ch]);
+    }
+
+    function statusToClass(text) {
+        if (!text) return 'neznano';
+        const normalized = text.toLowerCase().trim();
+        if (normalized.includes('neskladno')) return 'neskladno';
+        if (normalized.includes('skladno')) return 'skladno';
+        if (normalized.includes('ni relevantno')) return 'ni-relevantno';
+        return 'neznano';
+    }
+
+    function truncateText(text, maxLength = 220) {
+        if (!text) return '—';
+        if (text.length <= maxLength) return text;
+        return text.slice(0, maxLength).trimEnd() + '…';
+    }
+
+    function renderResults(zahteve, resultsMap) {
+        currentZahteve = Array.isArray(zahteve) ? zahteve : [];
+        currentResultsMap = resultsMap && typeof resultsMap === 'object' ? resultsMap : {};
+
+        if (!currentZahteve.length) {
+            if (resultsSection) {
+                resultsSection.style.display = 'none';
+            }
+            if (resultsTable) {
+                resultsTable.innerHTML = '';
+            }
+            return;
+        }
+
+        let tableHtml = `<table class="results-table"><thead><tr><th style="width:60px;">Izberi</th><th>Zahteva</th><th style="width:180px;">Status</th><th>Obrazložitev / ukrep</th></tr></thead><tbody>`;
+
+        currentZahteve.forEach(z => {
+            const result = currentResultsMap[z.id] || {};
+            const statusText = result.skladnost || 'Neznano';
+            const statusClass = statusToClass(statusText);
+            const noteRaw = result.predlagani_ukrep && result.predlagani_ukrep !== '—'
+                ? result.predlagani_ukrep
+                : truncateText(result.obrazlozitev || '—');
+            const note = truncateText(noteRaw, 280);
+            const escapedTitle = escapeHtml(z.naslov);
+            const escapedCategory = escapeHtml(z.kategorija);
+            const escapedStatus = escapeHtml(statusText);
+            const escapedNote = escapeHtml(note);
+            const checked = statusClass === 'neskladno' ? 'checked' : '';
+            tableHtml += `
+                <tr class="status-${statusClass}">
+                    <td><input type="checkbox" value="${z.id}" ${checked}></td>
+                    <td>
+                        <strong>${escapedTitle}</strong>
+                        <span class="category-tag">${escapedCategory}</span>
+                    </td>
+                    <td><span class="status-pill ${statusClass}">${escapedStatus}</span></td>
+                    <td><div class="result-note">${escapedNote}</div></td>
+                </tr>`;
+        });
+
+        tableHtml += '</tbody></table>';
+
+        if (resultsTable) {
+            resultsTable.innerHTML = tableHtml;
+        }
+        if (resultsSection) {
+            resultsSection.style.display = 'block';
+        }
+    }
+
+    function getSelectedRequirementIds() {
+        if (!resultsTable) return [];
+        return Array.from(resultsTable.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+    }
     
     function renderKeyDataFields(data) {
         keyDataFields.innerHTML = '';
@@ -1402,6 +1632,15 @@ def frontend():
         if (existingSummaryDiv) {
             existingSummaryDiv.remove();
         }
+        if (resultsSection) {
+            resultsSection.style.display = 'none';
+        }
+        if (resultsTable) {
+            resultsTable.innerHTML = '';
+        }
+        existingResultsInput.value = '';
+        currentZahteve = [];
+        currentResultsMap = {};
     }
 
     async function showStatus(e, t) {
@@ -1462,41 +1701,99 @@ def frontend():
         }
     });
 
-    // --- KORAK 2: Izvedba analize ---
-    analyzeForm.addEventListener("submit", async e => {
-        e.preventDefault();
-
+    async function runAnalysis(extraPayload = {}, options = {}) {
+        const { isRerun = false } = options;
         const sessionId = document.getElementById('sessionId').value;
         if (!sessionId) {
             showStatus("Seja ni aktivna. Prosim, ponovite Korak 1.", "error");
             return;
         }
-        
-        // Zberemo VSE končne podatke iz analize forme
-        const finalFormData = new FormData(analyzeForm); 
-        
-        showStatus("Izvajam podrobno analizo in generiram poročilo...", "loading");
-        document.getElementById('analyzeBtn').disabled = true;
+
+        const formData = new FormData(analyzeForm);
+
+        if (Array.isArray(extraPayload.selectedIds) && extraPayload.selectedIds.length) {
+            formData.append('selected_ids_json', JSON.stringify(extraPayload.selectedIds));
+        }
+
+        if (existingResultsInput) {
+            const existingValue = existingResultsInput.value || '';
+            if (typeof formData.set === 'function') {
+                formData.set('existing_results_json', existingValue);
+            } else if (existingValue) {
+                formData.append('existing_results_json', existingValue);
+            }
+        }
+
+        showStatus(isRerun ? "Ponovno preverjam izbrane zahteve..." : "Izvajam podrobno analizo in generiram poročilo...", "loading");
+        analyzeBtn.disabled = true;
         submitBtn.disabled = true;
+        if (rerunSelectedBtn) { rerunSelectedBtn.disabled = true; }
 
         try {
-            const response = await fetch("/analyze-report", { method: "POST", body: finalFormData });
+            const response = await fetch("/analyze-report", { method: "POST", body: formData });
 
             if (!response.ok) {
                 const error = await response.json();
                 throw new Error(error.detail || "Napaka pri analizi in generiranju poročila.");
             }
-            
+
             const result = await response.json();
-            showStatus(`Poročilo uspešno ustvarjeno! Analizirano ${result.total} zahtev. <br><a href="/download" style="font-weight:bold;">Prenesi poročilo (.docx)</a>`, "success");
-            analyzeForm.style.display = 'none';
+            const analyzed = result.total_analyzed ?? result.total ?? 0;
+            const totalAvailable = result.total_available ?? result.total ?? analyzed;
+            const scopeLabel = result.analysis_scope === "partial" ? "Ponovno analiziranih" : "Analiziranih";
+
+            showStatus(`Poročilo uspešno ustvarjeno! ${scopeLabel} ${analyzed} od ${totalAvailable} zahtev. <br><a href="/download" style="font-weight:bold;">Prenesi poročilo (.docx)</a>`, "success");
+
+            if (result.results_map) {
+                try {
+                    existingResultsInput.value = JSON.stringify(result.results_map);
+                } catch (err) {
+                    console.warn('Ne morem serializirati rezultatov:', err);
+                    existingResultsInput.value = '';
+                }
+            } else {
+                existingResultsInput.value = '';
+            }
+
+            renderResults(result.zahteve || [], result.results_map || {});
         } catch (error) {
             showStatus(`Kritična napaka pri analizi: ${error.message}`, "error");
         } finally {
-            document.getElementById('analyzeBtn').disabled = false;
+            analyzeBtn.disabled = false;
             submitBtn.disabled = false;
+            if (rerunSelectedBtn) { rerunSelectedBtn.disabled = false; }
         }
+    }
+
+    // --- KORAK 2: Izvedba analize ---
+    analyzeForm.addEventListener("submit", async e => {
+        e.preventDefault();
+        await runAnalysis();
     });
+
+    if (rerunSelectedBtn) {
+        rerunSelectedBtn.addEventListener("click", async () => {
+            if (!existingResultsInput.value) {
+                showStatus("Za ponovno preverjanje potrebujemo rezultate zadnje analize.", "error");
+                return;
+            }
+
+            const selected = getSelectedRequirementIds();
+            if (!selected.length) {
+                showStatus("Izberite vsaj eno zahtevo za ponovno preverjanje.", "error");
+                return;
+            }
+
+            await runAnalysis({ selectedIds: selected }, { isRerun: true });
+        });
+    }
+
+    if (resetSelectionBtn) {
+        resetSelectionBtn.addEventListener("click", () => {
+            if (!resultsTable) return;
+            resultsTable.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = false; });
+        });
+    }
 </script>
 </body></html>"""
     return html.replace("YEAR_PLACEHOLDER", str(datetime.now().year))
@@ -1579,19 +1876,44 @@ async def analyze_report(
     smer_slemena: str = Form("Ni podatka v dokumentaciji"),
     visinske_kote: str = Form("Ni podatka v dokumentaciji"),
     odmiki_parcel: str = Form("Ni podatka v dokumentaciji"),
-    komunalni_prikljucki: str = Form("Ni podatka v dokumentaciji")
+    komunalni_prikljucki: str = Form("Ni podatka v dokumentaciji"),
+    selected_ids_json: Optional[str] = Form(None),
+    existing_results_json: Optional[str] = Form(None)
 ):
     """Drugi korak: Izvede glavno analizo s potrjenimi/popravljenimi podatki."""
     global LAST_DOCX_PATH
     
     if session_id not in TEMP_STORAGE:
         raise HTTPException(status_code=404, detail="Seja je potekla ali podatki niso bili ekstrahirani. Prosim, ponovite Korak 1.")
-        
-    data = TEMP_STORAGE.pop(session_id) # Odstrani podatke iz začasnega pomnilnika po uporabi
-    
+
+    data = TEMP_STORAGE.get(session_id)
+    if data is None:
+        raise HTTPException(status_code=404, detail="Podatki seje niso na voljo. Ponovite Korak 1.")
+
     try:
         print(f"\n{'='*60}\n⚙️ Korak 2: Izvajam analizo (ID: {session_id})\n{'='*60}\n")
-        
+
+        selected_ids: List[str] = []
+        if selected_ids_json:
+            try:
+                parsed_ids = json.loads(selected_ids_json)
+                if not isinstance(parsed_ids, list):
+                    raise ValueError
+                selected_ids = [str(item).strip() for item in parsed_ids if str(item).strip()]
+            except (json.JSONDecodeError, ValueError):
+                raise HTTPException(status_code=400, detail="Neveljaven seznam izbranih zahtev za ponovno preverjanje.")
+
+        existing_results_map: Dict[str, Dict[str, Any]] = {}
+        if existing_results_json:
+            try:
+                parsed_results = json.loads(existing_results_json)
+                if isinstance(parsed_results, dict):
+                    existing_results_map = {str(k): v for k, v in parsed_results.items() if isinstance(v, dict)}
+                else:
+                    raise ValueError
+            except (json.JSONDecodeError, ValueError):
+                raise HTTPException(status_code=400, detail="Neveljaven JSON rezultatov prejšnje analize.")
+
         # 1. Čiščenje in konsolidacija VSEH končnih EUP in Raba
         eup_from_form = [e.strip() for e in final_eup_list if e and e.strip()] if final_eup_list is not None else []
         raba_from_form = [r.strip().upper() for r in final_raba_list if r and r.strip()] if final_raba_list is not None else []
@@ -1606,7 +1928,20 @@ async def analyze_report(
         
         # 2. Sestava zahtev
         zahteve = build_requirements_from_db(final_eup_list_cleaned, final_raba_list_cleaned, data["project_text"])
-        
+
+        vse_id = {z["id"] for z in zahteve}
+        selected_id_set = set(selected_ids)
+        if selected_id_set:
+            invalid_ids = selected_id_set - vse_id
+            if invalid_ids:
+                raise HTTPException(status_code=400, detail=f"Izbrane zahteve ne obstajajo: {', '.join(sorted(invalid_ids))}.")
+            zahteve_za_analizo = [z for z in zahteve if z["id"] in selected_id_set]
+        else:
+            zahteve_za_analizo = list(zahteve)
+
+        if not zahteve_za_analizo:
+            raise HTTPException(status_code=400, detail="Ni izbranih zahtev za ponovno preverjanje.")
+
         # 3. Priprava prompta za AI analizo - Vključitev VSEH končnih (potrjenih/popravljenih) ključnih podatkov
         final_key_data = {
             "glavni_objekt": glavni_objekt, "vrsta_gradnje": vrsta_gradnje,
@@ -1636,17 +1971,46 @@ async def analyze_report(
         """
         
         # Pravilen klic funkcije: Uporabimo le 3 zahtevane argumente.
-        prompt = build_prompt(modified_project_text, zahteve, IZRAZI_TEXT, UREDBA_TEXT)
+        prompt = build_prompt(modified_project_text, zahteve_za_analizo, IZRAZI_TEXT, UREDBA_TEXT)
         ai_response = call_gemini(prompt, data["images"])
-        results_map = parse_ai_response(ai_response, zahteve)
-        
+        results_map = parse_ai_response(ai_response, zahteve_za_analizo)
+
+        combined_results_map = {k: v for k, v in existing_results_map.items()}
+        combined_results_map.update(results_map)
+
+        for z in zahteve:
+            if z["id"] not in combined_results_map:
+                combined_results_map[z["id"]] = {
+                    "id": z["id"],
+                    "obrazlozitev": "Zahteva ni bila analizirana v tem koraku.",
+                    "evidence": "—",
+                    "skladnost": "Neznano",
+                    "predlagani_ukrep": "Ponovna analiza je potrebna."
+                }
+
         # 4. Generiranje poročila
         output_path = f"./Porocilo_Skladnosti_{datetime.now().strftime('%Y%m%d_%H%M%S')}.docx"
-        LAST_DOCX_PATH = generate_word_report(zahteve, results_map, data["metadata"], output_path)
-        
-        return {"status": "success", "docx_path": LAST_DOCX_PATH, "total": len(zahteve)}
-        
+        LAST_DOCX_PATH = generate_word_report(zahteve, combined_results_map, data["metadata"], output_path)
+
+        TEMP_STORAGE[session_id] = data
+
+        analysis_scope = "partial" if selected_id_set and len(selected_id_set) < len(zahteve) else "full"
+        zahteve_summary = [{"id": z["id"], "naslov": z["naslov"], "kategorija": z.get("kategorija", "Ostalo")} for z in zahteve]
+
+        return {
+            "status": "success",
+            "docx_path": LAST_DOCX_PATH,
+            "total_analyzed": len(zahteve_za_analizo),
+            "total_available": len(zahteve),
+            "analysis_scope": analysis_scope,
+            "results_map": combined_results_map,
+            "zahteve": zahteve_summary
+        }
+
     except Exception as e:
         import traceback
         traceback.print_exc()
-        # Pri kritični napaki podatke seje začasno ponovno shrani
+        TEMP_STORAGE[session_id] = data
+        if isinstance(e, HTTPException):
+            raise
+        raise HTTPException(status_code=500, detail=str(e))
