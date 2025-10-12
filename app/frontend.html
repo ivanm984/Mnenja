@@ -256,8 +256,8 @@
 
         textarea {
             resize: vertical;
-            min-height: 70px;
-            line-height: 1.5;
+            min-height: 110px;
+            line-height: 1.6;
         }
 
         .subtitle {
@@ -345,9 +345,19 @@
 
         .manual-input-pair {
             display: grid;
-            gap: 12px;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            grid-template-columns: minmax(260px, 1fr) minmax(260px, 1fr) auto;
             align-items: center;
+        }
+
+        .manual-input-pair input[type=text] {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(37, 99, 235, 0.18);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+        }
+
+        .manual-input-pair input[type=text]:focus {
+            border-color: rgba(37, 99, 235, 0.45);
         }
 
         .manual-input-pair button {
@@ -392,27 +402,34 @@
         }
 
         .key-summary .summary-item {
-            background: rgba(15, 23, 42, 0.04);
+            background: linear-gradient(145deg, rgba(37, 99, 235, 0.08), rgba(255, 255, 255, 0.92));
             border-radius: var(--radius-md);
-            padding: 14px 16px;
-            border: 1px solid rgba(15, 23, 42, 0.06);
+            padding: 16px 18px;
+            border: 1px solid rgba(37, 99, 235, 0.16);
+            box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
         }
 
         .key-summary .summary-item span {
             display: block;
-            font-size: 0.8rem;
-            letter-spacing: 0.04em;
+            font-size: 0.82rem;
+            letter-spacing: 0.05em;
             text-transform: uppercase;
-            color: rgba(15, 23, 42, 0.65);
+            color: rgba(15, 23, 42, 0.66);
+            font-weight: 600;
         }
 
         .key-summary .summary-item strong {
             display: block;
-            margin-top: 6px;
-            font-size: 1rem;
+            margin-top: 8px;
+            font-size: 1.02rem;
             color: #0f172a;
             font-weight: 700;
             word-break: break-word;
+        }
+
+        .key-summary .summary-item.empty {
+            background: rgba(148, 163, 184, 0.18);
+            border-style: dashed;
         }
 
         .key-summary .summary-item.empty strong {
@@ -427,10 +444,30 @@
             gap: 18px;
         }
 
+        .key-data-grid .data-item {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: var(--radius-md);
+            padding: 16px 18px;
+            border: 1px solid rgba(37, 99, 235, 0.1);
+            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.06);
+        }
+
         .key-data-grid .data-item label {
             font-weight: 600;
             font-size: 0.95rem;
             margin-bottom: 6px;
+        }
+
+        .key-data-grid .data-item input[type=text],
+        .key-data-grid .data-item textarea {
+            background: rgba(248, 250, 255, 0.95);
+        }
+
+        .data-item-meta .readonly-field {
+            background: rgba(226, 232, 240, 0.45) !important;
+            border-color: rgba(148, 163, 184, 0.6);
+            color: rgba(15, 23, 42, 0.75);
+            font-weight: 600;
         }
 
         .results-section {
@@ -1646,7 +1683,7 @@
         // Prikaz metapodatkov
         let metaHtml = '';
         for (const key in metadataLabels) {
-            metaHtml += `<div class="data-item"><label>${metadataLabels[key]}:</label><input type="text" name="${key}" id="${key}" value="${data[key]}" readonly style="background:#eee;"></div>`;
+            metaHtml += `<div class="data-item data-item-meta"><label>${metadataLabels[key]}:</label><input type="text" class="readonly-field" name="${key}" id="${key}" value="${data[key]}" readonly></div>`;
         }
         
         // Vstavitev metapodatkov pred keyDataFields (polja A in B)
