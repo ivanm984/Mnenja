@@ -1,0 +1,436 @@
+{
+  "uredba_o_razvrščanju_objektov": {
+    "vir": "URED8497_NPB0.pdf",
+    "clen1_vsebina": {
+      "odstavek1": "Ta uredba določa podrobnejša merila za razvrščanje enostavnih, nezahtevnih, manj zahtevnih in zahtevnih objektov ter merila za vzdrževanje in manjšo rekonstrukcijo (v nadaljnjem besedilu: merilo).",
+      "odstavek2": "Ta uredba določa tudi klasifikacijo vrst objektov CC SI glede na namen uporabe objektov."
+    },
+    "clen2_uporaba": {
+      "odstavek1": "Ta uredba se uporablja pri projektiranju in dovoljevanju gradnje objektov ter evidentiranju podatkov o gradnjah in objektih, za statistične namene in v drugih primerih, če tako določajo predpisi.",
+      "odstavek2": "Ta uredba se ne uporablja za razvrščanje enostavnih objektov, vzdrževanje objekta in vzdrževalna dela v javno korist, ki jih določajo posebni predpisi s področij energetike, rudarstva, gospodarjenja z gozdovi, elektronskih komunikacij, cest, železnic in žičniških naprav, upravljanja voda ter drugih področij, razen če so določbe te uredbe za investitorja ugodnejše.",
+      "odstavek3": "Ta uredba se ne uporablja za razvrščanje manjših naprav v skladu s predpisom, ki ureja manjše naprave za proizvodnjo električne energije iz obnovljivih virov energije.",
+      "odstavek4": "Ta uredba se ne uporablja za razvrščanje začasnih objektov."
+    },
+    "clen3_pomen_izrazov": [
+      {
+        "stevilka": 1,
+        "izraz": "fizična povezanost stavbe",
+        "pomen": "povezanost ene stavbe z grajenim elementom (npr. vrata, hodnik, dvigalo, tunel) z drugo stavbo, pri čemer se za fizično povezanost stavbe ne šteje, če sta stavbi povezani samo z inštalacijami;"
+      },
+      {
+        "stevilka": 2,
+        "izraz": "funkcionalni kompleks",
+        "pomen": "gradbeni inženirski objekt, v katerem je več objektov, ki so fizično povezani ali so povezani s skupno uporabo, ki je določena s posebnim predpisom (npr. kamp, pokopališče), ali skupnim namenom rabe (npr. odprta športna igrišča, betonarna, parkovna ureditev, industrijski gradbeni kompleksi);"
+      },
+      {
+        "stevilka": 3,
+        "izraz": "glavni objekt",
+        "pomen": "objekt, ki pomeni osnovni namen gradnje;"
+      },
+      {
+        "stevilka": 4,
+        "izraz": "nadstrešek",
+        "pomen": "del objekta, ki se uporablja za zaščito pred zunanjimi vplivi;"
+      },
+      {
+        "stevilka": 5,
+        "izraz": "nadstrešnica",
+        "pomen": "stavba, ki nima nobene obodne stene;"
+      },
+      {
+        "stevilka": 6,
+        "izraz": "zunanje naprave in zunanja oprema",
+        "pomen": "zunanje tehnološke naprave oziroma zunanja grajena oprema, ki se postavljajo na objekt ali so postavljeni na zunanji ureditvi objekta in služijo delovanju objekta;"
+      },
+      {
+        "stevilka": 7,
+        "izraz": "zunanja ureditev objekta",
+        "pomen": "utrjena oziroma zelena površina ob objektu, trajno namenjena njegovi redni rabi."
+      }
+    ],
+    "clen4_skupna_pravila": {
+      "odstavek1": "Razvršča in klasificira se posamezen objekt, ki je konstrukcijsko in funkcionalno samostojen.",
+      "odstavek2": "Samostojno se razvršča in klasificira tudi: - samostoječa stavba z vsemi vgrajenimi deli, inštalacijami, napravami in opremo v stavbi, ki skupaj zagotavljajo delovanje stavbe, - pomožna stavba, ki se dotika glavnega objekta, je od njega požarno ločena in z njim nima fizične povezanosti, - nadstrešnica, ki se drugih stavb dotika z največ dveh strani, - objekt gospodarske javne infrastrukture z vsemi njegovimi posameznimi deli, inštalacijami, napravami in opremo ter - funkcionalni kompleks.",
+      "odstavek3": "Ne glede na prvo alinejo prejšnjega odstavka se samostojno razvršča in klasificira tudi stavba, ki se druge stavbe dotika, če sta stavbi konstrukcijsko in požarno ločeni ter imata vsaka svoj vodovodni, kanalizacijski in elektro priključek, ne glede na fizično povezanost.",
+      "odstavek4": "Ne glede na drugi in tretji odstavek tega člena se samostojno razvršča in klasificira tudi stanovanjska stavba v vrstni stavbi ali dvojčku, ki je konstrukcijsko povezana (npr. s skupno steno), če gre za stavbo, ki: - ima ločen vhod, svoje temelje in streho, razen temelja skupne stene ali skupne temeljne plošče, - je požarno ločena od druge stavbe in z njo ni fizično povezana, - ima ločene priključke in - je razvrščena med zahtevne ali manj zahtevne objekte.",
+      "odstavek5": "Samostojno se razvrščajo in klasificirajo tudi zunanje naprave in zunanja oprema, če imajo v Prilogi 1, ki je sestavni del te uredbe, svojo klasifikacijo in se štejejo za pomožni objekt."
+    }
+  },
+  "priloga1_klasifikacija_objektov": {
+    "vir": "2022-01-2391-p1 (6).pdf",
+    "opombe": {
+      "noben": "ne glede na splošna merila iz 8., 10. in 11. člena te uredbe v to vrsto zahtevnosti objektov ne uvršča noben objekt",
+      "samo_splosna_merila": "dodatnih meril ni in se uporabljajo samo splošna merila iz 8., 10. in 11. člena te uredbe",
+      "vsi": "ne glede na splošna merila iz 8., 10. in 11. člena te uredbe v to vrsto zahtevnosti objektov uvrščajo vsi objekti",
+      "do": "vključno z navedeno mejno vrednostjo"
+    },
+    "stavbe": [
+      {
+        "cc_si": "11100",
+        "opis": "Enostanovanjske stavbe",
+        "enostavni": "noben",
+        "nezahtevni": "površina do 25 m2",
+        "zahtevni": "samo splošna merila"
+      },
+      {
+        "cc_si": "11210",
+        "opis": "Dvostanovanjske stavbe",
+        "enostavni": "noben",
+        "nezahtevni": "noben",
+        "zahtevni": "samo splošna merila"
+      },
+      {
+        "cc_si": "11220",
+        "opis": "Tri- in večstanovanjske stavbe",
+        "enostavni": "noben",
+        "nezahtevni": "noben",
+        "zahtevni": "površina nad 2.000 m2"
+      },
+      {
+        "cc_si": "11301",
+        "opis": "Stanovanjske stavbe z oskrbovanimi stanovanji",
+        "enostavni": "noben",
+        "nezahtevni": "noben",
+        "zahtevni": "površina nad 2.000 m2, višina nad 10 m"
+      },
+      {
+        "cc_si": "11302",
+        "opis": "Stanovanjske stavbe za druge posebne družbene skupine",
+        "enostavni": "noben",
+        "nezahtevni": "noben",
+        "zahtevni": "površina nad 2.000 m2, višina nad 10 m"
+      },
+      {
+        "cc_si": "12111",
+        "opis": "Hotelske in podobne stavbe za kratkotrajno nastanitev",
+        "enostavni": "površina do 10 m2",
+        "nezahtevni": "površina do 25 m2",
+        "zahtevni": "površina nad 2.000 m2"
+      },
+      {
+        "cc_si": "12112",
+        "opis": "Gostilne, restavracije in točilnice",
+        "enostavni": "noben",
+        "nezahtevni": "površina do 25 m2",
+        "zahtevni": "površina nad 2.000 m2"
+      },
+      {
+        "cc_si": "12121",
+        "opis": "Druge gostinske stavbe za kratkotrajno nastanitev",
+        "enostavni": "površina do 10 m2",
+        "nezahtevni": "površina do 25 m2",
+        "zahtevni": "površina nad 2.000 m2"
+      },
+      {
+        "cc_si": "12122",
+        "opis": "Stavbe za kratkotrajno nastanitev na drevesu",
+        "enostavni": "površina do 5 m2, višina od tal do vrha objekta do 5 m",
+        "nezahtevni": "površina do 25 m2, višina od tal do vrha objekta do 5 m",
+        "zahtevni": "površina nad 2.000 m2"
+      },
+      {
+        "cc_si": "12201",
+        "opis": "Stavbe javne uprave",
+        "enostavni": "noben",
+        "nezahtevni": "površina do 25 m2",
+        "zahtevni": "površina nad 2.000 m2"
+      },
+      {
+        "cc_si": "12202",
+        "opis": "Stavbe bank, pošt, zavarovalnic",
+        "enostavni": "noben",
+        "nezahtevni": "površina do 25 m2",
+        "zahtevni": "površina nad 2.000 m2"
+      },
+      {
+        "cc_si": "12203",
+        "opis": "Druge poslovne stavbe",
+        "enostavni": "noben",
+        "nezahtevni": "površina do 25 m2",
+        "zahtevni": "površina nad 2.000 m2"
+      },
+      {
+        "cc_si": "12204",
+        "opis": "Konferenčne in kongresne stavbe",
+        "enostavni": "noben",
+        "nezahtevni": "površina do 25 m2",
+        "zahtevni": "površina nad 2.000 m2"
+      },
+      {
+        "cc_si": "12301",
+        "opis": "Trgovske stavbe",
+        "enostavni": "noben",
+        "nezahtevni": "površina do 25 m2",
+        "zahtevni": "površina nad 2.000 m2"
+      },
+      {
+        "cc_si": "12302",
+        "opis": "Sejemske dvorane, razstavišča",
+        "enostavni": "noben",
+        "nezahtevni": "površina do 25 m2",
+        "zahtevni": "površina nad 2.000 m2"
+      },
+      {
+        "cc_si": "12303",
+        "opis": "Oskrbne postaje",
+        "enostavni": "noben",
+        "nezahtevni": "noben",
+        "zahtevni": "površina nad 2.000 m2"
+      },
+      {
+        "cc_si": "12304",
+        "opis": "Stavbe za storitvene dejavnosti",
+        "enostavni": "noben",
+        "nezahtevni": "površina do 25 m2",
+        "zahtevni": "površina nad 2.000 m2"
+      }
+    ]
+  },
+  "priloga2_manjsa_rekonstrukcija": {
+    "vir": "2022-01-2391-p2.pdf",
+    "vrste_del": [
+      {
+        "stevilka": 1,
+        "vrsta_del": "Statične ojačitve posameznega ali več posameznih konstrukcijskih elementov.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 2,
+        "vrsta_del": "Zamenjava istovrstnih posameznih konstrukcijskih elementov, v katero spada na primer zamenjava ostrešja ali delov medetažne konstrukcije.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 3,
+        "vrsta_del": "Zamenjava elementov javnega vodovoda in javne kanalizacije.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 4,
+        "vrsta_del": "Dolbenje utorov in niš v nosilno konstrukcijo.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 5,
+        "vrsta_del": "Izvedba odprtin in večjih konstrukcijskih prebojev ter povečanje obstoječih odprtin v objektu, ki ne presegajo ene tretjine površine posameznega konstrukcijskega elementa in niso širši od 2 m.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 6,
+        "vrsta_del": "Povečanje obstoječih prebojev fasade stavbe do 2 m, pri čemer velikost povečanja odprtine ne sme presegati ene tretjine površine fasade.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 7,
+        "vrsta_del": "Novi preboji fasade stavbe, če je ravnina fasade, na kateri se izvajajo preboji, od meje zemljišča drugega lastnika oddaljena več kot 2 m, pri čemer velikost novih prebojev ne presega ene tretjine površine fasade in noben preboj ni širši od 2 m.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 8,
+        "vrsta_del": "Vgradnja dvigala v notranjosti objekta, s katerim se posega v nosilno konstrukcijo.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 9,
+        "vrsta_del": "Manjše povečanje prostornine, ki ne poveča bruto tlorisne površine objekta, ter pomeni izvedbo posameznih konstrukcijskih elementov na objektu (npr. izvedba frčade, vsaj z dveh strani odprt nadstrešek na obstoječi pohodni strehi, dvig obodnega zidu pod poševno streho za višino horizontalne vezi za največ 0,3 m).",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva in soglasje občine"
+      },
+      {
+        "stevilka": 10,
+        "vrsta_del": "Prizidava nakladalnih ramp in klančin.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva in soglasje občine"
+      },
+      {
+        "stevilka": 11,
+        "vrsta_del": "Izvedba nepohodnega konzolnega nadstreška površine do 6 m2.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva in soglasje občine"
+      },
+      {
+        "stevilka": 12,
+        "vrsta_del": "Prizidava zunanjega odprtega stopnišča ali dvigala, ki ne povezuje več kot treh etaž in je zunanji rob stopnišča ali dvigala oddaljen od sosednjega objekta drugega lastnika več kot 4 m.",
+        "mnenje_soglasje": "Pooblaščena strokovnjaka s področja gradbeništva in področja arhitekture ter soglasje občine"
+      }
+    ]
+  },
+  "priloga3_vzdrzevanje_objekta": {
+    "vir": "2022-01-2391-p3.pdf",
+    "opomba": "Poleg zahtev iz te priloge se vzdrževalna dela izvaja tudi tako, da dela niso v nasprotju s prostorskim izvedbenim aktom, gradbenimi in drugimi predpisi in so v skladu s predpisanimi pridobljenimi mnenji ali soglasji.",
+    "vrste_del": [
+      {
+        "stevilka": 1,
+        "vrsta_del": "Dela v objektu",
+        "opis": "Med ta dela med drugim spadajo: pleskanje, popravilo ali zamenjava ometov in poda, popravilo ali zamenjava notranjega stavbnega pohištva, suhomontažna dela in izvedba ali odstranitev lahkih nenosilnih sten."
+      },
+      {
+        "stevilka": 2,
+        "vrsta_del": "Dela na ovoju objekta in zasteklitve",
+        "opis": "Med ta dela med drugim spadajo: prenova fasade, zunanjega stavbnega pohištva in strešne kritine na način, da se s posegi bistveno ne odstopa od prvotne zasnove objekta. Med ta dela spadajo tudi vgradnja strešnih oken, zasteklitev lož, balkonov in zunanjih stopnišč, namestitev senčil, nepohodnega konzolnega nadstreška nad vhodom površine do 2 m2."
+      },
+      {
+        "stevilka": 3,
+        "vrsta_del": "Vzdrževanje vgrajenih inštalacij in tehnoloških naprav, potrebnih za delovanje objekta",
+        "opis": "Med ta dela med drugim spadajo: popravilo ali zamenjava naprav in z njimi povezanih napeljav na električnih, telekomunikacijskih, strelovodnih, vodovodnih, kanalizacijskih, ogrevalnih in prezračevalnih ter dimovodnih sistemih. Med ta dela med drugim spada tudi popravilo ali zamenjava priključkov."
+      },
+      {
+        "stevilka": 4,
+        "vrsta_del": "Namestitev novih inštalacij in tehnoloških naprav, potrebnih za delovanje objekta",
+        "opis": "Med ta dela med drugim spadajo: namestitev novih naprav in z njimi povezanih napeljav za ogrevanje, hlajenje, prezračevanje, pripravo tople vode in razsvetljavo, tudi za izkoriščanje obnovljivih virov energije in hranilnike energije. Med ta dela med drugim spadajo tudi: namestitev novih električnih in telekomunikacijskih napeljav in strelovodne zaščite ter vodovoda, kanalizacije, vključno s sistemi za shranjevanje in rabo padavin, in strojne opreme za delovanje objekta, namestitev dimniških tuljav."
+      },
+      {
+        "stevilka": 5,
+        "vrsta_del": "Dela v zvezi z vzdrževanjem zunanje ureditve objekta",
+        "opis": "Med ta dela med drugim spadajo: izvedba gradbenih in drugih del, povezanih z gradnjo za ureditev dvorišča in vrta, tudi za parkiranje, vključno z dovozi oziroma dostopi in drugo opremo, npr. zapornice, ter izvedba nakladalnih ramp, klančin, dostopov in drugih ureditev za dostop in neovirano rabo objekta."
+      },
+      {
+        "stevilka": 6,
+        "vrsta_del": "Manjša dela na konstrukcijskih elementih objekta",
+        "opis": "Med ta dela med drugim spadajo: vzdrževanje nosilnih konstrukcijskih elementov in manjši inštalacijski preboji konstrukcijskih elementov premera do 16 cm, ki ne zmanjšujejo bistveno njihove nosilnosti."
+      },
+      {
+        "stevilka": 7,
+        "vrsta_del": "Druga vzdrževalna dela na gradbenih inženirskih objektih",
+        "opis": "Med ta dela med drugim spadajo: vzdrževanje in popravilo konstrukcijskih elementov, vzdrževanje drugih delov objekta in njegove izboljšave."
+      }
+    ]
+  },
+  "dodatne_tabele_iz_slik": {
+    "priloga3_vzdrzevanje_objekta_dodatno": [
+      {
+        "stevilka": 1,
+        "vrsta_del": "Dela v objektu",
+        "opis": "Med ta dela med drugim spadajo: pleskanje, popravilo ali zamenjava ometov in poda, popravilo ali zamenjava notranjega stavbnega pohištva, suhomontažna dela in izvedba ali odstranitev lahkih nenosilnih sten."
+      },
+      {
+        "stevilka": 2,
+        "vrsta_del": "Dela na ovoju objekta in zasteklitve",
+        "opis": "Med ta dela med drugim spadajo: prenova fasade, zunanjega stavbnega pohištva in strešne kritine na način, da se s posegi bistveno ne odstopa od prvotne zasnove objekta. Med ta dela spadajo tudi vgradnja strešnih oken, zasteklitev lož, balkonov in zunanjih stopnišč, namestitev senčil, nepohodnega konzolnega nadstreška nad vhodom površine do 2 m2."
+      },
+      {
+        "stevilka": 3,
+        "vrsta_del": "Vzdrževanje vgrajenih inštalacij in tehnoloških naprav, potrebnih za delovanje objekta",
+        "opis": "Med ta dela med drugim spadajo: popravilo ali zamenjava naprav in z njimi povezanih napeljav na električnih, telekomunikacijskih, strelovodnih, vodovodnih, kanalizacijskih, ogrevalnih in prezračevalnih ter dimovodnih sistemih. Med ta dela med drugim spada tudi popravilo ali zamenjava priključkov."
+      },
+      {
+        "stevilka": 4,
+        "vrsta_del": "Namestitev novih inštalacij in tehnoloških naprav, potrebnih za delovanje objekta",
+        "opis": "Med ta dela med drugim spadajo: namestitev novih naprav in z njimi povezanih napeljav za ogrevanje, hlajenje, prezračevanje, pripravo tople vode in razsvetljavo, tudi za izkoriščanje obnovljivih virov energije in hranilnike energije. Med ta dela med drugim spadajo tudi: namestitev novih električnih in telekomunikacijskih napeljav in strelovodne zaščite ter vodovoda, kanalizacije, vključno s sistemi za shranjevanje in rabo padavin, in strojne opreme za delovanje objekta, namestitev dimniških tuljav."
+      },
+      {
+        "stevilka": 5,
+        "vrsta_del": "Dela v zvezi z vzdrževanjem zunanje ureditve objekta",
+        "opis": "Med ta dela med drugim spadajo: izvedba gradbenih in drugih del, povezanih z gradnjo za ureditev dvorišča in vrta, tudi za parkiranje, vključno z dovozi oziroma dostopi in drugo opremo, npr. zapornice, ter izvedba nakladalnih ramp, klančin, dostopov in drugih ureditev za dostop in neovirano rabo objekta."
+      },
+      {
+        "stevilka": 6,
+        "vrsta_del": "Manjša dela na konstrukcijskih elementih objekta",
+        "opis": "Med ta dela med drugim spadajo: vzdrževanje nosilnih konstrukcijskih elementov in manjši inštalacijski preboji konstrukcijskih elementov premera do 16 cm, ki ne zmanjšujejo bistveno njihove nosilnosti."
+      },
+      {
+        "stevilka": 7,
+        "vrsta_del": "Druga vzdrževalna dela na gradbenih inženirskih objektih",
+        "opis": "Med ta dela med drugim spadajo: vzdrževanje in popravilo konstrukcijskih elementov, vzdrževanje drugih delov objekta in njegove izboljšave."
+      }
+    ],
+    "priloga2_manjsa_rekonstrukcija_dodatno": [
+      {
+        "stevilka": 1,
+        "vrsta_del": "Statične ojačitve posameznega ali več posameznih konstrukcijskih elementov.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 2,
+        "vrsta_del": "Zamenjava istovrstnih posameznih konstrukcijskih elementov, v katero spada na primer zamenjava ostrešja ali delov medetažne konstrukcije.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 3,
+        "vrsta_del": "Zamenjava elementov javnega vodovoda in javne kanalizacije.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 4,
+        "vrsta_del": "Dolbenje utorov in niš v nosilno konstrukcijo.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 5,
+        "vrsta_del": "Izvedba odprtin in večjih konstrukcijskih prebojev ter povečanje obstoječih odprtin v objektu, ki ne presegajo ene tretjine površine posameznega konstrukcijskega elementa in niso širši od 2 m.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 6,
+        "vrsta_del": "Povečanje obstoječih prebojev fasade stavbe do 2 m, pri čemer velikost povečanja odprtine ne sme presegati ene tretjine površine fasade.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 7,
+        "vrsta_del": "Novi preboji fasade stavbe, če je ravnina fasade, na kateri se izvajajo preboji, od meje zemljišča drugega lastnika oddaljena več kot 2 m, pri čemer velikost novih prebojev ne presega ene tretjine površine fasade in noben preboj ni širši od 2 m.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 8,
+        "vrsta_del": "Vgradnja dvigala v notranjosti objekta, s katerim se posega v nosilno konstrukcijo.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 9,
+        "vrsta_del": "Manjše povečanje prostornine, ki ne poveča bruto tlorisne površine objekta, ter pomeni izvedbo posameznih konstrukcijskih elementov na objektu (npr. izvedba frčade, vsaj z dveh strani odprt nadstrešek na obstoječi pohodni strehi, dvig obodnega zidu pod poševno streho za višino horizontalne vezi za največ 0,3 m).",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva in soglasje občine"
+      },
+      {
+        "stevilka": 10,
+        "vrsta_del": "Prizidava nakladalnih ramp in klančin.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 11,
+        "vrsta_del": "Izvedba nepohodnega konzolnega nadstreška površine do 6 m2.",
+        "mnenje_soglasje": "Pooblaščeni strokovnjak s področja gradbeništva"
+      },
+      {
+        "stevilka": 12,
+        "vrsta_del": "Prizidava zunanjega odprtega stopnišča ali dvigala, ki ne povezuje več kot treh etaž in je zunanji rob stopnišča ali dvigala oddaljen od sosednjega objekta drugega lastnika več kot 4 m.",
+        "mnenje_soglasje": "Pooblaščena strokovnjaka s področja gradbeništva in področja arhitekture ter soglasje občine"
+      }
+    ],
+    "uredba_dodatno": {
+      "clen1_vsebina": "(1) Ta uredba določa podrobnejša merila za razvrščanje enostavnih, nezahtevnih, manj zahtevnih in zahtevnih objektov ter merila za vzdrževanje in manjšo rekonstrukcijo (v nadaljnjem besedilu: merilo). (2) Ta uredba določa tudi klasifikacijo vrst objektov CC-SI glede na namen uporabe objektov.",
+      "clen2_uporaba": "(1) Ta uredba se uporablja pri projektiranju in dovoljevanju gradnje objektov ter evidentiranju podatkov o gradnjah in objektih, za statistične namene in v drugih primerih, če tako določajo predpisi. (2) Ta uredba se ne uporablja za razvrščanje enostavnih objektov, vzdrževanje objekta in vzdrževalna dela v javno korist... (3) Ta uredba se ne uporablja za razvrščanje manjših naprav... (4) Ta uredba se ne uporablja za razvrščanje začasnih objektov.",
+      "clen3_pomen_izrazov": "(1) glavni objekt je objekt, ki pomeni osnovni namen gradnje; (2) ...",
+      "clen4_skupna_pravila": "(1) Razvršča in klasificira se posamezen objekt, ki je konstrukcijsko in funkcionalno samostojen. (2) Samostojno se razvršča in klasificira tudi... (3) Ne glede na prvo alinejo prejšnjega odstavka... (4) Ne glede na drugi in tretji odstavek tega člena... (5) Samostojno se razvrščajo in klasificirajo tudi zunanje naprave..."
+    },
+    "priloga1_dodatno_iz_slik": [
+      {
+        "cc_si": "11100",
+        "klasifikacija": "Enostanovanjske stavbe",
+        "podrobnejsa": "",
+        "enostavni": "noben",
+        "nezahtevni": "površina do 25 m²",
+        "zahtevni": "samo splošna merila"
+      },
+      {
+        "cc_si": "11210",
+        "klasifikacija": "Dvostanovanjske stavbe",
+        "podrobnejsa": "",
+        "enostavni": "noben",
+        "nezahtevni": "noben",
+        "zahtevni": "samo splošna merila"
+      },
+      {
+        "cc_si": "11220",
+        "klasifikacija": "Tri- in večstanovanjske stavbe",
+        "podrobnejsa": "",
+        "enostavni": "noben",
+        "nezahtevni": "noben",
+        "zahtevni": "površina nad 2.000 m²"
+      },
+      {
+        "cc_si": "12111",
+        "klasifikacija": "Hotelske in podobne stavbe za kratkotrajno nastanitev",
+        "podrobnejsa": "",
+        "enostavni": "površina do 10 m²",
+        "nezahtevni": "površina do 25 m²",
+        "zahtevni": "površina nad 2.000 m²"
+      }
+    ]
+  }
+}
