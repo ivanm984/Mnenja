@@ -20,6 +20,7 @@ from .ai import (
 )
 from .database import DatabaseManager, compute_session_summary
 from .files import save_revision_files
+from .forms import generate_priloga_10a
 from .frontend import build_homepage
 from .knowledge_base import IZRAZI_TEXT, UREDBA_TEXT, build_requirements_from_db
 from .parsers import convert_pdf_pages_to_images, parse_pdf
@@ -412,6 +413,8 @@ async def analyze_report(
         "komunalni_prikljucki": komunalni_prikljucki,
     }
 
+    data["final_key_data"] = final_key_data
+
     metadata_formatted = "\n".join([f"- {k.replace('_', ' ').capitalize()}: {v}" for k, v in data["metadata"].items()])
     key_data_formatted = "\n".join([f"- {k.replace('_', ' ').capitalize()}: {v}" for k, v in final_key_data.items()])
     modified_project_text = f"""
@@ -474,6 +477,8 @@ async def analyze_report(
         "total_analyzed": len(zahteve_za_analizo),
         "total_available": len(zahteve),
         "requirement_revisions": requirement_revisions,
+        "final_key_data": final_key_data,
+        "source_files": data.get("source_files", []),
     }
 
     return {
@@ -508,12 +513,30 @@ async def confirm_report(payload: ConfirmReportPayload):
 
     reports_dir = Path("reports")
     reports_dir.mkdir(exist_ok=True)
-    output_path = reports_dir / f"Porocilo_Skladnosti_{datetime.now().strftime('%Y%m%d_%H%M%S')}.docx"
-    absolute_path = generate_word_report(filtered_zahteve, filtered_results_map, cache["metadata"], str(output_path))
-    state.LAST_DOCX_PATH = absolute_path
-    state.LATEST_REPORT_CACHE[payload.session_id]["docx_path"] = absolute_path
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+
+    docx_output = reports_dir / f"Porocilo_Skladnosti_{timestamp}.docx"
+    metadata_snapshot = dict(cache["metadata"])
+    absolute_docx_path = generate_word_report(filtered_zahteve, filtered_results_map, metadata_snapshot, str(docx_output))
+    state.LAST_DOCX_PATH = absolute_docx_path
+
+    priloga_output = reports_dir / f"Priloga10A_{timestamp}.xlsx"
+    key_data_snapshot = dict(cache.get("final_key_data", {}))
+    source_files = list(cache.get("source_files", []))
+    absolute_xlsx_path = generate_priloga_10a(
+        filtered_zahteve,
+        filtered_results_map,
+        metadata_snapshot,
+        key_data_snapshot,
+        source_files,
+        str(priloga_output),
+    )
+    state.LAST_XLSX_PATH = absolute_xlsx_path
+
+    state.LATEST_REPORT_CACHE[payload.session_id]["docx_path"] = absolute_docx_path
+    state.LATEST_REPORT_CACHE[payload.session_id]["xlsx_path"] = absolute_xlsx_path
     state.LATEST_REPORT_CACHE[payload.session_id]["excluded_ids"] = list(excluded_ids)
-    return {"status": "success", "docx_path": absolute_path}
+    return {"status": "success", "docx_path": absolute_docx_path, "xlsx_path": absolute_xlsx_path}
 
 
 @app.get("/download")
@@ -521,6 +544,16 @@ async def download_report():
     if not state.LAST_DOCX_PATH or not Path(state.LAST_DOCX_PATH).exists():
         raise HTTPException(status_code=404, detail="Poročilo ni bilo ustvarjeno ali ne obstaja več.")
     return FileResponse(state.LAST_DOCX_PATH, media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+
+
+@app.get("/download-priloga10a")
+async def download_priloga10a():
+    if not state.LAST_XLSX_PATH or not Path(state.LAST_XLSX_PATH).exists():
+        raise HTTPException(status_code=404, detail="Excel Priloga 10A ni bila ustvarjena ali ne obstaja več.")
+    return FileResponse(
+        state.LAST_XLSX_PATH,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
 
 
 __all__ = ["app"]
