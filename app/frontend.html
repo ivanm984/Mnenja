@@ -355,6 +355,46 @@
             gap: 14px;
             grid-template-columns: minmax(260px, 1fr) minmax(260px, 1fr) auto;
             align-items: center;
+            padding: 16px 18px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(37, 99, 235, 0.16);
+            border-radius: var(--radius-md);
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+            position: relative;
+        }
+
+        .manual-input-pair.active {
+            transform: scale(1.01);
+            border-color: var(--primary);
+            box-shadow: 0 18px 36px rgba(37, 99, 235, 0.18);
+            background: rgba(248, 250, 255, 0.96);
+            z-index: 2;
+        }
+
+        .manual-input-pair.modified {
+            border-left: 4px solid var(--primary);
+            padding-left: 14px;
+        }
+
+        .manual-input-pair .extraction-original {
+            grid-column: 1 / -1;
+            background: rgba(37, 99, 235, 0.06);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            color: var(--muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            white-space: pre-line;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.25s ease, opacity 0.25s ease;
+        }
+
+        .manual-input-pair.active .extraction-original {
+            max-height: 220px;
+            opacity: 1;
         }
 
         .manual-input-pair input[type=text] {
@@ -457,6 +497,41 @@
             padding: 16px 18px;
             border: 1px solid rgba(37, 99, 235, 0.1);
             box-shadow: 0 8px 16px rgba(15, 23, 42, 0.06);
+            position: relative;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .key-data-grid .data-item.active {
+            transform: scale(1.01);
+            border-color: var(--primary);
+            box-shadow: 0 20px 34px rgba(37, 99, 235, 0.18);
+            background: rgba(248, 250, 255, 0.96);
+            z-index: 1;
+        }
+
+        .key-data-grid .data-item.modified {
+            border-left: 4px solid var(--primary);
+            padding-left: 14px;
+        }
+
+        .key-data-grid .data-item .extraction-original {
+            margin-top: 12px;
+            background: rgba(37, 99, 235, 0.06);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            color: var(--muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            white-space: pre-line;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.25s ease, opacity 0.25s ease;
+        }
+
+        .key-data-grid .data-item.active .extraction-original {
+            max-height: 220px;
+            opacity: 1;
         }
 
         .key-data-grid .data-item label {
@@ -524,6 +599,15 @@
 
         .results-table tbody tr.status-neskladno:hover {
             background: rgba(220, 53, 69, 0.12);
+        }
+
+        .results-table tbody tr.excluded {
+            opacity: 0.55;
+            background: rgba(148, 163, 184, 0.12);
+        }
+
+        .results-table tbody tr.excluded:hover {
+            background: rgba(148, 163, 184, 0.18);
         }
 
         .results-table td strong {
@@ -615,6 +699,37 @@
 
         .row-actions .attachment-input {
             display: none;
+        }
+
+        .toggle-report-btn {
+            margin-top: 10px;
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(15, 23, 42, 0.1);
+            background: rgba(15, 23, 42, 0.05);
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .toggle-report-btn:hover {
+            background: rgba(220, 53, 69, 0.14);
+            border-color: rgba(220, 53, 69, 0.3);
+            color: var(--danger);
+        }
+
+        .toggle-report-btn.is-excluded {
+            background: rgba(220, 53, 69, 0.18);
+            border-color: rgba(220, 53, 69, 0.32);
+            color: var(--danger);
+        }
+
+        .toggle-report-btn.is-excluded:hover {
+            background: rgba(37, 99, 235, 0.16);
+            border-color: rgba(37, 99, 235, 0.32);
+            color: var(--primary);
         }
 
         .results-actions {
@@ -997,6 +1112,10 @@
     let currentRequirementRevisions = {};
     let latestNonCompliantIds = [];
     let pendingDocxPath = null;
+    let initialKeyDataValues = {};
+    let initialEupRabaPairs = [];
+    let excludedRequirementIds = new Set();
+    let latestAnalysisSummary = '';
     const STORAGE_KEY = "mnenjaSavedState";
     let savedSessionsCache = null;
     let highlightedSavedSession = null;
@@ -1321,9 +1440,15 @@
         if (!sessionIdInput || !sessionIdInput.value) { return null; }
         const eupInputs = manualInputs ? Array.from(manualInputs.querySelectorAll('input[name="final_eup_list"]')) : [];
         const rabaInputs = manualInputs ? Array.from(manualInputs.querySelectorAll('input[name="final_raba_list"]')) : [];
+        const pairContainers = manualInputs ? Array.from(manualInputs.querySelectorAll('.manual-input-pair')) : [];
 
         const eupList = eupInputs.map(input => input.value || '');
         const rabaList = rabaInputs.map(input => input.value || '');
+        const initialPairs = pairContainers.map(container => ({
+            eup: container.dataset.originalEup || '',
+            raba: container.dataset.originalRaba || ''
+        }));
+        initialEupRabaPairs = initialPairs;
 
         const keyData = {};
         Object.keys(keyLabels).forEach(key => {
@@ -1361,7 +1486,16 @@
             existingResults: existingResultsInput ? existingResultsInput.value : null,
             requirementRevisions: currentRequirementRevisions,
             nonCompliantIds: latestNonCompliantIds,
-            pendingDocxPath
+            pendingDocxPath,
+            initialEupRabaPairs: Array.isArray(initialEupRabaPairs)
+                ? initialEupRabaPairs.map(pair => ({
+                    eup: pair && typeof pair.eup === 'string' ? pair.eup : '',
+                    raba: pair && typeof pair.raba === 'string' ? pair.raba : ''
+                }))
+                : [],
+            initialKeyData: { ...initialKeyDataValues },
+            excludedRequirementIds: Array.from(excludedRequirementIds || []).map(id => id != null ? String(id) : id),
+            latestAnalysisSummary
         };
     }
 
@@ -1422,14 +1556,36 @@
 
         clearManualInputs();
 
+        initialEupRabaPairs = Array.isArray(state.initialEupRabaPairs)
+            ? state.initialEupRabaPairs.map(pair => ({
+                eup: pair && typeof pair.eup === 'string' ? pair.eup : '',
+                raba: pair && typeof pair.raba === 'string' ? pair.raba : ''
+            }))
+            : [];
+        initialKeyDataValues = state.initialKeyData && typeof state.initialKeyData === 'object'
+            ? { ...state.initialKeyData }
+            : {};
+        excludedRequirementIds = new Set(
+            Array.isArray(state.excludedRequirementIds)
+                ? state.excludedRequirementIds.map(id => id != null ? String(id) : id)
+                : []
+        );
+        latestAnalysisSummary = state.latestAnalysisSummary || '';
+
         const pairCount = Math.max(state.eupList ? state.eupList.length : 0, state.rabaList ? state.rabaList.length : 0);
         if (pairCount === 0) {
-            addInputPair('', '');
+            addInputPair('', '', { originalEup: '', originalRaba: '' });
         } else {
             for (let i = 0; i < pairCount; i++) {
                 const eup = state.eupList && state.eupList[i] ? state.eupList[i] : '';
                 const raba = state.rabaList && state.rabaList[i] ? state.rabaList[i] : '';
-                addInputPair(eup, raba);
+                const originalPair = initialEupRabaPairs[i] || {};
+                const original = {
+                    eup: typeof originalPair.eup === 'string' && originalPair.eup ? originalPair.eup : eup,
+                    raba: typeof originalPair.raba === 'string' && originalPair.raba ? originalPair.raba : raba
+                };
+                addInputPair(eup, raba, { originalEup: original.eup, originalRaba: original.raba });
+                initialEupRabaPairs[i] = { eup: original.eup, raba: original.raba };
             }
         }
 
@@ -1541,29 +1697,38 @@
             if (downloadReportLink) {
                 downloadReportLink.style.display = 'none';
             }
+            excludedRequirementIds = new Set();
+            latestAnalysisSummary = '';
+            updateReportPreview();
             return;
         }
+
+        const validIds = new Set(currentZahteve.map(z => (z && z.id != null ? String(z.id) : '')));
+        excludedRequirementIds = new Set(
+            Array.from(excludedRequirementIds || []).filter(id => validIds.has(id != null ? String(id) : ''))
+        );
 
         let tableHtml = `<table class="results-table"><thead><tr><th style="width:60px;">Izberi</th><th>Zahteva</th><th style="width:180px;">Status</th><th>Obrazložitev / ukrep</th></tr></thead><tbody>`;
 
         currentZahteve.forEach(z => {
-            const result = currentResultsMap[z.id] || {};
+            const requirementKey = z && z.id != null ? String(z.id) : '';
+            const result = currentResultsMap[z.id] || currentResultsMap[requirementKey] || {};
             const statusText = result.skladnost || 'Neznano';
             const statusClass = statusToClass(statusText);
-            const noteRaw = result.predlagani_ukrep && result.predlagani_ukrep !== '—'
+            const noteSource = result.predlagani_ukrep && result.predlagani_ukrep !== '—'
                 ? result.predlagani_ukrep
-                : truncateText(result.obrazlozitev || '—');
-            const note = truncateText(noteRaw, 280);
+                : result.obrazlozitev || '—';
+            const note = truncateText(noteSource, 280);
             const escapedTitle = escapeHtml(z.naslov);
             const escapedCategory = escapeHtml(z.kategorija);
             const escapedStatus = escapeHtml(statusText);
             const escapedNote = escapeHtml(note);
             const normalizedStatus = (statusText || '').toLowerCase();
             const normalizedNote = (result.predlagani_ukrep || '').toLowerCase();
-            const autoSelected = Array.isArray(autoSelectIds) && autoSelectIds.includes(z.id);
+            const autoSelected = Array.isArray(autoSelectIds) && (autoSelectIds.includes(z.id) || autoSelectIds.includes(requirementKey));
             const shouldCheck = autoSelected || normalizedStatus.includes('neskladno') || normalizedNote.includes('ponovna analiza');
             const checked = shouldCheck ? 'checked' : '';
-            const attachments = Array.isArray(revisionsMap[z.id]) ? revisionsMap[z.id] : [];
+            const attachments = Array.isArray(revisionsMap[requirementKey]) ? revisionsMap[requirementKey] : [];
             let attachmentsHtml = '';
             if (attachments.length) {
                 const items = attachments.map(rev => {
@@ -1576,12 +1741,17 @@
             }
             const uploadControls = `
                 <div class="row-actions">
-                    <button type="button" class="btn btn-tertiary btn-inline attach-btn" data-requirement="${z.id}">Naloži popravek</button>
-                    <input type="file" class="attachment-input" data-requirement="${z.id}" accept="application/pdf" multiple>
+                    <button type="button" class="btn btn-tertiary btn-inline attach-btn" data-requirement="${requirementKey}">Naloži popravek</button>
+                    <input type="file" class="attachment-input" data-requirement="${requirementKey}" accept="application/pdf" multiple>
                 </div>`;
+            const isExcluded = excludedRequirementIds.has(requirementKey);
+            const rowClasses = [`status-${statusClass}`];
+            if (isExcluded) { rowClasses.push('excluded'); }
+            const toggleLabel = isExcluded ? 'Vrni v poročilo' : 'Izloči iz poročila';
+            const toggleClass = isExcluded ? 'toggle-report-btn is-excluded' : 'toggle-report-btn';
             tableHtml += `
-                <tr class="status-${statusClass}">
-                    <td><input type="checkbox" value="${z.id}" ${checked}></td>
+                <tr class="${rowClasses.join(' ')}">
+                    <td><input type="checkbox" value="${requirementKey}" ${checked}></td>
                     <td>
                         <strong>${escapedTitle}</strong>
                         <span class="category-tag">${escapedCategory}</span>
@@ -1591,6 +1761,7 @@
                         <div class="result-note">${escapedNote}</div>
                         ${attachmentsHtml}
                         ${uploadControls}
+                        <button type="button" class="${toggleClass}" data-requirement="${requirementKey}">${toggleLabel}</button>
                     </td>
                 </tr>`;
         });
@@ -1617,6 +1788,21 @@
                     };
                 });
             });
+            const toggleButtons = resultsTable.querySelectorAll('.toggle-report-btn');
+            toggleButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const requirementId = btn.dataset.requirement;
+                    if (!requirementId) { return; }
+                    if (excludedRequirementIds.has(requirementId)) {
+                        excludedRequirementIds.delete(requirementId);
+                    } else {
+                        excludedRequirementIds.add(requirementId);
+                    }
+                    renderResults(currentZahteve, currentResultsMap, currentRequirementRevisions, latestNonCompliantIds);
+                    updateReportPreview();
+                    persistState(true);
+                });
+            });
         }
         currentRequirementRevisions = revisionsMap || {};
         latestNonCompliantIds = Array.isArray(autoSelectIds) ? autoSelectIds : [];
@@ -1626,6 +1812,7 @@
         if (revisionSection) {
             revisionSection.style.display = 'flex';
         }
+        updateReportPreview();
     }
 
     function getSelectedRequirementIds() {
@@ -1680,26 +1867,21 @@
 
     function renderKeyDataFields(data) {
         keyDataFields.innerHTML = '';
-        
-        // Polji metapodatkov (samo za prikaz, ne za urejanje)
-        data.ime_projekta = data.ime_projekta || 'Ni podatka';
-        data.stevilka_projekta = data.stevilka_projekta || 'Ni podatka';
-        
+
+        const safeData = data && typeof data === 'object' ? { ...data } : {};
         const metadataLabels = {
-             'ime_projekta': 'Ime projekta', 'stevilka_projekta': 'Številka projekta',
+            'ime_projekta': 'Ime projekta',
+            'stevilka_projekta': 'Številka projekta',
         };
 
-        // Prikaz metapodatkov
-        let metaHtml = '';
-        for (const key in metadataLabels) {
-            metaHtml += `<div class="data-item data-item-meta"><label>${metadataLabels[key]}:</label><input type="text" class="readonly-field" name="${key}" id="${key}" value="${data[key]}" readonly></div>`;
-        }
-        
-        // Vstavitev metapodatkov pred keyDataFields (polja A in B)
         const metaDiv = document.createElement('div');
-        metaDiv.className = "key-data-grid";
+        metaDiv.className = 'key-data-grid';
         metaDiv.style.gridTemplateColumns = '1fr';
-        metaDiv.innerHTML = metaHtml;
+
+        metaDiv.innerHTML = Object.keys(metadataLabels).map(key => {
+            const value = (typeof safeData[key] === 'string' && safeData[key].trim()) ? safeData[key] : 'Ni podatka';
+            return `<div class="data-item data-item-meta"><label>${metadataLabels[key]}:</label><input type="text" class="readonly-field" name="${key}" id="${key}" value="${value}" readonly></div>`;
+        }).join('');
 
         const existingMetaDiv = analyzeForm.querySelector('.key-data-grid[style*="1fr"]');
         if (existingMetaDiv) {
@@ -1711,22 +1893,22 @@
         }
         keyDataFields.insertAdjacentElement('beforebegin', metaDiv);
 
-        // Povzetek ključnih opisnih podatkov (read-only kartice)
         const summaryDiv = document.createElement('div');
         summaryDiv.className = 'key-summary';
 
         for (const key in summaryLabels) {
-            const rawValue = typeof data[key] === 'string' ? data[key].trim() : '';
-            const value = rawValue ? rawValue : 'Ni podatka v dokumentaciji';
+            const currentValue = typeof safeData[key] === 'string' ? safeData[key].trim() : '';
+            const originalValue = typeof initialKeyDataValues[key] === 'string' ? initialKeyDataValues[key].trim() : '';
+            const displayValue = currentValue || originalValue || 'Ni podatka v dokumentaciji';
             const item = document.createElement('div');
             item.className = 'summary-item';
-            if (value === 'Ni podatka v dokumentaciji') {
+            if (!displayValue || displayValue === 'Ni podatka v dokumentaciji') {
                 item.classList.add('empty');
             }
             const labelSpan = document.createElement('span');
             labelSpan.textContent = summaryLabels[key];
             const valueStrong = document.createElement('strong');
-            valueStrong.textContent = value;
+            valueStrong.textContent = displayValue || 'Ni podatka v dokumentaciji';
             item.appendChild(labelSpan);
             item.appendChild(valueStrong);
             summaryDiv.appendChild(item);
@@ -1734,48 +1916,104 @@
 
         metaDiv.insertAdjacentElement('afterend', summaryDiv);
 
+        const originalPlaceholder = 'Ni podatka v dokumentaciji';
 
-        // Prikaz in urejanje razširjenih ključnih podatkov
         for (const key in keyLabels) {
             const label = keyLabels[key];
-            const value = data[key] || "Ni podatka v dokumentaciji";
+            const initialRaw = typeof initialKeyDataValues[key] === 'string' ? initialKeyDataValues[key] : '';
+            const currentRaw = typeof safeData[key] === 'string' ? safeData[key] : '';
+            const normalizedInitial = initialRaw && initialRaw.trim() ? initialRaw : '';
+            const normalizedCurrent = currentRaw && currentRaw.trim() ? currentRaw : '';
+            const initialValue = normalizedInitial || normalizedCurrent || originalPlaceholder;
+            if (!(key in initialKeyDataValues) || !initialKeyDataValues[key]) {
+                initialKeyDataValues[key] = initialValue;
+            }
+            const fieldValue = normalizedCurrent || initialValue;
             const isTextArea = ['stevilke_parcel_ko', 'odmiki_parcel', 'komunalni_prikljucki', 'nezahtevni_objekti', 'enostavni_objekti', 'vzdrzevalna_dela'].includes(key);
 
-            const div = document.createElement("div");
-            div.className = "data-item";
+            const div = document.createElement('div');
+            div.className = 'data-item';
+            div.dataset.originalValue = normalizeValue(initialValue);
 
-            const labelEl = document.createElement("label");
+            const labelEl = document.createElement('label');
             labelEl.textContent = label;
             labelEl.setAttribute('for', key);
 
+            let fieldEl;
             if (isTextArea) {
-                 const inputEl = document.createElement("textarea");
-                 inputEl.name = key;
-                 inputEl.id = key;
-                 inputEl.value = value;
-                 div.appendChild(labelEl);
-                 div.appendChild(inputEl);
+                fieldEl = document.createElement('textarea');
             } else {
-                const inputEl = document.createElement("input");
-                inputEl.type = "text";
-                inputEl.name = key;
-                inputEl.id = key;
-                inputEl.value = value;
-                div.appendChild(labelEl);
-                div.appendChild(inputEl);
+                fieldEl = document.createElement('input');
+                fieldEl.type = 'text';
             }
+            fieldEl.name = key;
+            fieldEl.id = key;
+            fieldEl.value = fieldValue;
+
+            const originalInfo = document.createElement('div');
+            originalInfo.className = 'extraction-original';
+            const formattedInitial = escapeHtml(initialValue).replace(/\n/g, '<br>');
+            originalInfo.innerHTML = `<strong>AI ekstrakcija:</strong><div>${formattedInitial}</div>`;
+
+            div.appendChild(labelEl);
+            div.appendChild(fieldEl);
+            div.appendChild(originalInfo);
             keyDataFields.appendChild(div);
+
+            setupActiveContainer(div, [fieldEl]);
+            fieldEl.addEventListener('input', () => updateKeyFieldModifiedState(div, fieldEl));
+            updateKeyFieldModifiedState(div, fieldEl);
         }
     }
 
-    function addInputPair(e = "", t = "") {
-        const n = document.createElement("div");
-        n.className = "manual-input-pair";
-        n.innerHTML = `<input type="text" name="final_eup_list" placeholder="EUP (npr. LI-08)" value="${e}"><input type="text" name="final_raba_list" placeholder="Namenska raba (npr. SSe)" value="${t}"><button type="button" class="remove-btn">X</button>`;
-        n.querySelector(".remove-btn").addEventListener("click", () => { n.remove() });
-        manualInputs.appendChild(n);
+    function addInputPair(e = "", t = "", options = {}) {
+        const originalEup = typeof options.originalEup === 'string' ? options.originalEup : e;
+        const originalRaba = typeof options.originalRaba === 'string' ? options.originalRaba : t;
+
+        const container = document.createElement('div');
+        container.className = 'manual-input-pair';
+        container.dataset.originalEup = normalizeValue(originalEup || '');
+        container.dataset.originalRaba = normalizeValue(originalRaba || '');
+
+        const eupInput = document.createElement('input');
+        eupInput.type = 'text';
+        eupInput.name = 'final_eup_list';
+        eupInput.placeholder = 'EUP (npr. LI-08)';
+        eupInput.value = e;
+
+        const rabaInput = document.createElement('input');
+        rabaInput.type = 'text';
+        rabaInput.name = 'final_raba_list';
+        rabaInput.placeholder = 'Namenska raba (npr. SSe)';
+        rabaInput.value = t;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'remove-btn';
+        removeBtn.textContent = 'X';
+        removeBtn.addEventListener('click', () => {
+            container.remove();
+            persistState(true);
+        });
+
+        const originalInfo = document.createElement('div');
+        originalInfo.className = 'extraction-original';
+        const formattedEup = escapeHtml(originalEup || '—');
+        const formattedRaba = escapeHtml(originalRaba || '—');
+        originalInfo.innerHTML = `<strong>AI ekstrakcija:</strong><div>EUP: ${formattedEup}</div><div>Namenska raba: ${formattedRaba}</div>`;
+
+        container.appendChild(eupInput);
+        container.appendChild(rabaInput);
+        container.appendChild(removeBtn);
+        container.appendChild(originalInfo);
+        manualInputs.appendChild(container);
+
+        setupActiveContainer(container, [eupInput, rabaInput]);
+        eupInput.addEventListener('input', () => updatePairModifiedState(container));
+        rabaInput.addEventListener('input', () => updatePairModifiedState(container));
+        updatePairModifiedState(container);
     }
-    addEupRabaBtn.addEventListener("click", () => addInputPair());
+    addEupRabaBtn.addEventListener("click", () => addInputPair('', '', { originalEup: '', originalRaba: '' }));
 
     function clearManualInputs() {
         manualInputs.innerHTML = '';
@@ -1809,6 +2047,81 @@
         existingResultsInput.value = '';
         currentZahteve = [];
         currentResultsMap = {};
+        initialKeyDataValues = {};
+        initialEupRabaPairs = [];
+        excludedRequirementIds = new Set();
+        latestAnalysisSummary = '';
+        if (reportPreview) {
+            reportPreview.textContent = '';
+            reportPreview.style.display = 'none';
+        }
+    }
+
+    function normalizeValue(value) {
+        return (value || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function setupActiveContainer(container, focusElements = []) {
+        if (!container) { return; }
+        const activate = () => container.classList.add('active');
+        const deactivate = () => {
+            if (!container.contains(document.activeElement)) {
+                container.classList.remove('active');
+            }
+        };
+        focusElements.forEach(el => {
+            el.addEventListener('focus', activate);
+            el.addEventListener('blur', () => setTimeout(deactivate, 10));
+        });
+        container.addEventListener('click', event => {
+            if (event.target) {
+                if (focusElements.some(el => el === event.target || el.contains(event.target))) {
+                    return;
+                }
+                if (event.target.closest('.remove-btn')) {
+                    return;
+                }
+            }
+            container.classList.toggle('active');
+        });
+    }
+
+    function updateKeyFieldModifiedState(container, fieldEl) {
+        if (!container || !fieldEl) { return; }
+        const original = normalizeValue(container.dataset.originalValue || '');
+        const current = normalizeValue(fieldEl.value);
+        container.classList.toggle('modified', current !== original);
+    }
+
+    function updatePairModifiedState(pairDiv) {
+        if (!pairDiv) { return; }
+        const eupInput = pairDiv.querySelector('input[name="final_eup_list"]');
+        const rabaInput = pairDiv.querySelector('input[name="final_raba_list"]');
+        const originalEup = normalizeValue(pairDiv.dataset.originalEup || '');
+        const originalRaba = normalizeValue(pairDiv.dataset.originalRaba || '');
+        const currentEup = normalizeValue(eupInput ? eupInput.value : '');
+        const currentRaba = normalizeValue(rabaInput ? rabaInput.value : '');
+        pairDiv.classList.toggle('modified', currentEup !== originalEup || currentRaba !== originalRaba);
+    }
+
+    function updateReportPreview() {
+        if (!reportPreview) { return; }
+        const baseMessage = latestAnalysisSummary ? latestAnalysisSummary.trim() : '';
+        const excludedCount = excludedRequirementIds ? excludedRequirementIds.size : 0;
+        let message = baseMessage;
+        if (excludedCount > 0) {
+            const suffix = excludedCount === 1
+                ? 'Iz poročila bo izločena 1 zahteva.'
+                : `Iz poročila bo izločenih ${excludedCount} zahtev.`;
+            message = baseMessage ? `${baseMessage} ${suffix}` : suffix;
+        }
+        if (message) {
+            reportPreview.textContent = message;
+            reportPreview.style.display = 'block';
+        } else {
+            reportPreview.textContent = '';
+            reportPreview.style.display = 'none';
+        }
     }
 
     async function showStatus(e, t) {
@@ -1873,17 +2186,24 @@
 
             // 1. Prikaz AI zaznave EUP/Raba za lažji popravek
             clearManualInputs();
+            initialEupRabaPairs = [];
             const maxLength = Math.max(data.eup.length, data.namenska_raba.length);
             for (let i = 0; i < maxLength; i++) {
                 const eup = data.eup[i] || '';
                 const raba = data.namenska_raba[i] || '';
-                addInputPair(eup, raba);
+                initialEupRabaPairs.push({ eup, raba });
+                addInputPair(eup, raba, { originalEup: eup, originalRaba: raba });
             }
             if (maxLength === 0) {
-                 addInputPair('', ''); // Dodaj vsaj eno prazno polje, če AI nič ne najde
+                 addInputPair('', '', { originalEup: '', originalRaba: '' }); // Dodaj vsaj eno prazno polje, če AI nič ne najde
             }
 
             // 2. Prikaz/renderiranje urejevalnih polj za ključne podatke
+            initialKeyDataValues = {};
+            Object.keys(keyLabels).forEach(key => {
+                const raw = typeof data[key] === 'string' ? data[key] : '';
+                initialKeyDataValues[key] = raw && raw.trim() ? raw : 'Ni podatka v dokumentaciji';
+            });
             renderKeyDataFields(data);
             
             analyzeForm.style.display = 'block';
@@ -1943,10 +2263,8 @@
             pendingDocxPath = null;
             showStatus(`Analiza zaključena. ${summaryMessage}`, "success");
 
-            if (reportPreview) {
-                reportPreview.textContent = summaryMessage;
-                reportPreview.style.display = 'block';
-            }
+            latestAnalysisSummary = summaryMessage;
+            updateReportPreview();
 
             if (confirmReportBtn) {
                 confirmReportBtn.style.display = 'inline-flex';
@@ -1994,7 +2312,10 @@
             const response = await fetch('/confirm-report', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ session_id: sessionIdInput.value })
+                body: JSON.stringify({
+                    session_id: sessionIdInput.value,
+                    excluded_ids: Array.from(excludedRequirementIds || []).map(id => id != null ? String(id) : id)
+                })
             });
             if (!response.ok) {
                 let detail = 'Generiranje poročila ni uspelo.';
