@@ -496,12 +496,23 @@ async def confirm_report(payload: ConfirmReportPayload):
     if not cache:
         raise HTTPException(status_code=404, detail="Analiza za generiranje poročila ni na voljo.")
 
+    excluded_ids = {item for item in (payload.excluded_ids or []) if isinstance(item, str)}
+    filtered_zahteve = [
+        zahteva for zahteva in cache["zahteve"]
+        if zahteva.get("id") not in excluded_ids
+    ]
+    filtered_results_map = {
+        key: value for key, value in cache["results_map"].items()
+        if key not in excluded_ids
+    }
+
     reports_dir = Path("reports")
     reports_dir.mkdir(exist_ok=True)
     output_path = reports_dir / f"Porocilo_Skladnosti_{datetime.now().strftime('%Y%m%d_%H%M%S')}.docx"
-    absolute_path = generate_word_report(cache["zahteve"], cache["results_map"], cache["metadata"], str(output_path))
+    absolute_path = generate_word_report(filtered_zahteve, filtered_results_map, cache["metadata"], str(output_path))
     state.LAST_DOCX_PATH = absolute_path
     state.LATEST_REPORT_CACHE[payload.session_id]["docx_path"] = absolute_path
+    state.LATEST_REPORT_CACHE[payload.session_id]["excluded_ids"] = list(excluded_ids)
     return {"status": "success", "docx_path": absolute_path}
 
 
