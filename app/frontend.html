@@ -123,10 +123,17 @@
             justify-content: space-between;
             gap: 16px;
             flex-wrap: wrap;
+            margin-bottom: 18px;
         }
 
         .section-header .section-title {
             margin: 0;
+        }
+
+        .section-tools {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 18px;
         }
 
         .section-title {
@@ -853,9 +860,11 @@
 
         <main class="main-card">
             <div>
+                <div class="section-tools">
+                    <button type="button" class="btn btn-tertiary btn-inline" id="openSavedBtn">Odpri shranjeno analizo</button>
+                </div>
                 <div class="section-header">
                     <div class="section-title"><span class="step-badge">1</span> Priprava dokumentacije</div>
-                    <button type="button" class="btn btn-tertiary btn-inline" id="openSavedBtn">Odpri shranjeno analizo</button>
                 </div>
                 <form id="uploadForm">
                     <div class="upload-section" id="dropZone">
