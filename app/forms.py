@@ -7,6 +7,7 @@ from typing import Any, Dict, Iterable, List
 
 try:  # pragma: no cover - optional dependency import guard
     from openpyxl import load_workbook
+    from openpyxl.utils.cell import coordinate_to_tuple
 except ImportError as exc:  # pragma: no cover - import guard
     raise RuntimeError(
         "Knjižnica 'openpyxl' ni nameščena. Namestite jo z `pip install openpyxl`."
@@ -137,6 +138,49 @@ def _format_source_files(source_files: Iterable[Dict[str, Any]]) -> str:
     return "\n".join(files) if files else "Ni navedenih dokumentov."
 
 
+def _set_cell_value(worksheet, cell: str, value: Any) -> None:
+    try:
+        worksheet[cell] = value
+        return
+    except AttributeError as exc:
+        if "MergedCell" not in str(exc):
+            raise
+
+        row, column = coordinate_to_tuple(cell)
+        for merged_range in worksheet.merged_cells.ranges:
+            if (
+                merged_range.min_row <= row <= merged_range.max_row
+                and merged_range.min_col <= column <= merged_range.max_col
+            ):
+                worksheet.cell(
+                    row=merged_range.min_row, column=merged_range.min_col
+                ).value = value
+                return
+
+        # If the cell is not part of a merged range re-raise the original error.
+        raise exc
+
+
+def _get_cell_value(worksheet, cell: str) -> Any:
+    try:
+        return worksheet[cell].value
+    except AttributeError as exc:
+        if "MergedCell" not in str(exc):
+            raise
+
+        row, column = coordinate_to_tuple(cell)
+        for merged_range in worksheet.merged_cells.ranges:
+            if (
+                merged_range.min_row <= row <= merged_range.max_row
+                and merged_range.min_col <= column <= merged_range.max_col
+            ):
+                return worksheet.cell(
+                    row=merged_range.min_row, column=merged_range.min_col
+                ).value
+
+        raise exc
+
+
 def generate_priloga_10a(
     zahteve: List[Dict[str, Any]],
     results_map: Dict[str, Dict[str, Any]],
@@ -152,40 +196,55 @@ def generate_priloga_10a(
     worksheet = workbook.active
 
     project_name = _clean(metadata.get("ime_projekta", "Ni podatka"))
-    worksheet["B4"] = f"Mnenje o skladnosti – {project_name}" if project_name else "Mnenje o skladnosti"
-    worksheet["B7"] = _clean(metadata.get("mnenjedajalec", "Avtomatski pregled skladnosti"))
-    worksheet["B9"] = _clean(metadata.get("stevilka_porocila", "Ni podatka"))
-    worksheet["B10"] = datetime.now().strftime("%d.%m.%Y")
-    worksheet["B11"] = _format_predpis(zahteve)
-    worksheet["B12"] = _clean(metadata.get("postopek_vodil", "Ni podatka"))
-    worksheet["B14"] = _clean(metadata.get("odgovorna_oseba", "Ni podatka"))
+    _set_cell_value(
+        worksheet,
+        "B4",
+        f"Mnenje o skladnosti – {project_name}" if project_name else "Mnenje o skladnosti",
+    )
+    _set_cell_value(worksheet, "B7", _clean(metadata.get("mnenjedajalec", "Avtomatski pregled skladnosti")))
+    _set_cell_value(worksheet, "B9", _clean(metadata.get("stevilka_porocila", "Ni podatka")))
+    _set_cell_value(worksheet, "B10", datetime.now().strftime("%d.%m.%Y"))
+    _set_cell_value(worksheet, "B11", _format_predpis(zahteve))
+    _set_cell_value(worksheet, "B12", _clean(metadata.get("postopek_vodil", "Ni podatka")))
+    _set_cell_value(worksheet, "B14", _clean(metadata.get("odgovorna_oseba", "Ni podatka")))
 
-    worksheet["B34"] = project_name
-    worksheet["B35"] = _clean(metadata.get("kratek_opis", key_data.get("vrsta_gradnje", "Ni podatka")))
-    worksheet["B37"] = _clean(metadata.get("stevilka_projekta", "Ni podatka"))
-    worksheet["B38"] = _clean(metadata.get("datum_projekta", "Ni podatka"))
-    worksheet["B39"] = _clean(metadata.get("projektant", "Ni podatka"))
+    _set_cell_value(worksheet, "B34", project_name)
+    _set_cell_value(
+        worksheet,
+        "B35",
+        _clean(metadata.get("kratek_opis", key_data.get("vrsta_gradnje", "Ni podatka"))),
+    )
+    _set_cell_value(worksheet, "B37", _clean(metadata.get("stevilka_projekta", "Ni podatka")))
+    _set_cell_value(worksheet, "B38", _clean(metadata.get("datum_projekta", "Ni podatka")))
+    _set_cell_value(worksheet, "B39", _clean(metadata.get("projektant", "Ni podatka")))
 
-    worksheet["D47"] = _format_source_files(source_files)
+    _set_cell_value(worksheet, "D47", _format_source_files(source_files))
 
     compliant, non_compliant = _summarize_results(zahteve, results_map)
     total = len(zahteve)
     overall_skladnost = "SKLADNA" if not non_compliant else "NESKLADNA"
-    worksheet["B48"] = "X" if overall_skladnost == "SKLADNA" else ""
-    worksheet["B49"] = "X" if overall_skladnost == "NESKLADNA" else ""
+    _set_cell_value(worksheet, "B48", "X" if overall_skladnost == "SKLADNA" else "")
+    _set_cell_value(worksheet, "B49", "X" if overall_skladnost == "NESKLADNA" else "")
 
     pogoji_text = _format_conditions(zahteve, results_map)
-    worksheet["C52"] = pogoji_text
-    worksheet["C53"] = pogoji_text
-    worksheet["C54"] = pogoji_text
+    _set_cell_value(worksheet, "C52", pogoji_text)
+    _set_cell_value(worksheet, "C53", pogoji_text)
+    _set_cell_value(worksheet, "C54", pogoji_text)
 
-    worksheet["C57"] = _format_obrazlozitev(total, non_compliant, compliant)
-    worksheet["C62"] = (
+    _set_cell_value(worksheet, "C57", _format_obrazlozitev(total, non_compliant, compliant))
+    _set_cell_value(
+        worksheet,
+        "C62",
         f"Gradnja je {overall_skladnost.lower()} glede na preverjene pogoje." if total else "Analiza pogojev ni bila izvedena."
     )
-    worksheet["B40"] = _clean(metadata.get("pvo_status", "Ni podatka"))
+    _set_cell_value(worksheet, "B40", _clean(metadata.get("pvo_status", "Ni podatka")))
 
-    worksheet["C52"] = f"{worksheet['C52'].value}\n\nKljučni podatki projekta:\n{_format_key_data(key_data)}"
+    existing_c52 = _get_cell_value(worksheet, "C52") or ""
+    _set_cell_value(
+        worksheet,
+        "C52",
+        f"{existing_c52}\n\nKljučni podatki projekta:\n{_format_key_data(key_data)}",
+    )
 
     output_file = Path(output_path)
     output_file.parent.mkdir(parents=True, exist_ok=True)
