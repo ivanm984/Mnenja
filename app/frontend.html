@@ -247,17 +247,28 @@
         }
 
         .btn {
+            position: relative;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
             border-radius: 14px;
-            border: none;
+            border: 1px solid transparent;
             padding: 14px 20px;
             font-weight: 600;
             font-size: 1rem;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border 0.2s ease, color 0.2s ease;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.08);
+            opacity: 0;
+            transition: opacity 0.2s ease;
         }
 
         .btn:disabled {
@@ -267,42 +278,118 @@
             box-shadow: none;
         }
 
-        .btn-primary {
-            background: var(--primary);
-            color: #fff;
-            box-shadow: 0 16px 30px rgba(37, 99, 235, 0.2);
+        .btn:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18);
         }
 
-        .btn-primary:hover {
-            background: var(--primary-dark);
+        .btn:hover:not(:disabled)::after {
+            opacity: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #1d8ef2);
+            color: #fff;
+            box-shadow: 0 18px 32px rgba(37, 99, 235, 0.24);
+        }
+
+        .btn-primary:hover:not(:disabled) {
             transform: translateY(-1px);
         }
 
         .btn-outline {
-            background: rgba(37, 99, 235, 0.08);
+            background: rgba(255, 255, 255, 0.92);
+            border-color: rgba(37, 99, 235, 0.28);
             color: var(--primary);
+            box-shadow: var(--shadow-sm);
         }
 
-        .btn-outline:hover {
-            background: rgba(37, 99, 235, 0.16);
+        .btn-outline:hover:not(:disabled) {
+            background: rgba(237, 242, 255, 0.9);
         }
 
         .btn-secondary {
             background: rgba(15, 23, 42, 0.06);
+            border-color: rgba(15, 23, 42, 0.12);
             color: var(--text);
         }
 
-        .btn-secondary:hover {
-            background: rgba(15, 23, 42, 0.14);
+        .btn-secondary:hover:not(:disabled) {
+            background: rgba(15, 23, 42, 0.12);
         }
 
         .btn-danger {
-            background: rgba(220, 38, 38, 0.14);
-            color: #b91c1c;
+            background: rgba(220, 38, 38, 0.12);
+            border-color: rgba(220, 38, 38, 0.28);
+            color: #991b1b;
         }
 
-        .btn-danger:hover {
-            background: rgba(220, 38, 38, 0.22);
+        .btn-danger:hover:not(:disabled) {
+            background: rgba(220, 38, 38, 0.18);
+        }
+
+        .btn[data-state="working"] {
+            pointer-events: none;
+            transform: translateY(-1px);
+            box-shadow: 0 12px 26px rgba(37, 99, 235, 0.24);
+            padding-right: 42px;
+        }
+
+        .btn[data-state="working"]::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 3px solid currentColor;
+            border-bottom-color: transparent;
+            animation: spin 0.8s linear infinite;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .btn[data-state="success"] {
+            background: rgba(22, 163, 74, 0.14);
+            border-color: rgba(22, 163, 74, 0.4);
+            color: #166534;
+            box-shadow: 0 14px 26px rgba(22, 163, 74, 0.24);
+        }
+
+        .btn-primary[data-state="success"] {
+            background: linear-gradient(135deg, var(--success), #22c55e);
+            color: #fff;
+        }
+
+        .btn-outline[data-state="success"] {
+            background: rgba(22, 163, 74, 0.12);
+            border-color: rgba(22, 163, 74, 0.38);
+            color: #166534;
+        }
+
+        .btn-secondary[data-state="success"] {
+            background: rgba(22, 163, 74, 0.12);
+            border-color: rgba(22, 163, 74, 0.32);
+            color: #166534;
+        }
+
+        .btn-danger[data-state="success"] {
+            background: rgba(22, 163, 74, 0.12);
+            border-color: rgba(22, 163, 74, 0.38);
+            color: #166534;
+        }
+
+        .btn[data-state="error"] {
+            background: rgba(220, 38, 38, 0.16);
+            border-color: rgba(220, 38, 38, 0.4);
+            color: #b91c1c;
+            box-shadow: 0 14px 26px rgba(220, 38, 38, 0.22);
+        }
+
+        .btn-primary[data-state="error"] {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            border-color: rgba(220, 38, 38, 0.65);
+            color: #fff;
         }
 
         .status-banner {
@@ -633,6 +720,54 @@
             gap: 12px;
         }
 
+        .section-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(240px, 280px);
+            gap: 32px;
+            align-items: start;
+        }
+
+        .section-main {
+            display: grid;
+            gap: 32px;
+        }
+
+        .section-sidebar {
+            display: grid;
+            gap: 18px;
+            position: sticky;
+            top: 24px;
+            align-self: start;
+        }
+
+        .sidebar-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            border-radius: var(--radius-md);
+            padding: 20px 22px;
+            box-shadow: var(--shadow-sm);
+            display: grid;
+            gap: 16px;
+        }
+
+        .sidebar-title {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+
+        .sidebar-hint {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .actions-stack {
+            display: grid;
+            gap: 12px;
+        }
+
         .empty-note {
             color: var(--muted);
             font-style: italic;
@@ -645,6 +780,11 @@
             background: rgba(37, 99, 235, 0.08);
             display: grid;
             gap: 14px;
+        }
+
+        @media (max-width: 1080px) {
+            .section-layout { grid-template-columns: 1fr; }
+            .section-sidebar { position: static; }
         }
 
         .modal-backdrop {
@@ -711,6 +851,8 @@
             body { padding: 28px 14px 40px; }
             .section-head { align-items: stretch; }
             .actions-row { flex-direction: column; }
+            .section-layout { grid-template-columns: 1fr; }
+            .section-sidebar { position: static; }
         }
     </style>
 </head>
@@ -776,7 +918,7 @@
             </div>
 
             <div class="actions-row">
-                <button class="btn btn-primary" @click="extractData" :disabled="!files.length || isBusy">Ekstrahiraj ključne podatke in EUP/Rabe</button>
+                <button class="btn btn-primary" @click="extractData" :disabled="!files.length || isBusy" :data-state="actionStates.extract">Ekstrahiraj ključne podatke in EUP/Rabe</button>
             </div>
         </section>
 
@@ -789,62 +931,72 @@
                 <div class="subtitle">Seja: {{ sessionId || 'ni začeta' }}</div>
             </div>
 
-            <div>
-                <h3 style="margin-top:0;">A. EUP in namenske rabe</h3>
-                <p class="subtitle">Sistem predlaga pare EUP/Raba. Po potrebi jih dopolnite ali popravite.</p>
-                <div class="grid-two">
-                    <div class="pair-card" v-for="(pair, index) in eupPairs" :key="pair.id" :class="{ modified: pairModified(pair) }">
-                        <div>
-                            <label :for="`eup-${pair.id}`">EUP</label>
-                            <input :id="`eup-${pair.id}`" type="text" v-model="pair.eup" placeholder="npr. LI-08" />
+            <div class="section-layout">
+                <div class="section-main">
+                    <div>
+                        <h3 style="margin-top:0;">A. EUP in namenske rabe</h3>
+                        <p class="subtitle">Sistem predlaga pare EUP/Raba. Po potrebi jih dopolnite ali popravite.</p>
+                        <div class="grid-two">
+                            <div class="pair-card" v-for="(pair, index) in eupPairs" :key="pair.id" :class="{ modified: pairModified(pair) }">
+                                <div>
+                                    <label :for="`eup-${pair.id}`">EUP</label>
+                                    <input :id="`eup-${pair.id}`" type="text" v-model="pair.eup" placeholder="npr. LI-08" />
+                                </div>
+                                <div>
+                                    <label :for="`raba-${pair.id}`">Namenska raba</label>
+                                    <input :id="`raba-${pair.id}`" type="text" v-model="pair.raba" placeholder="npr. SSe" />
+                                </div>
+                                <div class="hint">AI predlog: {{ pair.originalEup || '—' }} / {{ pair.originalRaba || '—' }}</div>
+                                <button class="btn btn-secondary" v-if="eupPairs.length > 1" @click="removePair(index)">Odstrani</button>
+                            </div>
                         </div>
-                        <div>
-                            <label :for="`raba-${pair.id}`">Namenska raba</label>
-                            <input :id="`raba-${pair.id}`" type="text" v-model="pair.raba" placeholder="npr. SSe" />
+                        <button class="btn btn-outline" style="margin-top:12px;" @click="addPair">Dodaj EUP/Rabo</button>
+                    </div>
+
+                    <div>
+                        <h3>Projektni podatki</h3>
+                        <div class="metadata-grid">
+                            <div class="meta-field">
+                                <span class="meta-label">Ime projekta</span>
+                                <span class="meta-value">{{ metadata.ime_projekta || 'Ni podatka' }}</span>
+                            </div>
+                            <div class="meta-field">
+                                <span class="meta-label">Številka projekta</span>
+                                <span class="meta-value">{{ metadata.stevilka_projekta || 'Ni podatka' }}</span>
+                            </div>
                         </div>
-                        <div class="hint">AI predlog: {{ pair.originalEup || '—' }} / {{ pair.originalRaba || '—' }}</div>
-                        <button class="btn btn-secondary" v-if="eupPairs.length > 1" @click="removePair(index)">Odstrani</button>
+                    </div>
+
+                    <div>
+                        <h3>B. Ključni gabaritni podatki</h3>
+                        <p class="subtitle">Preglejte podatke in jih po potrebi dopolnite. Originalni AI izsek ostane prikazan za transparentnost.</p>
+                        <div class="key-grid">
+                            <div class="key-field" v-for="field in keyFieldList" :key="field.key" :class="{ modified: keyFieldModified(field.key) }">
+                                <div>
+                                    <label :for="field.key">{{ field.label }}</label>
+                                    <textarea v-if="field.isLong" :id="field.key" v-model="keyData[field.key]"></textarea>
+                                    <input v-else :id="field.key" type="text" v-model="keyData[field.key]" />
+                                </div>
+                                <div class="field-hint">
+                                    <strong>AI ekstrakcija:</strong>
+                                    <div>{{ initialKeyData[field.key] || 'Ni podatka v dokumentaciji' }}</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <button class="btn btn-outline" style="margin-top:12px;" @click="addPair">Dodaj EUP/Rabo</button>
-            </div>
 
-            <div>
-                <h3>Projektni podatki</h3>
-                <div class="metadata-grid">
-                    <div class="meta-field">
-                        <span class="meta-label">Ime projekta</span>
-                        <span class="meta-value">{{ metadata.ime_projekta || 'Ni podatka' }}</span>
-                    </div>
-                    <div class="meta-field">
-                        <span class="meta-label">Številka projekta</span>
-                        <span class="meta-value">{{ metadata.stevilka_projekta || 'Ni podatka' }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <h3>B. Ključni gabaritni podatki</h3>
-                <p class="subtitle">Preglejte podatke in jih po potrebi dopolnite. Originalni AI izsek ostane prikazan za transparentnost.</p>
-                <div class="key-grid">
-                    <div class="key-field" v-for="field in keyFieldList" :key="field.key" :class="{ modified: keyFieldModified(field.key) }">
-                        <div>
-                            <label :for="field.key">{{ field.label }}</label>
-                            <textarea v-if="field.isLong" :id="field.key" v-model="keyData[field.key]"></textarea>
-                            <input v-else :id="field.key" type="text" v-model="keyData[field.key]" />
-                        </div>
-                        <div class="field-hint">
-                            <strong>AI ekstrakcija:</strong>
-                            <div>{{ initialKeyData[field.key] || 'Ni podatka v dokumentaciji' }}</div>
+                <aside class="section-sidebar">
+                    <div class="sidebar-card">
+                        <h4 class="sidebar-title">Upravljanje analize</h4>
+                        <p class="sidebar-hint">Gumbi so razporejeni po pomembnosti. Po kliku se barva spremeni in potrdi izvedbo.</p>
+                        <div class="actions-stack">
+                            <button class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy" :data-state="actionStates.reset">Ponastavi analizo</button>
+                            <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">Shrani napredek</button>
+                            <button class="btn btn-primary" @click="runAnalysis()" :disabled="isBusy" :data-state="actionStates.run">Izvedi podrobno analizo</button>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="actions-row">
-                <button class="btn btn-primary" @click="runAnalysis" :disabled="isBusy">Izvedi podrobno analizo</button>
-                <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId">Shrani napredek</button>
-                <button class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy">Ponastavi analizo</button>
+                </aside>
             </div>
         </section>
 
@@ -857,122 +1009,132 @@
                 <div class="subtitle" v-if="analysisSummary">{{ analysisSummary }}</div>
             </div>
 
-            <div class="results-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width:60px;">Izberi</th>
-                            <th>Zahteva</th>
-                            <th style="width:200px;">Status</th>
-                            <th>Obrazložitev in popravki</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="req in requirements" :key="req.id" :class="{ excluded: excludedIds.includes(String(req.id)) }">
-                            <td>
-                                <input type="checkbox" :value="String(req.id)" v-model="selectedRequirementIds" :disabled="excludedIds.includes(String(req.id))" />
-                            </td>
-                            <td>
-                                <strong>{{ req.naziv || req.naslov || 'Zahteva' }}</strong>
-                                <div class="subtitle" v-if="req.clen">{{ req.clen }}</div>
-                                <div class="subtitle" v-if="req.skupina || req.kategorija">{{ req.skupina || req.kategorija }}</div>
-                                <button class="btn btn-secondary" style="margin-top:8px;" @click="toggleRequirementExclusion(req.id)">
-                                    {{ excludedIds.includes(String(req.id)) ? 'Vključi v poročilo' : 'Izloči iz končnega poročila' }}
-                                </button>
-                                <div v-if="requirementRevisions[String(req.id)]?.length" class="field-hint" style="margin-top:10px;">
-                                    <strong>Priloženi popravki:</strong>
-                                    <ul style="margin:6px 0 0 18px; padding:0;">
-                                        <li v-for="rev in requirementRevisions[String(req.id)]" :key="rev.filename + rev.uploaded_at">
-                                            {{ rev.filename }} – {{ formatTimestamp(rev.uploaded_at) }}<span v-if="rev.note"> · {{ rev.note }}</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </td>
-                            <td class="status-cell">
-                                <div class="status-control">
-                                    <span class="status-pill" :class="statusClass(currentStatus(req.id))">{{ displayStatus(req.id) }}</span>
-                                    <select :value="currentStatus(req.id)" @change="event => updateRequirementStatus(req.id, event.target.value)">
-                                        <option v-for="option in statusOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-                                    </select>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="analysis-editor" :class="{ modified: isResultModified(req.id), active: activeEditorId === stringId(req.id) }" @click="activateEditor(req.id, $event)">
-                                    <div class="analysis-display">
-                                        <div class="analysis-header">
-                                            <strong>AI ugotovitve</strong>
-                                            <span v-if="isResultModified(req.id)" class="analysis-tag">Ročno urejeno</span>
+            <div class="section-layout">
+                <div class="section-main">
+                    <div class="results-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width:60px;">Izberi</th>
+                                    <th>Zahteva</th>
+                                    <th style="width:200px;">Status</th>
+                                    <th>Obrazložitev in popravki</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="req in requirements" :key="req.id" :class="{ excluded: excludedIds.includes(String(req.id)) }">
+                                    <td>
+                                        <input type="checkbox" :value="String(req.id)" v-model="selectedRequirementIds" :disabled="excludedIds.includes(String(req.id))" />
+                                    </td>
+                                    <td>
+                                        <strong>{{ req.naziv || req.naslov || 'Zahteva' }}</strong>
+                                        <div class="subtitle" v-if="req.clen">{{ req.clen }}</div>
+                                        <div class="subtitle" v-if="req.skupina || req.kategorija">{{ req.skupina || req.kategorija }}</div>
+                                        <button class="btn btn-secondary" style="margin-top:8px;" @click="toggleRequirementExclusion(req.id)">
+                                            {{ excludedIds.includes(String(req.id)) ? 'Vključi v poročilo' : 'Izloči iz končnega poročila' }}
+                                        </button>
+                                        <div v-if="requirementRevisions[String(req.id)]?.length" class="field-hint" style="margin-top:10px;">
+                                            <strong>Priloženi popravki:</strong>
+                                            <ul style="margin:6px 0 0 18px; padding:0;">
+                                                <li v-for="rev in requirementRevisions[String(req.id)]" :key="rev.filename + rev.uploaded_at">
+                                                    {{ rev.filename }} – {{ formatTimestamp(rev.uploaded_at) }}<span v-if="rev.note"> · {{ rev.note }}</span>
+                                                </li>
+                                            </ul>
                                         </div>
-                                        <div class="analysis-section">
-                                            <strong>Ugotovitve</strong>
-                                            <div :class="{ 'analysis-empty': !analysisFinding(req.id).trim() }">{{ analysisFinding(req.id).trim() ? analysisFinding(req.id) : 'Ni zabeleženih ugotovitev AI.' }}</div>
+                                    </td>
+                                    <td class="status-cell">
+                                        <div class="status-control">
+                                            <span class="status-pill" :class="statusClass(currentStatus(req.id))">{{ displayStatus(req.id) }}</span>
+                                            <select :value="currentStatus(req.id)" @change="event => updateRequirementStatus(req.id, event.target.value)">
+                                                <option v-for="option in statusOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+                                            </select>
                                         </div>
-                                        <div class="analysis-section">
-                                            <strong>Predlagani ukrep</strong>
-                                            <div :class="{ 'analysis-empty': !analysisAction(req.id).trim() }">{{ analysisAction(req.id).trim() ? analysisAction(req.id) : 'Ni predlaganega ukrepa.' }}</div>
+                                    </td>
+                                    <td>
+                                        <div class="analysis-editor" :class="{ modified: isResultModified(req.id), active: activeEditorId === stringId(req.id) }" @click="activateEditor(req.id, $event)">
+                                            <div class="analysis-display">
+                                                <div class="analysis-header">
+                                                    <strong>AI ugotovitve</strong>
+                                                    <span v-if="isResultModified(req.id)" class="analysis-tag">Ročno urejeno</span>
+                                                </div>
+                                                <div class="analysis-section">
+                                                    <strong>Ugotovitve</strong>
+                                                    <div :class="{ 'analysis-empty': !analysisFinding(req.id).trim() }">{{ analysisFinding(req.id).trim() ? analysisFinding(req.id) : 'Ni zabeleženih ugotovitev AI.' }}</div>
+                                                </div>
+                                                <div class="analysis-section">
+                                                    <strong>Predlagani ukrep</strong>
+                                                    <div :class="{ 'analysis-empty': !analysisAction(req.id).trim() }">{{ analysisAction(req.id).trim() ? analysisAction(req.id) : 'Ni predlaganega ukrepa.' }}</div>
+                                                </div>
+                                                <div class="analysis-hint">Zadržite miško ali tapnite za urejanje besedila.</div>
+                                            </div>
+                                            <div class="analysis-hover" @click.stop>
+                                                <label :for="`findings-${stringId(req.id)}`">AI ugotovitve</label>
+                                                <textarea
+                                                    :id="`findings-${stringId(req.id)}`"
+                                                    v-model="editableFindings[stringId(req.id)]"
+                                                    :data-editor="stringId(req.id)"
+                                                    data-field="finding"
+                                                    @focus="activateEditor(req.id, $event)"
+                                                    @blur="handleEditorBlur(req.id, $event)"
+                                                    @input="onEditableChange(req.id)"
+                                                ></textarea>
+                                                <label :for="`action-${stringId(req.id)}`">Predlagani ukrep / obrazložitev</label>
+                                                <textarea
+                                                    :id="`action-${stringId(req.id)}`"
+                                                    v-model="editableActions[stringId(req.id)]"
+                                                    :data-editor="stringId(req.id)"
+                                                    data-field="action"
+                                                    @focus="activateEditor(req.id, $event)"
+                                                    @blur="handleEditorBlur(req.id, $event)"
+                                                    @input="onEditableChange(req.id)"
+                                                ></textarea>
+                                                <div class="analysis-hint">Vnesene spremembe se shranijo samodejno.</div>
+                                            </div>
                                         </div>
-                                        <div class="analysis-hint">Zadržite miško ali tapnite za urejanje besedila.</div>
-                                    </div>
-                                    <div class="analysis-hover" @click.stop>
-                                        <label :for="`findings-${stringId(req.id)}`">AI ugotovitve</label>
-                                        <textarea
-                                            :id="`findings-${stringId(req.id)}`"
-                                            v-model="editableFindings[stringId(req.id)]"
-                                            :data-editor="stringId(req.id)"
-                                            data-field="finding"
-                                            @focus="activateEditor(req.id, $event)"
-                                            @blur="handleEditorBlur(req.id, $event)"
-                                            @input="onEditableChange(req.id)"
-                                        ></textarea>
-                                        <label :for="`action-${stringId(req.id)}`">Predlagani ukrep / obrazložitev</label>
-                                        <textarea
-                                            :id="`action-${stringId(req.id)}`"
-                                            v-model="editableActions[stringId(req.id)]"
-                                            :data-editor="stringId(req.id)"
-                                            data-field="action"
-                                            @focus="activateEditor(req.id, $event)"
-                                            @blur="handleEditorBlur(req.id, $event)"
-                                            @input="onEditableChange(req.id)"
-                                        ></textarea>
-                                        <div class="analysis-hint">Vnesene spremembe se shranijo samodejno.</div>
-                                    </div>
-                                </div>
-                                <div class="actions-row" style="margin-top:12px;">
-                                    <label class="btn btn-outline" style="cursor:pointer;">
-                                        Naloži popravek
-                                        <input type="file" accept="application/pdf" multiple style="display:none;" @change="event => queueRequirementRevision(req.id, event)" />
-                                    </label>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                                        <div class="actions-row" style="margin-top:12px;">
+                                            <label class="btn btn-outline" style="cursor:pointer;">
+                                                Naloži popravek
+                                                <input type="file" accept="application/pdf" multiple style="display:none;" @change="event => queueRequirementRevision(req.id, event)" />
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-            <div class="actions-row">
-                <button class="btn btn-outline" @click="rerunNonCompliant" :disabled="isBusy || !latestNonCompliantIds.length">Analiziraj neskladne</button>
-                <button class="btn btn-outline" @click="rerunSelected" :disabled="isBusy || !selectedRequirementIds.length">Ponovno preveri izbrane</button>
-                <button class="btn btn-secondary" @click="resetSelection" :disabled="isBusy">Počisti izbor</button>
-                <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId">Shrani napredek</button>
-                <button class="btn btn-primary" @click="confirmReport" :disabled="isBusy || !sessionId">Potrdi in ustvari poročilo</button>
-                <a v-if="downloadReady" class="btn btn-outline" :href="downloadHref" download>Prenesi poročilo (.docx)</a>
-            </div>
+                    <div class="revision-card">
+                        <h4 style="margin:0;">Dodaj popravljeno projektno dokumentacijo</h4>
+                        <p class="subtitle">Po prejemu dopolnitev projektanta lahko dodatne dokumente naložite in ponovno zaženete ciljno analizo.</p>
+                        <div>
+                            <label for="revision-upload">Popravljene PDF datoteke</label>
+                            <input id="revision-upload" type="file" multiple accept="application/pdf" @change="handleRevisionFiles" />
+                        </div>
+                        <div>
+                            <label for="revision-pages">Strani za podrobno analizo (neobvezno)</label>
+                            <input id="revision-pages" type="text" v-model="revisionPages" placeholder="npr. 2, 4-6" />
+                        </div>
+                        <div class="actions-row">
+                            <button class="btn btn-secondary" @click="uploadRevision" :disabled="isBusy || !revisionFiles.length" :data-state="actionStates.revision">Naloži popravek</button>
+                            <div class="subtitle">{{ revisionInfo }}</div>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="revision-card">
-                <h4 style="margin:0;">Dodaj popravljeno projektno dokumentacijo</h4>
-                <p class="subtitle">Po prejemu dopolnitev projektanta lahko dodatne dokumente naložite in ponovno zaženete ciljno analizo.</p>
-                <div>
-                    <label for="revision-upload">Popravljene PDF datoteke</label>
-                    <input id="revision-upload" type="file" multiple accept="application/pdf" @change="handleRevisionFiles" />
-                </div>
-                <div>
-                    <label for="revision-pages">Strani za podrobno analizo (neobvezno)</label>
-                    <input id="revision-pages" type="text" v-model="revisionPages" placeholder="npr. 2, 4-6" />
-                </div>
-                <div class="actions-row">
-                    <button class="btn btn-secondary" @click="uploadRevision" :disabled="isBusy || !revisionFiles.length">Naloži popravek</button>
-                    <div class="subtitle">{{ revisionInfo }}</div>
-                </div>
+                <aside class="section-sidebar">
+                    <div class="sidebar-card">
+                        <h4 class="sidebar-title">Akcije rezultatov</h4>
+                        <p class="sidebar-hint">Izberite nadaljnji korak ali pripravite poročilo za deljenje.</p>
+                        <div class="actions-stack">
+                            <button class="btn btn-outline" @click="rerunNonCompliant" :disabled="isBusy || !latestNonCompliantIds.length" :data-state="actionStates.rerunNonCompliant">Analiziraj neskladne</button>
+                            <button class="btn btn-outline" @click="rerunSelected" :disabled="isBusy || !selectedRequirementIds.length" :data-state="actionStates.rerunSelected">Ponovno preveri izbrane</button>
+                            <button class="btn btn-secondary" @click="resetSelection" :disabled="isBusy">Počisti izbor</button>
+                            <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">Shrani napredek</button>
+                            <button class="btn btn-primary" @click="confirmReport" :disabled="isBusy || !sessionId" :data-state="actionStates.confirm">Potrdi in ustvari poročilo</button>
+                            <a v-if="downloadReady" class="btn btn-outline" :href="downloadHref" download>Prenesi poročilo (.docx)</a>
+                        </div>
+                    </div>
+                </aside>
             </div>
         </section>
 
@@ -1068,6 +1230,17 @@
                         'Ni relevantno': 'NI RELEVANTNO',
                         'ni relevantno': 'NI RELEVANTNO'
                     },
+                    actionStates: {
+                        extract: '',
+                        run: '',
+                        save: '',
+                        reset: '',
+                        rerunSelected: '',
+                        rerunNonCompliant: '',
+                        confirm: '',
+                        revision: ''
+                    },
+                    actionTimers: {},
                     heroSteps: [
                         { id: 1, title: 'Naloži dokumente', description: 'Dodajte PDF dokumentacijo in po želji označite strani za grafični pregled.' },
                         { id: 2, title: 'Preglej osnutek', description: 'AI pripravi osnutek EUP/rab in ključnih podatkov, ki jih lahko prilagodite.' },
@@ -1133,10 +1306,37 @@
                 setStatus(type, message) {
                     this.status = { type, message };
                 },
+                setActionState(key, state, options = {}) {
+                    if (!key || !(key in this.actionStates)) {
+                        return;
+                    }
+                    const { autoClear = state === 'success' || state === 'error', timeout = 2200 } = options;
+                    if (this.actionTimers[key]) {
+                        clearTimeout(this.actionTimers[key]);
+                        delete this.actionTimers[key];
+                    }
+                    this.actionStates[key] = state;
+                    if (autoClear && state) {
+                        this.actionTimers[key] = setTimeout(() => {
+                            if (this.actionStates[key] === state) {
+                                this.actionStates[key] = '';
+                            }
+                            delete this.actionTimers[key];
+                        }, timeout);
+                    }
+                },
+                markActionWorking(key) {
+                    this.setActionState(key, 'working', { autoClear: false });
+                },
+                markActionResult(key, state) {
+                    const validState = state === 'success' ? 'success' : state === 'error' ? 'error' : '';
+                    this.setActionState(key, validState);
+                },
                 resetAnalysis() {
                     if (this.isBusy) return;
                     const confirmed = confirm('Ali želite ponastaviti analizo in odstraniti vse trenutno zbrane podatke?');
                     if (!confirmed) return;
+                    this.markActionWorking('reset');
                     localStorage.removeItem(this.storageKey);
                     if (this.$refs.fileInput) {
                         this.$refs.fileInput.value = '';
@@ -1170,6 +1370,11 @@
                     this.revisionInfo = '';
                     this.showSavedModal = false;
                     this.highlightedSession = this.savedSessions.length ? this.savedSessions[0] : null;
+                    Object.keys(this.actionStates).forEach(key => {
+                        if (key === 'reset') return;
+                        this.setActionState(key, '', { autoClear: false });
+                    });
+                    this.markActionResult('reset', 'success');
                     this.setStatus('info', 'Analiza je bila ponastavljena.');
                 },
                 startLoading(message) {
@@ -1437,6 +1642,7 @@
                         this.setStatus('error', 'Prosim naložite vsaj eno PDF datoteko.');
                         return;
                     }
+                    this.markActionWorking('extract');
                     const formData = new FormData();
                     const manifest = [];
                     this.files.forEach(item => {
@@ -1473,9 +1679,11 @@
                         this.revisionPages = '';
                         this.revisionInfo = '';
                         this.persistState(true);
+                        this.markActionResult('extract', 'success');
                         this.stopLoading('success', 'Ekstrakcija podatkov uspešna. Preglejte predloge in nadaljujte z analizo.');
                     } catch (error) {
                         console.error(error);
+                        this.markActionResult('extract', 'error');
                         this.stopLoading('error', error.message || 'Napaka pri ekstrakciji.');
                     }
                 },
@@ -1533,9 +1741,16 @@
                     return formData;
                 },
                 async runAnalysis(extra = {}) {
+                    const actionKey = extra.actionKey || (extra.isRerun ? 'rerunSelected' : 'run');
                     if (!this.sessionId) {
                         this.setStatus('error', 'Seja ni aktivna. Ponovite prvi korak.');
+                        if (actionKey) {
+                            this.markActionResult(actionKey, 'error');
+                        }
                         return;
+                    }
+                    if (actionKey) {
+                        this.markActionWorking(actionKey);
                     }
                     const formData = this.collectAnalysisPayload();
                     if (Array.isArray(extra.selectedIds) && extra.selectedIds.length) {
@@ -1559,9 +1774,15 @@
                         this.downloadHref = '';
                         this.selectedRequirementIds = this.latestNonCompliantIds.slice();
                         this.persistState(true);
+                        if (actionKey) {
+                            this.markActionResult(actionKey, 'success');
+                        }
                         this.stopLoading('success', 'Analiza zaključena. Preglejte rezultate in po potrebi pripravite poročilo.');
                     } catch (error) {
                         console.error(error);
+                        if (actionKey) {
+                            this.markActionResult(actionKey, 'error');
+                        }
                         this.stopLoading('error', error.message || 'Analiza ni uspela.');
                     }
                 },
@@ -1630,14 +1851,14 @@
                         this.setStatus('error', 'Najprej izberite zahteve.');
                         return;
                     }
-                    this.runAnalysis({ selectedIds: this.selectedRequirementIds, isRerun: true });
+                    this.runAnalysis({ selectedIds: this.selectedRequirementIds, isRerun: true, actionKey: 'rerunSelected' });
                 },
                 rerunNonCompliant() {
                     if (!this.latestNonCompliantIds.length) {
                         this.setStatus('error', 'Ni neskladnih zahtev za ponovno analizo.');
                         return;
                     }
-                    this.runAnalysis({ selectedIds: this.latestNonCompliantIds, isRerun: true });
+                    this.runAnalysis({ selectedIds: this.latestNonCompliantIds, isRerun: true, actionKey: 'rerunNonCompliant' });
                 },
                 toggleRequirementExclusion(id) {
                     const key = String(id);
@@ -1684,12 +1905,15 @@
                 async uploadRevision() {
                     if (!this.sessionId) {
                         this.setStatus('error', 'Seja ni aktivna.');
+                        this.markActionResult('revision', 'error');
                         return;
                     }
                     if (!this.revisionFiles.length) {
                         this.setStatus('error', 'Izberite popravljene PDF dokumente.');
+                        this.markActionResult('revision', 'error');
                         return;
                     }
+                    this.markActionWorking('revision');
                     const formData = new FormData();
                     formData.append('session_id', this.sessionId);
                     this.revisionFiles.forEach(file => formData.append('revision_files', file));
@@ -1715,17 +1939,21 @@
                         }
                         this.revisionFiles = [];
                         this.persistState(true);
+                        this.markActionResult('revision', 'success');
                         this.stopLoading('success', result.message || 'Popravek je shranjen.');
                     } catch (error) {
                         console.error(error);
+                        this.markActionResult('revision', 'error');
                         this.stopLoading('error', error.message || 'Napaka pri nalaganju popravka.');
                     }
                 },
                 async confirmReport() {
                     if (!this.sessionId) {
                         this.setStatus('error', 'Seja ni aktivna.');
+                        this.markActionResult('confirm', 'error');
                         return;
                     }
+                    this.markActionWorking('confirm');
                     this.startLoading('Pripravljam Word poročilo...');
                     try {
                         const response = await fetch('/confirm-report', {
@@ -1744,9 +1972,11 @@
                         this.downloadReady = true;
                         this.downloadHref = '/download';
                         this.persistState(true);
+                        this.markActionResult('confirm', 'success');
                         this.stopLoading('success', result.message || 'Poročilo je pripravljeno. Prenesite dokument.');
                     } catch (error) {
                         console.error(error);
+                        this.markActionResult('confirm', 'error');
                         this.stopLoading('error', error.message || 'Napaka pri generiranju poročila.');
                     }
                 },
@@ -1835,8 +2065,10 @@
                     const state = this.collectState();
                     if (!state) {
                         this.setStatus('error', 'Ni podatkov za shranjevanje.');
+                        this.markActionResult('save', 'error');
                         return;
                     }
+                    this.markActionWorking('save');
                     this.persistState(true);
                     this.startLoading('Shranjujem analizo...');
                     try {
@@ -1856,9 +2088,11 @@
                         }
                         await response.json();
                         this.fetchSavedSessions(true);
+                        this.markActionResult('save', 'success');
                         this.stopLoading('success', 'Analiza je shranjena.');
                     } catch (error) {
                         console.error(error);
+                        this.markActionResult('save', 'error');
                         this.stopLoading('error', error.message || 'Shranjevanje analize ni uspelo.');
                     }
                 },
