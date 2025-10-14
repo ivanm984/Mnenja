@@ -579,7 +579,32 @@ async def confirm_report(payload: ConfirmReportPayload):
     state.LATEST_REPORT_CACHE[payload.session_id]["docx_path"] = absolute_docx_path
     state.LATEST_REPORT_CACHE[payload.session_id]["xlsx_path"] = absolute_xlsx_path
     state.LATEST_REPORT_CACHE[payload.session_id]["excluded_ids"] = list(excluded_ids)
-    return {"status": "success", "docx_path": absolute_docx_path, "xlsx_path": absolute_xlsx_path}
+    project_name = infer_project_name({"metadata": metadata_snapshot, "keyData": key_data_snapshot}, fallback="Neimenovan projekt")
+    report_summary = compute_session_summary({"zahteve": filtered_zahteve, "resultsMap": filtered_results_map})
+    try:
+        report_record = db_manager.record_report(
+            payload.session_id,
+            project_name,
+            report_summary,
+            metadata_snapshot,
+            key_data_snapshot,
+            list(excluded_ids),
+            cache.get("analysis_scope"),
+            cache.get("total_analyzed"),
+            cache.get("total_available"),
+            str(absolute_docx_path),
+            str(absolute_xlsx_path),
+        )
+    except Exception as exc:  # pragma: no cover - backend specific
+        raise HTTPException(status_code=500, detail=f"Shranjevanje poročila ni uspelo: {exc}") from exc
+
+    return {
+        "status": "success",
+        "docx_path": absolute_docx_path,
+        "xlsx_path": absolute_xlsx_path,
+        "report_id": report_record.get("id"),
+        "created_at": report_record.get("created_at"),
+    }
 
 
 @app.get("/download")
