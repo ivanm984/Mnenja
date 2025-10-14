@@ -407,6 +407,143 @@
             vertical-align: top;
         }
 
+        .results-table {
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        .results-table table {
+            min-width: 780px;
+        }
+
+        .results-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .analysis-editor {
+            position: relative;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            background: rgba(37, 99, 235, 0.04);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            min-height: 168px;
+            overflow: hidden;
+        }
+
+        .analysis-editor.modified {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+            background: rgba(37, 99, 235, 0.08);
+        }
+
+        .analysis-display {
+            display: grid;
+            gap: 10px;
+            transition: opacity 0.2s ease;
+        }
+
+        .analysis-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .analysis-header strong {
+            font-size: 1rem;
+        }
+
+        .analysis-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(37, 99, 235, 0.12);
+            color: var(--primary);
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .analysis-section {
+            display: grid;
+            gap: 4px;
+        }
+
+        .analysis-section strong {
+            font-size: 0.92rem;
+            color: rgba(15, 23, 42, 0.72);
+        }
+
+        .analysis-section div {
+            white-space: pre-line;
+        }
+
+        .analysis-hint {
+            font-size: 0.84rem;
+            color: var(--muted);
+        }
+
+        .analysis-hover {
+            position: absolute;
+            inset: 0;
+            padding: 16px;
+            background: var(--card);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s ease;
+        }
+
+        .analysis-editor:hover .analysis-hover,
+        .analysis-editor:focus-within .analysis-hover,
+        .analysis-editor.active .analysis-hover {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .analysis-editor:hover .analysis-display,
+        .analysis-editor:focus-within .analysis-display,
+        .analysis-editor.active .analysis-display {
+            opacity: 0;
+        }
+
+        .analysis-hover label {
+            font-weight: 600;
+            font-size: 0.92rem;
+            color: rgba(15, 23, 42, 0.86);
+        }
+
+        .analysis-hover textarea {
+            min-height: 96px;
+            resize: vertical;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            background: rgba(15, 23, 42, 0.02);
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+        }
+
+        .analysis-hover textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+            background: #ffffff;
+        }
+
+        .analysis-empty {
+            color: rgba(15, 23, 42, 0.6);
+            font-style: italic;
+        }
+
         thead {
             background: rgba(37, 99, 235, 0.08);
         }
@@ -703,7 +840,46 @@
                                 <span class="status-pill" :class="statusClass(resultsMap[req.id]?.skladnost)">{{ resultsMap[req.id]?.skladnost || 'Neznano' }}</span>
                             </td>
                             <td>
-                                <div>{{ resultsMap[req.id]?.predlagani_ukrep || resultsMap[req.id]?.obrazlozitev || '—' }}</div>
+                                <div class="analysis-editor" :class="{ modified: isResultModified(req.id), active: activeEditorId === stringId(req.id) }" @click="activateEditor(req.id, $event)">
+                                    <div class="analysis-display">
+                                        <div class="analysis-header">
+                                            <strong>AI ugotovitve</strong>
+                                            <span v-if="isResultModified(req.id)" class="analysis-tag">Ročno urejeno</span>
+                                        </div>
+                                        <div class="analysis-section">
+                                            <strong>Ugotovitve</strong>
+                                            <div :class="{ 'analysis-empty': !analysisFinding(req.id).trim() }">{{ analysisFinding(req.id).trim() ? analysisFinding(req.id) : 'Ni zabeleženih ugotovitev AI.' }}</div>
+                                        </div>
+                                        <div class="analysis-section">
+                                            <strong>Predlagani ukrep</strong>
+                                            <div :class="{ 'analysis-empty': !analysisAction(req.id).trim() }">{{ analysisAction(req.id).trim() ? analysisAction(req.id) : 'Ni predlaganega ukrepa.' }}</div>
+                                        </div>
+                                        <div class="analysis-hint">Zadržite miško ali tapnite za urejanje besedila.</div>
+                                    </div>
+                                    <div class="analysis-hover" @click.stop>
+                                        <label :for="`findings-${stringId(req.id)}`">AI ugotovitve</label>
+                                        <textarea
+                                            :id="`findings-${stringId(req.id)}`"
+                                            v-model="editableFindings[stringId(req.id)]"
+                                            :data-editor="stringId(req.id)"
+                                            data-field="finding"
+                                            @focus="activateEditor(req.id, $event)"
+                                            @blur="handleEditorBlur(req.id, $event)"
+                                            @input="onEditableChange(req.id)"
+                                        ></textarea>
+                                        <label :for="`action-${stringId(req.id)}`">Predlagani ukrep / obrazložitev</label>
+                                        <textarea
+                                            :id="`action-${stringId(req.id)}`"
+                                            v-model="editableActions[stringId(req.id)]"
+                                            :data-editor="stringId(req.id)"
+                                            data-field="action"
+                                            @focus="activateEditor(req.id, $event)"
+                                            @blur="handleEditorBlur(req.id, $event)"
+                                            @input="onEditableChange(req.id)"
+                                        ></textarea>
+                                        <div class="analysis-hint">Vnesene spremembe se shranijo samodejno.</div>
+                                    </div>
+                                </div>
                                 <div class="actions-row" style="margin-top:12px;">
                                     <label class="btn btn-outline" style="cursor:pointer;">
                                         Naloži popravek
@@ -799,6 +975,11 @@
                     metadata: {},
                     requirements: [],
                     resultsMap: {},
+                    editableFindings: {},
+                    editableActions: {},
+                    initialEditableFindings: {},
+                    initialEditableActions: {},
+                    activeEditorId: '',
                     selectedRequirementIds: [],
                     excludedIds: [],
                     requirementRevisions: {},
@@ -872,6 +1053,189 @@
                     this.busyMessage = '';
                     if (message) {
                         this.setStatus(type, message);
+                    }
+                },
+                stringId(value) {
+                    if (value === undefined || value === null) {
+                        return '';
+                    }
+                    return String(value);
+                },
+                ensureText(value) {
+                    if (typeof value === 'string') {
+                        return value;
+                    }
+                    if (value === undefined || value === null) {
+                        return '';
+                    }
+                    if (typeof value === 'number' || typeof value === 'boolean') {
+                        return String(value);
+                    }
+                    try {
+                        return JSON.stringify(value, null, 2);
+                    } catch (error) {
+                        return String(value);
+                    }
+                },
+                normalizeResultsMap(data) {
+                    const normalized = {};
+                    if (data && typeof data === 'object') {
+                        Object.entries(data).forEach(([key, value]) => {
+                            const safeKey = this.stringId(value && typeof value === 'object' ? value.id ?? key : key);
+                            const entry = value && typeof value === 'object' ? { ...value } : {};
+                            if (!entry.id) {
+                                entry.id = safeKey;
+                            }
+                            normalized[safeKey] = entry;
+                        });
+                    }
+                    return normalized;
+                },
+                ensureResultEntry(id) {
+                    const key = this.stringId(id);
+                    if (!key) {
+                        return {};
+                    }
+                    if (!this.resultsMap[key] || typeof this.resultsMap[key] !== 'object') {
+                        this.resultsMap[key] = { id: key };
+                    }
+                    if (!this.resultsMap[key].id) {
+                        this.resultsMap[key].id = key;
+                    }
+                    return this.resultsMap[key];
+                },
+                applyEditableValuesToResult(id, finding, action) {
+                    const key = this.stringId(id);
+                    const entry = this.ensureResultEntry(key);
+                    entry.obrazlozitev = this.ensureText(finding);
+                    entry.ugotovitve_ai = this.ensureText(finding);
+                    entry.predlagani_ukrep = this.ensureText(action);
+                    return entry;
+                },
+                prepareEditableResults(options = {}) {
+                    const {
+                        editedFindings = null,
+                        editedActions = null,
+                        initialFindings = null,
+                        initialActions = null,
+                        preferStateInitial = false
+                    } = options || {};
+
+                    const mapEntries = Object.entries(this.resultsMap || {});
+                    const nextEditableFindings = {};
+                    const nextEditableActions = {};
+                    const nextInitialFindings = {};
+                    const nextInitialActions = {};
+
+                    mapEntries.forEach(([rawKey, rawResult]) => {
+                        const key = this.stringId(rawKey);
+                        const result = rawResult && typeof rawResult === 'object' ? rawResult : {};
+                        const aiFinding = this.ensureText(result.ugotovitve_ai ?? result.obrazlozitev ?? '');
+                        const aiAction = this.ensureText(result.predlagani_ukrep ?? '');
+
+                        const baselineFinding = preferStateInitial && initialFindings && typeof initialFindings[key] === 'string'
+                            ? initialFindings[key]
+                            : aiFinding;
+                        const baselineAction = preferStateInitial && initialActions && typeof initialActions[key] === 'string'
+                            ? initialActions[key]
+                            : aiAction;
+
+                        const currentFinding = editedFindings && typeof editedFindings[key] === 'string'
+                            ? editedFindings[key]
+                            : baselineFinding;
+                        const currentAction = editedActions && typeof editedActions[key] === 'string'
+                            ? editedActions[key]
+                            : baselineAction;
+
+                        nextInitialFindings[key] = baselineFinding;
+                        nextInitialActions[key] = baselineAction;
+                        nextEditableFindings[key] = currentFinding;
+                        nextEditableActions[key] = currentAction;
+
+                        this.applyEditableValuesToResult(key, currentFinding, currentAction);
+                    });
+
+                    if (Array.isArray(this.requirements)) {
+                        this.requirements.forEach(req => {
+                            const key = this.stringId(req?.id);
+                            if (!key || Object.prototype.hasOwnProperty.call(nextEditableFindings, key)) {
+                                return;
+                            }
+                            nextInitialFindings[key] = '';
+                            nextInitialActions[key] = '';
+                            nextEditableFindings[key] = '';
+                            nextEditableActions[key] = '';
+                            this.applyEditableValuesToResult(key, '', '');
+                        });
+                    }
+
+                    this.initialEditableFindings = nextInitialFindings;
+                    this.initialEditableActions = nextInitialActions;
+                    this.editableFindings = nextEditableFindings;
+                    this.editableActions = nextEditableActions;
+                    if (!this.activeEditorId || !Object.prototype.hasOwnProperty.call(this.resultsMap || {}, this.activeEditorId)) {
+                        this.activeEditorId = '';
+                    }
+                },
+                analysisFinding(id) {
+                    const key = this.stringId(id);
+                    const value = this.editableFindings && typeof this.editableFindings[key] === 'string'
+                        ? this.editableFindings[key]
+                        : '';
+                    return value;
+                },
+                analysisAction(id) {
+                    const key = this.stringId(id);
+                    const value = this.editableActions && typeof this.editableActions[key] === 'string'
+                        ? this.editableActions[key]
+                        : '';
+                    return value;
+                },
+                isResultModified(id) {
+                    const key = this.stringId(id);
+                    const currentFinding = this.analysisFinding(key);
+                    const currentAction = this.analysisAction(key);
+                    const initialFinding = this.initialEditableFindings && typeof this.initialEditableFindings[key] === 'string'
+                        ? this.initialEditableFindings[key]
+                        : '';
+                    const initialAction = this.initialEditableActions && typeof this.initialEditableActions[key] === 'string'
+                        ? this.initialEditableActions[key]
+                        : '';
+                    return currentFinding !== initialFinding || currentAction !== initialAction;
+                },
+                onEditableChange(id) {
+                    const key = this.stringId(id);
+                    if (!key) return;
+                    const finding = this.ensureText(this.editableFindings && this.editableFindings[key]);
+                    const action = this.ensureText(this.editableActions && this.editableActions[key]);
+                    this.applyEditableValuesToResult(key, finding, action);
+                    this.persistState(true);
+                },
+                activateEditor(id, event) {
+                    const key = this.stringId(id);
+                    if (!key) return;
+                    const triggerFocus = !event || !event.target || event.target.tagName !== 'TEXTAREA';
+                    this.activeEditorId = key;
+                    if (triggerFocus) {
+                        this.$nextTick(() => {
+                            if (!this.$el) return;
+                            const selector = `textarea[data-editor="${key}"][data-field="finding"]`;
+                            const textarea = this.$el.querySelector(selector);
+                            if (textarea && typeof textarea.focus === 'function') {
+                                textarea.focus();
+                            }
+                        });
+                    }
+                },
+                handleEditorBlur(id, event) {
+                    const key = this.stringId(id);
+                    if (!key) return;
+                    const related = event && event.relatedTarget;
+                    if (related && related.dataset && related.dataset.editor === key) {
+                        return;
+                    }
+                    if (this.activeEditorId === key) {
+                        this.activeEditorId = '';
                     }
                 },
                 formatFileSize(size) {
@@ -963,6 +1327,11 @@
                         this.preparePairs(data.eup || [], data.namenska_raba || []);
                         this.prepareKeyData(data);
                         this.resultsMap = {};
+                        this.editableFindings = {};
+                        this.editableActions = {};
+                        this.initialEditableFindings = {};
+                        this.initialEditableActions = {};
+                        this.activeEditorId = '';
                         this.requirements = [];
                         this.selectedRequirementIds = [];
                         this.excludedIds = [];
@@ -1051,8 +1420,9 @@
                             throw new Error(error.detail || 'Napaka pri analizi.');
                         }
                         const result = await response.json();
-                        this.resultsMap = result.results_map || {};
+                        this.resultsMap = this.normalizeResultsMap(result.results_map || {});
                         this.requirements = Array.isArray(result.zahteve) ? result.zahteve : [];
+                        this.prepareEditableResults();
                         this.requirementRevisions = result.requirement_revisions || {};
                         this.latestNonCompliantIds = Array.isArray(result.non_compliant_ids) ? result.non_compliant_ids.map(String) : [];
                         this.analysisSummary = this.buildAnalysisSummary(result);
@@ -1219,6 +1589,10 @@
                         metadata: this.metadata,
                         requirements: this.requirements,
                         resultsMap: this.resultsMap,
+                        editableFindings: this.editableFindings,
+                        editableActions: this.editableActions,
+                        initialEditableFindings: this.initialEditableFindings,
+                        initialEditableActions: this.initialEditableActions,
                         selectedRequirementIds: this.selectedRequirementIds,
                         excludedIds: this.excludedIds,
                         requirementRevisions: this.requirementRevisions,
@@ -1250,7 +1624,20 @@
                         this.initialKeyData = state.initialKeyData || {};
                         this.metadata = state.metadata || {};
                         this.requirements = state.requirements || [];
-                        this.resultsMap = state.resultsMap || {};
+                        this.resultsMap = this.normalizeResultsMap(state.resultsMap || {});
+                        const hasEditableState = (state.editableFindings && Object.keys(state.editableFindings).length)
+                            || (state.editableActions && Object.keys(state.editableActions).length);
+                        if (hasEditableState) {
+                            this.prepareEditableResults({
+                                editedFindings: state.editableFindings || {},
+                                editedActions: state.editableActions || {},
+                                initialFindings: state.initialEditableFindings || {},
+                                initialActions: state.initialEditableActions || {},
+                                preferStateInitial: true
+                            });
+                        } else {
+                            this.prepareEditableResults();
+                        }
                         this.selectedRequirementIds = state.selectedRequirementIds || [];
                         this.excludedIds = state.excludedIds || [];
                         this.requirementRevisions = state.requirementRevisions || {};
