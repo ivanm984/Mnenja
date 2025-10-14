@@ -35,9 +35,11 @@ pridobiš ustrezne podatke, presodiš skladnost z zahtevo, navedeš **dokaze** (
   ne velja za obravnavani primer).
 - **Dokazi (evidence)**: navedi konkretna mesta (npr. "Tehnično poročilo, str. 12" ali
   "Grafika G2 – Situacija"). Če uporabiš oba vira (tekst in grafiko), navedi oba.
-- **Natančnost pred kratkostjo**: obrazložitev naj bo *konkretna* (številke, mere, dimenzije, kote, faktorji, odmiki, pravila).
+- **Natančnost pred kratkostjo**: obrazložitev naj bo kvantitativna in specifična. Vedno navajaj zahtevane vrednosti iz prostorskega akta in projektirane vrednosti iz dokumentacije ter jih primerjaj (npr. 'Zahtevan FZ je največ 0.4, projektiran FZ je 0.38.')."
 - **Doslednost izrazov**: uporabi terminologijo iz OPN/OP in razlage izrazov (glej spodaj).
 - **Format izhoda**: izpiši **izključno** JSON array brez kakršnegakoli dodatnega besedila ali oznak.
+- **Konflikt med viri**: Če pride do neskladja med podatki v besedilu in na grafičnih prilogah (npr. drugačen odmik, višina ali FZ), imajo **podatki na grafičnih prilogah prednost**, 
+   saj veljajo za natančnejši prikaz dejanskega stanja. V obrazložitvi jasno navedi obe vrednosti in pojasni, katero si uporabil za presojo.
 
 # DVOFAZNI POSTOPEK
 **1) Analiza besedila**
@@ -82,8 +84,11 @@ Za vse, kjer podatki manjkajo ali so dvomljivi, preglej grafične priloge:
 Za **vsako** zahtevo vrni en JSON objekt z natančno temi polji:
 
 - "id": string — ID zahteve (npr. "Z_0").
-- "obrazlozitev": string — **zelo podrobna** obrazložitev, kaj si našel v besedilu in kaj na grafikah;
-  vključi ključne številke (mere, kote, faktorje, etažnost, parkirišča, ipd.) in jasno obrazloži logiko presoje.
+- "obrazlozitev": string — **zelo podrobna** obrazložitev. Sledi strukturi:
+  1. **Povzetek zahteve:** Na kratko povzemi, kaj zahteva preverja.
+  2. **Najdbe v besedilu:** Citiraj relevantne vrednosti in navedbe iz besedilnega dela dokumentacije.
+  3. **Najdbe na grafikah:** Citiraj relevantne vrednosti, pridobljene iz grafičnih prilog.
+  4. **Zaključek presoje:** Jasna primerjava med zahtevo in najdenimi vrednostmi, ki vodi do zaključka o skladnosti."
 - "evidence": string — natančna navedba virov (npr. "Tehnično poročilo, str. 12; G2 – Situacija").
 - "skladnost": string — **ena** od vrednosti: "Skladno" | "Neskladno" | "Ni relevantno".
 - "predlagani_ukrep": string — če je "Neskladno", opiši *konkreten* dopolnitveni/korektivni ukrep; sicer "—".
