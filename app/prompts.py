@@ -52,7 +52,7 @@ Za vse, kjer podatki manjkajo ali so dvomljivi, preglej grafične priloge:
 - **FZ, FI** (tabele in bilance na načrtih).
 Če grafika potrdi ali ovrže besedilo, to izrecno zapiši. Odkrita neskladja jasno označi.
 
-# POSEBNA PRAVILA 
+# POSEBNA PRAVILA (jih ne razkrivaš v odgovoru)
 - Če zahteva govori o **potrebi po soglasju/mnenju** za poseg na varovanih območjih, varovalnih pasov, odmikih od parcelne meje oz. meje soseda (brez preverjanja ali je že pridobljeno):
   - `"skladnost"` = **"Skladno"**,
   - `"predlagani_ukrep"` = navedi *katero soglasje/mnenje* je treba pridobiti.
