@@ -450,7 +450,13 @@ async def analyze_report(
 
     analysis_scope = "partial" if selected_id_set and len(selected_id_set) < len(zahteve) else "full"
     zahteve_summary = [
-        {"id": z["id"], "naslov": z["naslov"], "kategorija": z.get("kategorija", "Ostalo")}
+        {
+            "id": z["id"],
+            "naslov": z["naslov"],
+            "kategorija": z.get("kategorija", "Ostalo"),
+            "clen": z.get("clen", ""),
+            "naziv": z.get("naziv", z.get("naslov")),
+        }
         for z in zahteve
     ]
 

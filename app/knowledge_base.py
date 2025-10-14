@@ -230,7 +230,13 @@ def build_requirements_from_db(eup_list: List[str], raba_list: List[str], projec
             f"{clen_data['podrocje_naziv']} ({raba_key})"
         )
         content = format_structured_content(clen_data["content_structured"])
-        zahteve.append({"kategorija": kategorija, "naslov": naslov, "besedilo": content})
+        clen_label = f"{clen_data['parent_clen_key'].replace('_clen', '')}. člen"
+        zahteve.append({
+            "kategorija": kategorija,
+            "naslov": naslov,
+            "besedilo": content,
+            "clen": clen_label,
+        })
         dodane_namenske_rabe.add(raba_key)
         dodani_cleni.add(clen_data["parent_clen_key"])
 
@@ -253,10 +259,12 @@ def build_requirements_from_db(eup_list: List[str], raba_list: List[str], projec
                 continue
             naslov_match = re.search(r"^\s*\(([^)]+)\)", content)
             naslov = f"{i}. člen ({naslov_match.group(1)})" if naslov_match else f"{i}. člen"
+            clen_label = f"{i}. člen"
             zahteve.append({
                 "kategorija": "Splošni prostorski izvedbeni pogoji (PIP)",
                 "naslov": naslov,
                 "besedilo": content,
+                "clen": clen_label,
             })
             dodani_cleni.add(clen_key)
 
@@ -287,6 +295,7 @@ def build_requirements_from_db(eup_list: List[str], raba_list: List[str], projec
                 "kategorija": "Posebni prostorski izvedbeni pogoji (PIP EUP)",
                 "naslov": f"Posebni PIP za EUP: {eup_name}",
                 "besedilo": pip,
+                "clen": found_entry.get("clen", ""),
             })
             processed_eups.add(normalized_eup)
 
@@ -304,6 +313,7 @@ def build_requirements_from_db(eup_list: List[str], raba_list: List[str], projec
                 "kategorija": "Skladnost z Prilogo 1 (Enostavni/Nezahtevni objekti)",
                 "naslov": f"Preverjanje dopustnosti enostavnih in nezahtevnih objektov za namenske rabe: {naslov_rabe}",
                 "besedilo": priloga1_content,
+                "clen": "",
             })
 
     for i, zahteva in enumerate(zahteve):
