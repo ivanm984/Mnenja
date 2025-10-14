@@ -53,7 +53,7 @@ Za vse, kjer podatki manjkajo ali so dvomljivi, preglej grafične priloge:
 Če grafika potrdi ali ovrže besedilo, to izrecno zapiši. Odkrita neskladja jasno označi.
 
 # POSEBNA PRAVILA (Soglasja, mnenja, odmiki)
-- Če zahteva govori o **potrebi po soglasju/mnenju** (brez preverjanja ali je že pridobljeno):
+- Če zahteva govori o **potrebi po soglasju/mnenju** za poseg na varovanih območjih, varovalnih pasov, odmikih od parcelne meje oz. meje soseda (brez preverjanja ali je že pridobljeno):
   - `"skladnost"` = **"Skladno"**,
   - `"predlagani_ukrep"` = navedi *katero soglasje/mnenje* je treba pridobiti.
 - Pri **odmikih** v obrazložitvi navedi **vse citirane odmike** iz dokumentacije, tudi če presegajo 4 m
