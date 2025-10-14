@@ -88,8 +88,8 @@
 
         .step-card {
             backdrop-filter: blur(12px);
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.88);
+            border: 2px solid rgba(148, 163, 184, 0.35);
             border-radius: var(--radius-md);
             padding: 18px 20px;
             box-shadow: var(--shadow-sm);
@@ -294,6 +294,15 @@
 
         .btn-secondary:hover {
             background: rgba(15, 23, 42, 0.14);
+        }
+
+        .btn-danger {
+            background: rgba(220, 38, 38, 0.14);
+            color: #b91c1c;
+        }
+
+        .btn-danger:hover {
+            background: rgba(220, 38, 38, 0.22);
         }
 
         .status-banner {
@@ -835,6 +844,7 @@
             <div class="actions-row">
                 <button class="btn btn-primary" @click="runAnalysis" :disabled="isBusy">Izvedi podrobno analizo</button>
                 <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId">Shrani napredek</button>
+                <button class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy">Ponastavi analizo</button>
             </div>
         </section>
 
@@ -1122,6 +1132,45 @@
                 },
                 setStatus(type, message) {
                     this.status = { type, message };
+                },
+                resetAnalysis() {
+                    if (this.isBusy) return;
+                    const confirmed = confirm('Ali želite ponastaviti analizo in odstraniti vse trenutno zbrane podatke?');
+                    if (!confirmed) return;
+                    localStorage.removeItem(this.storageKey);
+                    if (this.$refs.fileInput) {
+                        this.$refs.fileInput.value = '';
+                    }
+                    this.files = [];
+                    this.pageOverrides = {};
+                    this.isDragging = false;
+                    this.isBusy = false;
+                    this.busyMessage = '';
+                    this.sessionId = '';
+                    this.eupPairs = [];
+                    this.initialKeyData = {};
+                    this.keyData = {};
+                    this.metadata = {};
+                    this.requirements = [];
+                    this.resultsMap = {};
+                    this.editableFindings = {};
+                    this.editableActions = {};
+                    this.initialEditableFindings = {};
+                    this.initialEditableActions = {};
+                    this.activeEditorId = '';
+                    this.selectedRequirementIds = [];
+                    this.excludedIds = [];
+                    this.requirementRevisions = {};
+                    this.latestNonCompliantIds = [];
+                    this.analysisSummary = '';
+                    this.downloadReady = false;
+                    this.downloadHref = '';
+                    this.revisionFiles = [];
+                    this.revisionPages = '';
+                    this.revisionInfo = '';
+                    this.showSavedModal = false;
+                    this.highlightedSession = this.savedSessions.length ? this.savedSessions[0] : null;
+                    this.setStatus('info', 'Analiza je bila ponastavljena.');
                 },
                 startLoading(message) {
                     this.isBusy = true;
