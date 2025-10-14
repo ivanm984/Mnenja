@@ -85,10 +85,10 @@ Za **vsako** zahtevo vrni en JSON objekt z natančno temi polji:
 
 - "id": string — ID zahteve (npr. "Z_0").
 - "obrazlozitev": string — **zelo podrobna** obrazložitev. Sledi strukturi:
-  1. **Povzetek zahteve:** Na kratko povzemi, kaj zahteva preverja.
-  2. **Najdbe v besedilu:** Citiraj relevantne vrednosti in navedbe iz besedilnega dela dokumentacije.
-  3. **Najdbe na grafikah:** Citiraj relevantne vrednosti, pridobljene iz grafičnih prilog.
-  4. **Zaključek presoje:** Jasna primerjava med zahtevo in najdenimi vrednostmi, ki vodi do zaključka o skladnosti."
+  1.  Na kratko povzemi, kaj zahteva preverja.
+  2.  Citiraj relevantne vrednosti in navedbe iz besedilnega dela dokumentacije.
+  3.  Citiraj relevantne vrednosti, pridobljene iz grafičnih prilog.
+  4.  Jasna primerjava med zahtevo in najdenimi vrednostmi, ki vodi do zaključka o skladnosti."
 - "evidence": string — natančna navedba virov (npr. "Tehnično poročilo, str. 12; G2 – Situacija").
 - "skladnost": string — **ena** od vrednosti: "Skladno" | "Neskladno" | "Ni relevantno".
 - "predlagani_ukrep": string — če je "Neskladno", opiši *konkreten* dopolnitveni/korektivni ukrep; sicer "—".
