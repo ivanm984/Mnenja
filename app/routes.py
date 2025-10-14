@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from datetime import datetime
 from pathlib import Path
+import re
 from typing import Any, Dict, List, Optional
 
 from fastapi import File, Form, HTTPException, UploadFile
@@ -430,8 +431,44 @@ async def analyze_report(
     ai_response = call_gemini(prompt, data["images"])
     results_map = parse_ai_response(ai_response, zahteve_za_analizo)
 
+    id_to_label: Dict[str, str] = {}
+    for zahteva in zahteve:
+        zid = zahteva.get("id")
+        if not zid:
+            continue
+        clen_label = (zahteva.get("clen") or "").strip()
+        naziv_label = (zahteva.get("naziv") or zahteva.get("naslov") or "").strip()
+        if clen_label and naziv_label and clen_label.lower() not in naziv_label.lower():
+            preferred_label = f"{clen_label} ({naziv_label})"
+        else:
+            preferred_label = clen_label or naziv_label or zid
+        id_to_label[zid] = preferred_label
+
+    replacement_pattern = None
+    if id_to_label:
+        replacement_pattern = re.compile(r"\\b(" + "|".join(map(re.escape, id_to_label.keys())) + r")\\b")
+
+    def replace_requirement_ids(value: Any) -> Any:
+        if not replacement_pattern or not isinstance(value, str) or not value:
+            return value
+        return replacement_pattern.sub(lambda match: id_to_label.get(match.group(0), match.group(0)), value)
+
+    def normalize_entry(entry: Dict[str, Any]) -> Dict[str, Any]:
+        if not isinstance(entry, dict):
+            return entry
+        for field in ("obrazlozitev", "predlagani_ukrep", "ugotovitve_ai", "evidence"):
+            if field in entry:
+                entry[field] = replace_requirement_ids(entry[field])
+        return entry
+
+    for entry in results_map.values():
+        normalize_entry(entry)
+
     combined_results_map = {k: v for k, v in existing_results_map.items()}
     combined_results_map.update(results_map)
+
+    for entry in combined_results_map.values():
+        normalize_entry(entry)
 
     for z in zahteve:
         if z["id"] not in combined_results_map:

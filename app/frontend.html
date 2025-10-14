@@ -88,13 +88,24 @@
 
         .step-card {
             backdrop-filter: blur(12px);
-            background: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.88);
+            border: 2px solid rgba(148, 163, 184, 0.35);
             border-radius: var(--radius-md);
             padding: 18px 20px;
             box-shadow: var(--shadow-sm);
             display: grid;
             gap: 8px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .step-card.active {
+            border-color: rgba(37, 99, 235, 0.85);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .step-card.completed {
+            border-color: rgba(22, 163, 74, 0.6);
         }
 
         .step-card strong {
@@ -283,6 +294,15 @@
 
         .btn-secondary:hover {
             background: rgba(15, 23, 42, 0.14);
+        }
+
+        .btn-danger {
+            background: rgba(220, 38, 38, 0.14);
+            color: #b91c1c;
+        }
+
+        .btn-danger:hover {
+            background: rgba(220, 38, 38, 0.22);
         }
 
         .status-banner {
@@ -702,7 +722,7 @@
                 <p>Napredni pregled projektne dokumentacije, ki združuje AI ekstrakcijo ključnih podatkov, preglednost korakov in jasne povratne informacije za vašo ekipo.</p>
             </div>
             <div class="steps">
-                <div class="step-card" v-for="step in heroSteps" :key="step.title">
+                <div class="step-card" v-for="step in heroSteps" :key="step.title" :class="heroStepClass(step.id)">
                     <strong>{{ step.id }}</strong>
                     <div>{{ step.title }}</div>
                     <small class="subtitle">{{ step.description }}</small>
@@ -824,6 +844,7 @@
             <div class="actions-row">
                 <button class="btn btn-primary" @click="runAnalysis" :disabled="isBusy">Izvedi podrobno analizo</button>
                 <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId">Shrani napredek</button>
+                <button class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy">Ponastavi analizo</button>
             </div>
         </section>
 
@@ -1088,13 +1109,68 @@
                         isLong: this.longFieldKeys.has(key)
                     }));
                 },
+                heroActiveStep() {
+                    if (Array.isArray(this.requirements) && this.requirements.length) {
+                        return 3;
+                    }
+                    if (this.showReview) {
+                        return 2;
+                    }
+                    return 1;
+                },
                 showReview() {
                     return !!this.sessionId && this.eupPairs.length > 0;
                 }
             },
             methods: {
+                heroStepClass(stepId) {
+                    const active = this.heroActiveStep;
+                    return {
+                        active: stepId === active,
+                        completed: stepId < active
+                    };
+                },
                 setStatus(type, message) {
                     this.status = { type, message };
+                },
+                resetAnalysis() {
+                    if (this.isBusy) return;
+                    const confirmed = confirm('Ali želite ponastaviti analizo in odstraniti vse trenutno zbrane podatke?');
+                    if (!confirmed) return;
+                    localStorage.removeItem(this.storageKey);
+                    if (this.$refs.fileInput) {
+                        this.$refs.fileInput.value = '';
+                    }
+                    this.files = [];
+                    this.pageOverrides = {};
+                    this.isDragging = false;
+                    this.isBusy = false;
+                    this.busyMessage = '';
+                    this.sessionId = '';
+                    this.eupPairs = [];
+                    this.initialKeyData = {};
+                    this.keyData = {};
+                    this.metadata = {};
+                    this.requirements = [];
+                    this.resultsMap = {};
+                    this.editableFindings = {};
+                    this.editableActions = {};
+                    this.initialEditableFindings = {};
+                    this.initialEditableActions = {};
+                    this.activeEditorId = '';
+                    this.selectedRequirementIds = [];
+                    this.excludedIds = [];
+                    this.requirementRevisions = {};
+                    this.latestNonCompliantIds = [];
+                    this.analysisSummary = '';
+                    this.downloadReady = false;
+                    this.downloadHref = '';
+                    this.revisionFiles = [];
+                    this.revisionPages = '';
+                    this.revisionInfo = '';
+                    this.showSavedModal = false;
+                    this.highlightedSession = this.savedSessions.length ? this.savedSessions[0] : null;
+                    this.setStatus('info', 'Analiza je bila ponastavljena.');
                 },
                 startLoading(message) {
                     this.isBusy = true;
