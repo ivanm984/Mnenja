@@ -285,17 +285,6 @@
             background: rgba(15, 23, 42, 0.14);
         }
 
-        .btn-text {
-            background: transparent;
-            color: var(--muted);
-            padding: 8px 12px;
-        }
-
-        .btn-text:hover {
-            color: var(--primary);
-            background: rgba(37, 99, 235, 0.08);
-        }
-
         .status-banner {
             border-radius: var(--radius-md);
             padding: 16px 18px;
@@ -340,12 +329,6 @@
             box-shadow: 0 22px 40px rgba(37, 99, 235, 0.18);
         }
 
-        .pair-card.modified input,
-        .pair-card.modified textarea {
-            border-color: rgba(37, 99, 235, 0.45);
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
-        }
-
         .pair-card .hint {
             font-size: 0.85rem;
             color: var(--muted);
@@ -373,12 +356,6 @@
         .key-field.modified {
             border-color: rgba(37, 99, 235, 0.5);
             box-shadow: 0 22px 46px rgba(37, 99, 235, 0.18);
-        }
-
-        .key-field.modified textarea,
-        .key-field.modified input {
-            border-color: rgba(37, 99, 235, 0.6);
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
         }
 
         .metadata-grid {
@@ -434,135 +411,8 @@
             background: rgba(37, 99, 235, 0.08);
         }
 
-        .requirement-row {
-            transition: background 0.18s ease, box-shadow 0.18s ease;
-        }
-
-        .requirement-row:hover {
+        tbody tr:hover {
             background: rgba(37, 99, 235, 0.05);
-        }
-
-        .requirement-row.modified {
-            box-shadow: inset 0 0 0 2px rgba(37, 99, 235, 0.25);
-        }
-
-        .requirement-row.open {
-            background: rgba(37, 99, 235, 0.08);
-        }
-
-        .requirement-row.excluded {
-            opacity: 0.6;
-        }
-
-        .requirement-row .requirement-toggle {
-            border: none;
-            background: none;
-            padding: 0;
-            margin: 0;
-            font: inherit;
-            text-align: left;
-            color: inherit;
-            cursor: pointer;
-            display: grid;
-            gap: 4px;
-        }
-
-        .requirement-row .requirement-toggle strong {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .requirement-row .requirement-toggle strong::after {
-            content: attr(data-expanded);
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--primary);
-            background: rgba(37, 99, 235, 0.14);
-            border-radius: 999px;
-            padding: 2px 8px;
-        }
-
-        .requirement-row .requirement-toggle strong[data-expanded=""]::after {
-            display: none;
-        }
-
-        .requirement-row .requirement-toggle:hover strong {
-            color: var(--primary);
-        }
-
-        .requirement-row .requirement-toggle .subtitle {
-            color: var(--muted);
-        }
-
-        .requirement-row .tooltip-source {
-            position: relative;
-        }
-
-        .requirement-row .tooltip-source::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            left: 0;
-            top: 100%;
-            transform: translateY(8px);
-            background: #0f172a;
-            color: #fff;
-            padding: 10px 12px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            line-height: 1.4;
-            white-space: pre-wrap;
-            box-shadow: var(--shadow-md);
-            min-width: 220px;
-            max-width: 360px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.15s ease;
-            z-index: 5;
-        }
-
-        .requirement-row .tooltip-source[data-tooltip=""]::after {
-            display: none;
-        }
-
-        .requirement-row .tooltip-source:hover::after {
-            opacity: 1;
-        }
-
-        .requirement-details td {
-            background: rgba(248, 250, 255, 0.95);
-        }
-
-        .requirement-editor {
-            display: grid;
-            gap: 16px;
-        }
-
-        .requirement-editor .editor-grid {
-            display: grid;
-            gap: 16px;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        }
-
-        .requirement-editor .editor-grid textarea {
-            min-height: 110px;
-        }
-
-        .requirement-editor .editor-actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .btn-outline.btn-saved {
-            border-color: rgba(22, 163, 74, 0.6);
-            color: var(--success);
-            background: rgba(34, 197, 94, 0.12);
-            box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.18);
         }
 
         .status-pill {
@@ -806,9 +656,7 @@
 
             <div class="actions-row">
                 <button class="btn btn-primary" @click="runAnalysis" :disabled="isBusy">Izvedi podrobno analizo</button>
-                <button :class="['btn', 'btn-outline', { 'btn-saved': saveButtonPulse }]" @click="saveProgress" :disabled="isBusy || !sessionId">
-                    Shrani napredek
-                </button>
+                <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId">Shrani napredek</button>
             </div>
         </section>
 
@@ -832,75 +680,38 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <template v-for="req in requirements" :key="req.id">
-                            <tr class="requirement-row" :class="{
-                                    excluded: excludedIds.includes(String(req.id)),
-                                    open: activeRequirementId === String(req.id),
-                                    modified: requirementModified(req.id)
-                                }">
-                                <td>
-                                    <input type="checkbox" :value="String(req.id)" v-model="selectedRequirementIds" :disabled="excludedIds.includes(String(req.id))" />
-                                </td>
-                                <td>
-                                    <button type="button" class="requirement-toggle tooltip-source" :data-tooltip="fullRequirementText(req.id)" @click="toggleRequirementDetails(req.id)">
-                                        <strong :data-expanded="activeRequirementId === String(req.id) ? 'UREJANJE' : 'UREDI'">{{ req.naziv || 'Zahteva' }}</strong>
-                                        <div class="subtitle">{{ req.skupina || req.kategorija || '' }}</div>
-                                    </button>
-                                    <button class="btn btn-secondary" style="margin-top:8px;" @click="toggleRequirementExclusion(req.id)">
-                                        {{ excludedIds.includes(String(req.id)) ? 'Vključi v poročilo' : 'Izloči iz končnega poročila' }}
-                                    </button>
-                                    <div v-if="requirementRevisions[String(req.id)]?.length" class="field-hint" style="margin-top:10px;">
-                                        <strong>Priloženi popravki:</strong>
-                                        <ul style="margin:6px 0 0 18px; padding:0;">
-                                            <li v-for="rev in requirementRevisions[String(req.id)]" :key="rev.filename + rev.uploaded_at">
-                                                {{ rev.filename }} – {{ formatTimestamp(rev.uploaded_at) }}<span v-if="rev.note"> ·{{ rev.note }}</span>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="status-pill" :class="statusClass(resultFor(req.id).skladnost)">{{ resultFor(req.id).skladnost || 'Neznano' }}</span>
-                                </td>
-                                <td>
-                                    <div>{{ resultFor(req.id).predlagani_ukrep || resultFor(req.id).obrazlozitev || '—' }}</div>
-                                    <div class="actions-row" style="margin-top:12px;">
-                                        <label class="btn btn-outline" style="cursor:pointer;">
-                                            Naloži popravek
-                                            <input type="file" accept="application/pdf" multiple style="display:none;" @change="event => queueRequirementRevision(req.id, event)" />
-                                        </label>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr v-if="activeRequirementId === String(req.id)" class="requirement-details">
-                                <td></td>
-                                <td colspan="3">
-                                    <div class="requirement-editor">
-                                        <div class="editor-grid">
-                                            <div>
-                                                <label :for="`req-status-${req.id}`">Ocena skladnosti</label>
-                                                <input :id="`req-status-${req.id}`" type="text" v-model="editableResults[String(req.id)].skladnost" />
-                                            </div>
-                                            <div>
-                                                <label :for="`req-note-${req.id}`">Opomba</label>
-                                                <textarea :id="`req-note-${req.id}`" v-model="editableResults[String(req.id)].komentar" placeholder="Dodatna pojasnila za poročilo"></textarea>
-                                            </div>
-                                            <div>
-                                                <label :for="`req-summary-${req.id}`">Obrazložitev</label>
-                                                <textarea :id="`req-summary-${req.id}`" v-model="editableResults[String(req.id)].obrazlozitev"></textarea>
-                                            </div>
-                                            <div>
-                                                <label :for="`req-action-${req.id}`">Predlagani ukrep</label>
-                                                <textarea :id="`req-action-${req.id}`" v-model="editableResults[String(req.id)].predlagani_ukrep"></textarea>
-                                            </div>
-                                        </div>
-                                        <div class="editor-actions">
-                                            <button class="btn btn-primary" type="button" @click="applyRequirementEdit(req.id)">Shrani spremembe</button>
-                                            <button class="btn btn-text" type="button" @click="resetRequirementEdit(req.id)" :disabled="!requirementModified(req.id)">Ponastavi na analizo</button>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </template>
+                        <tr v-for="req in requirements" :key="req.id" :class="{ excluded: excludedIds.includes(String(req.id)) }">
+                            <td>
+                                <input type="checkbox" :value="String(req.id)" v-model="selectedRequirementIds" :disabled="excludedIds.includes(String(req.id))" />
+                            </td>
+                            <td>
+                                <strong>{{ req.naziv || 'Zahteva' }}</strong>
+                                <div class="subtitle">{{ req.skupina || req.kategorija || '' }}</div>
+                                <button class="btn btn-secondary" style="margin-top:8px;" @click="toggleRequirementExclusion(req.id)">
+                                    {{ excludedIds.includes(String(req.id)) ? 'Vključi v poročilo' : 'Izloči iz končnega poročila' }}
+                                </button>
+                                <div v-if="requirementRevisions[String(req.id)]?.length" class="field-hint" style="margin-top:10px;">
+                                    <strong>Priloženi popravki:</strong>
+                                    <ul style="margin:6px 0 0 18px; padding:0;">
+                                        <li v-for="rev in requirementRevisions[String(req.id)]" :key="rev.filename + rev.uploaded_at">
+                                            {{ rev.filename }} – {{ formatTimestamp(rev.uploaded_at) }}<span v-if="rev.note"> · {{ rev.note }}</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="status-pill" :class="statusClass(resultsMap[req.id]?.skladnost)">{{ resultsMap[req.id]?.skladnost || 'Neznano' }}</span>
+                            </td>
+                            <td>
+                                <div>{{ resultsMap[req.id]?.predlagani_ukrep || resultsMap[req.id]?.obrazlozitev || '—' }}</div>
+                                <div class="actions-row" style="margin-top:12px;">
+                                    <label class="btn btn-outline" style="cursor:pointer;">
+                                        Naloži popravek
+                                        <input type="file" accept="application/pdf" multiple style="display:none;" @change="event => queueRequirementRevision(req.id, event)" />
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -909,7 +720,7 @@
                 <button class="btn btn-outline" @click="rerunNonCompliant" :disabled="isBusy || !latestNonCompliantIds.length">Analiziraj neskladne</button>
                 <button class="btn btn-outline" @click="rerunSelected" :disabled="isBusy || !selectedRequirementIds.length">Ponovno preveri izbrane</button>
                 <button class="btn btn-secondary" @click="resetSelection" :disabled="isBusy">Počisti izbor</button>
-                <button :class="['btn', 'btn-outline', { 'btn-saved': saveButtonPulse }]" @click="saveProgress" :disabled="isBusy || !sessionId">Shrani napredek</button>
+                <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId">Shrani napredek</button>
                 <button class="btn btn-primary" @click="confirmReport" :disabled="isBusy || !sessionId">Potrdi in ustvari poročilo</button>
                 <a v-if="downloadReady" class="btn btn-outline" :href="downloadHref" download>Prenesi poročilo (.docx)</a>
             </div>
@@ -988,9 +799,6 @@
                     metadata: {},
                     requirements: [],
                     resultsMap: {},
-                    editableResults: {},
-                    originalResultsMap: {},
-                    activeRequirementId: null,
                     selectedRequirementIds: [],
                     excludedIds: [],
                     requirementRevisions: {},
@@ -1005,8 +813,6 @@
                     savedSessionsLoading: false,
                     showSavedModal: false,
                     highlightedSession: null,
-                    saveButtonPulse: false,
-                    savePulseTimeout: null,
                     heroSteps: [
                         { id: 1, title: 'Naloži dokumente', description: 'Dodajte PDF dokumentacijo in po želji označite strani za grafični pregled.' },
                         { id: 2, title: 'Preglej osnutek', description: 'AI pripravi osnutek EUP/rab in ključnih podatkov, ki jih lahko prilagodite.' },
@@ -1067,127 +873,6 @@
                     if (message) {
                         this.setStatus(type, message);
                     }
-                },
-                normalizeResultsMap(source) {
-                    const normalized = {};
-                    if (source && typeof source === 'object') {
-                        Object.entries(source).forEach(([key, value]) => {
-                            normalized[String(key)] = { ...(value || {}) };
-                        });
-                    }
-                    return normalized;
-                },
-                normalizeRequirementEntry(entry = {}) {
-                    return {
-                        skladnost: (entry.skladnost || '').toString(),
-                        obrazlozitev: (entry.obrazlozitev || entry.obrazložitev || '').toString(),
-                        predlagani_ukrep: (entry.predlagani_ukrep || '').toString(),
-                        komentar: (entry.komentar || entry.opomba || entry.note || '').toString()
-                    };
-                },
-                hasRequirementChanged(current = {}, original = {}) {
-                    const fields = ['skladnost', 'obrazlozitev', 'predlagani_ukrep', 'komentar'];
-                    return fields.some(field => (current[field] || '').trim() !== (original[field] || '').trim());
-                },
-                prepareRequirementDrafts(updatedKeys = null) {
-                    const nextEditable = {};
-                    const nextOriginal = {};
-                    const keySet = updatedKeys ? new Set([...updatedKeys].map(key => String(key))) : null;
-                    this.requirements.forEach(req => {
-                        const key = String(req.id);
-                        const base = this.normalizeRequirementEntry(this.resultFor(req.id));
-                        const previousDraft = this.editableResults[key];
-                        const previousOriginal = this.originalResultsMap[key];
-                        const keepDraft = previousDraft && previousOriginal && this.hasRequirementChanged(previousDraft, previousOriginal);
-                        nextEditable[key] = keepDraft ? { ...previousDraft } : { ...base };
-                        if (keySet && !keySet.has(key) && previousOriginal) {
-                            nextOriginal[key] = { ...previousOriginal };
-                        } else {
-                            nextOriginal[key] = { ...base };
-                        }
-                    });
-                    this.editableResults = nextEditable;
-                    this.originalResultsMap = nextOriginal;
-                },
-                resultFor(id) {
-                    const key = String(id);
-                    return this.resultsMap[key] || this.resultsMap[id] || {};
-                },
-                fullRequirementText(id) {
-                    const key = String(id);
-                    const draft = this.editableResults[key];
-                    const base = this.normalizeRequirementEntry(this.resultFor(id));
-                    const merged = {
-                        skladnost: (draft?.skladnost ?? base.skladnost) || '',
-                        obrazlozitev: (draft?.obrazlozitev ?? base.obrazlozitev) || '',
-                        predlagani_ukrep: (draft?.predlagani_ukrep ?? base.predlagani_ukrep) || '',
-                        komentar: (draft?.komentar ?? base.komentar) || ''
-                    };
-                    const parts = [];
-                    if (merged.skladnost) parts.push(`Ocena: ${merged.skladnost}`);
-                    if (merged.obrazlozitev) parts.push(`Obrazložitev: ${merged.obrazlozitev}`);
-                    if (merged.predlagani_ukrep) parts.push(`Ukrep: ${merged.predlagani_ukrep}`);
-                    if (merged.komentar) parts.push(`Opomba: ${merged.komentar}`);
-                    return parts.join('\n\n');
-                },
-                requirementModified(id) {
-                    const key = String(id);
-                    const draft = this.editableResults[key];
-                    const original = this.originalResultsMap[key];
-                    if (!draft || !original) return false;
-                    return this.hasRequirementChanged(draft, original);
-                },
-                toggleRequirementDetails(id) {
-                    const key = String(id);
-                    if (!this.editableResults[key] || !this.originalResultsMap[key]) {
-                        const normalized = this.normalizeRequirementEntry(this.resultFor(id));
-                        this.editableResults = { ...this.editableResults, [key]: { ...normalized } };
-                        this.originalResultsMap = { ...this.originalResultsMap, [key]: { ...normalized } };
-                    }
-                    this.activeRequirementId = this.activeRequirementId === key ? null : key;
-                    this.persistState(true);
-                },
-                applyRequirementEdit(id) {
-                    const key = String(id);
-                    const draft = this.editableResults[key];
-                    if (!draft) return;
-                    const cleaned = {
-                        skladnost: (draft.skladnost || '').trim(),
-                        obrazlozitev: (draft.obrazlozitev || '').trim(),
-                        predlagani_ukrep: (draft.predlagani_ukrep || '').trim(),
-                        komentar: (draft.komentar || '').trim()
-                    };
-                    this.editableResults = { ...this.editableResults, [key]: { ...cleaned } };
-                    const existing = this.resultFor(id);
-                    this.resultsMap = { ...this.resultsMap, [key]: { ...existing, ...cleaned } };
-                    this.persistState(true);
-                    this.setStatus('success', 'Spremembe zahteve so shranjene (lokalno).');
-                },
-                resetRequirementEdit(id) {
-                    const key = String(id);
-                    const original = this.originalResultsMap[key];
-                    if (!original) return;
-                    const restored = {
-                        skladnost: (original.skladnost || '').trim(),
-                        obrazlozitev: (original.obrazlozitev || '').trim(),
-                        predlagani_ukrep: (original.predlagani_ukrep || '').trim(),
-                        komentar: (original.komentar || '').trim()
-                    };
-                    this.editableResults = { ...this.editableResults, [key]: { ...restored } };
-                    const existing = this.resultFor(id);
-                    this.resultsMap = { ...this.resultsMap, [key]: { ...existing, ...restored } };
-                    this.persistState(true);
-                    this.setStatus('success', 'Spremembe so bile ponastavljene na rezultat analize.');
-                },
-                highlightSaveButton() {
-                    if (this.savePulseTimeout) {
-                        clearTimeout(this.savePulseTimeout);
-                    }
-                    this.saveButtonPulse = true;
-                    this.savePulseTimeout = setTimeout(() => {
-                        this.saveButtonPulse = false;
-                        this.savePulseTimeout = null;
-                    }, 2000);
                 },
                 formatFileSize(size) {
                     if (!size) return '0 B';
@@ -1278,9 +963,6 @@
                         this.preparePairs(data.eup || [], data.namenska_raba || []);
                         this.prepareKeyData(data);
                         this.resultsMap = {};
-                        this.editableResults = {};
-                        this.originalResultsMap = {};
-                        this.activeRequirementId = null;
                         this.requirements = [];
                         this.selectedRequirementIds = [];
                         this.excludedIds = [];
@@ -1369,19 +1051,8 @@
                             throw new Error(error.detail || 'Napaka pri analizi.');
                         }
                         const result = await response.json();
-                        const incomingResults = this.normalizeResultsMap(result.results_map || {});
-                        const updatedKeys = Object.keys(incomingResults);
-                        const isPartial = result.analysis_scope === 'partial';
-                        if (!isPartial || !Object.keys(this.resultsMap).length) {
-                            this.resultsMap = incomingResults;
-                        } else {
-                            this.resultsMap = { ...this.resultsMap, ...incomingResults };
-                        }
+                        this.resultsMap = result.results_map || {};
                         this.requirements = Array.isArray(result.zahteve) ? result.zahteve : [];
-                        this.prepareRequirementDrafts(isPartial ? updatedKeys : null);
-                        if (this.activeRequirementId && !this.requirements.some(req => String(req.id) === this.activeRequirementId)) {
-                            this.activeRequirementId = null;
-                        }
                         this.requirementRevisions = result.requirement_revisions || {};
                         this.latestNonCompliantIds = Array.isArray(result.non_compliant_ids) ? result.non_compliant_ids.map(String) : [];
                         this.analysisSummary = this.buildAnalysisSummary(result);
@@ -1548,9 +1219,6 @@
                         metadata: this.metadata,
                         requirements: this.requirements,
                         resultsMap: this.resultsMap,
-                        editableResults: this.editableResults,
-                        originalResultsMap: this.originalResultsMap,
-                        activeRequirementId: this.activeRequirementId,
                         selectedRequirementIds: this.selectedRequirementIds,
                         excludedIds: this.excludedIds,
                         requirementRevisions: this.requirementRevisions,
@@ -1582,7 +1250,7 @@
                         this.initialKeyData = state.initialKeyData || {};
                         this.metadata = state.metadata || {};
                         this.requirements = state.requirements || [];
-                        this.resultsMap = this.normalizeResultsMap(state.resultsMap || {});
+                        this.resultsMap = state.resultsMap || {};
                         this.selectedRequirementIds = state.selectedRequirementIds || [];
                         this.excludedIds = state.excludedIds || [];
                         this.requirementRevisions = state.requirementRevisions || {};
@@ -1591,24 +1259,6 @@
                         this.downloadReady = state.downloadReady || false;
                         this.downloadHref = this.downloadReady ? '/download' : '';
                         this.revisionInfo = state.revisionInfo || '';
-                        const editable = { ...(state.editableResults || {}) };
-                        const originals = { ...(state.originalResultsMap || {}) };
-                        this.requirements.forEach(req => {
-                            const key = String(req.id);
-                            const base = this.normalizeRequirementEntry(this.resultFor(req.id));
-                            if (!editable[key]) {
-                                editable[key] = { ...base };
-                            }
-                            if (!originals[key]) {
-                                originals[key] = { ...base };
-                            }
-                        });
-                        this.editableResults = editable;
-                        this.originalResultsMap = originals;
-                        this.activeRequirementId = state.activeRequirementId && this.requirements.some(req => String(req.id) === String(state.activeRequirementId))
-                            ? String(state.activeRequirementId)
-                            : null;
-                        this.saveButtonPulse = false;
                         this.setStatus('success', 'Obnovljena je bila lokalno shranjena seja.');
                         if (!this.highlightedSession || this.highlightedSession.source === 'local') {
                             this.highlightedSession = {
@@ -1649,7 +1299,6 @@
                         await response.json();
                         this.fetchSavedSessions(true);
                         this.stopLoading('success', 'Analiza je shranjena.');
-                        this.highlightSaveButton();
                     } catch (error) {
                         console.error(error);
                         this.stopLoading('error', error.message || 'Shranjevanje analize ni uspelo.');
@@ -1740,11 +1389,6 @@
                         }
                         this.setStatus('success', 'Shranjena seja je odstranjena.');
                     }
-                }
-            },
-            beforeUnmount() {
-                if (this.savePulseTimeout) {
-                    clearTimeout(this.savePulseTimeout);
                 }
             },
             mounted() {
