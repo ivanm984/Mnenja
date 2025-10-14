@@ -28,20 +28,37 @@ GEN_CFG = {
 }
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
+
 MYSQL_HOST = os.environ.get("MYSQL_HOST")
 MYSQL_PORT = os.environ.get("MYSQL_PORT", "3306")
 MYSQL_USER = os.environ.get("MYSQL_USER")
 MYSQL_PASSWORD = os.environ.get("MYSQL_PASSWORD")
 MYSQL_DATABASE = os.environ.get("MYSQL_DATABASE")
 
+POSTGRES_HOST = os.environ.get("POSTGRES_HOST")
+POSTGRES_PORT = os.environ.get("POSTGRES_PORT", "5432")
+POSTGRES_USER = os.environ.get("POSTGRES_USER")
+POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD")
+POSTGRES_DATABASE = os.environ.get("POSTGRES_DATABASE")
+
 
 def build_mysql_dsn() -> Optional[str]:
-    """Build a PyMySQL connection string if MySQL variables are provided."""
+    """Build a MySQL connection string if environment variables are provided."""
     if not all([MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE]):
         return None
     return (
-        f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}"
+        f"mysql://{MYSQL_USER}:{MYSQL_PASSWORD}"
         f"@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}?charset=utf8mb4"
+    )
+
+
+def build_postgres_dsn() -> Optional[str]:
+    """Build a PostgreSQL connection string if environment variables are provided."""
+    if not all([POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DATABASE]):
+        return None
+    return (
+        f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}"
+        f"@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DATABASE}"
     )
 
 
@@ -53,6 +70,7 @@ __all__ = [
     "GEN_CFG",
     "DATABASE_URL",
     "build_mysql_dsn",
+    "build_postgres_dsn",
     "DEFAULT_SQLITE_PATH",
     "DATA_DIR",
 ]
