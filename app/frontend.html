@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Avtomatsko preverjanje skladnosti</title>
+    <title>IZDELAVA MNENJA O SKADNOSTI S PIA</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -577,6 +577,36 @@
         .status-pill.ni-relevantno { color: var(--primary); background: rgba(37, 99, 235, 0.16); }
         .status-pill.neznano { color: rgba(15, 23, 42, 0.75); background: rgba(15, 23, 42, 0.12); }
 
+        .status-cell {
+            min-width: 200px;
+        }
+
+        .status-control {
+            display: grid;
+            gap: 10px;
+        }
+
+        .status-control select {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            background: rgba(15, 23, 42, 0.03);
+            color: var(--text);
+            cursor: pointer;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+        }
+
+        .status-control select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+            background: #ffffff;
+        }
+
         .actions-row {
             display: flex;
             flex-wrap: wrap;
@@ -668,7 +698,7 @@
     <div id="app" class="app-shell" v-cloak>
         <header class="hero">
             <div>
-                <h1>Avtomatsko preverjanje skladnosti</h1>
+                <h1>IZDELAVA MNENJA O SKADNOSTI S PIA</h1>
                 <p>Napredni pregled projektne dokumentacije, ki združuje AI ekstrakcijo ključnih podatkov, preglednost korakov in jasne povratne informacije za vašo ekipo.</p>
             </div>
             <div class="steps">
@@ -812,7 +842,7 @@
                         <tr>
                             <th style="width:60px;">Izberi</th>
                             <th>Zahteva</th>
-                            <th style="width:160px;">Status</th>
+                            <th style="width:200px;">Status</th>
                             <th>Obrazložitev in popravki</th>
                         </tr>
                     </thead>
@@ -822,8 +852,9 @@
                                 <input type="checkbox" :value="String(req.id)" v-model="selectedRequirementIds" :disabled="excludedIds.includes(String(req.id))" />
                             </td>
                             <td>
-                                <strong>{{ req.naziv || 'Zahteva' }}</strong>
-                                <div class="subtitle">{{ req.skupina || req.kategorija || '' }}</div>
+                                <strong>{{ req.naziv || req.naslov || 'Zahteva' }}</strong>
+                                <div class="subtitle" v-if="req.clen">{{ req.clen }}</div>
+                                <div class="subtitle" v-if="req.skupina || req.kategorija">{{ req.skupina || req.kategorija }}</div>
                                 <button class="btn btn-secondary" style="margin-top:8px;" @click="toggleRequirementExclusion(req.id)">
                                     {{ excludedIds.includes(String(req.id)) ? 'Vključi v poročilo' : 'Izloči iz končnega poročila' }}
                                 </button>
@@ -836,8 +867,13 @@
                                     </ul>
                                 </div>
                             </td>
-                            <td>
-                                <span class="status-pill" :class="statusClass(resultsMap[req.id]?.skladnost)">{{ resultsMap[req.id]?.skladnost || 'Neznano' }}</span>
+                            <td class="status-cell">
+                                <div class="status-control">
+                                    <span class="status-pill" :class="statusClass(currentStatus(req.id))">{{ displayStatus(req.id) }}</span>
+                                    <select :value="currentStatus(req.id)" @change="event => updateRequirementStatus(req.id, event.target.value)">
+                                        <option v-for="option in statusOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+                                    </select>
+                                </div>
                             </td>
                             <td>
                                 <div class="analysis-editor" :class="{ modified: isResultModified(req.id), active: activeEditorId === stringId(req.id) }" @click="activateEditor(req.id, $event)">
@@ -920,7 +956,7 @@
         </section>
 
         <footer>
-            &copy; YEAR_PLACEHOLDER – Avtomatsko preverjanje skladnosti
+            &copy; YEAR_PLACEHOLDER – IZDELAVA MNENJA O SKADNOSTI S PIA
         </footer>
 
         <div v-if="showSavedModal" class="modal-backdrop" @click.self="showSavedModal = false">
@@ -994,6 +1030,23 @@
                     savedSessionsLoading: false,
                     showSavedModal: false,
                     highlightedSession: null,
+                    statusOptions: [
+                        { value: '', label: 'NEZNANO' },
+                        { value: 'Skladno', label: 'SKLADNA' },
+                        { value: 'Neskladno', label: 'NESKLADNA' },
+                        { value: 'Ni relevantno', label: 'NI RELEVANTNO' }
+                    ],
+                    statusLabels: {
+                        '': 'NEZNANO',
+                        Neznano: 'NEZNANO',
+                        neznano: 'NEZNANO',
+                        Skladno: 'SKLADNA',
+                        skladno: 'SKLADNA',
+                        Neskladno: 'NESKLADNA',
+                        neskladno: 'NESKLADNA',
+                        'Ni relevantno': 'NI RELEVANTNO',
+                        'ni relevantno': 'NI RELEVANTNO'
+                    },
                     heroSteps: [
                         { id: 1, title: 'Naloži dokumente', description: 'Dodajte PDF dokumentacijo in po želji označite strani za grafični pregled.' },
                         { id: 2, title: 'Preglej osnutek', description: 'AI pripravi osnutek EUP/rab in ključnih podatkov, ki jih lahko prilagodite.' },
@@ -1450,6 +1503,48 @@
                     if (normalized.includes('skladno')) return 'skladno';
                     if (normalized.includes('ni relevantno')) return 'ni-relevantno';
                     return 'neznano';
+                },
+                currentStatus(id) {
+                    const key = this.stringId(id);
+                    if (!key || !this.resultsMap[key]) {
+                        return '';
+                    }
+                    const value = this.resultsMap[key].skladnost;
+                    return typeof value === 'string' ? value : '';
+                },
+                statusLabel(value) {
+                    if (typeof value !== 'string' || !value.trim()) {
+                        return this.statusLabels[''];
+                    }
+                    const trimmed = value.trim();
+                    return this.statusLabels[trimmed] || this.statusLabels[trimmed.toLowerCase()] || trimmed;
+                },
+                displayStatus(id) {
+                    return this.statusLabel(this.currentStatus(id));
+                },
+                computeNonCompliantIds() {
+                    const ids = [];
+                    Object.entries(this.resultsMap || {}).forEach(([key, result]) => {
+                        if (!result || typeof result !== 'object') {
+                            return;
+                        }
+                        const status = typeof result.skladnost === 'string' ? result.skladnost.toLowerCase() : '';
+                        if (status.includes('nesklad')) {
+                            ids.push(this.stringId(key));
+                        }
+                    });
+                    return ids;
+                },
+                updateRequirementStatus(id, value) {
+                    const key = this.stringId(id);
+                    const entry = this.ensureResultEntry(key);
+                    if (typeof value === 'string' && value.trim()) {
+                        entry.skladnost = value;
+                    } else {
+                        delete entry.skladnost;
+                    }
+                    this.latestNonCompliantIds = this.computeNonCompliantIds();
+                    this.persistState(true);
                 },
                 resetSelection() {
                     this.selectedRequirementIds = [];
