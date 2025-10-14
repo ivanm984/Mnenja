@@ -27,3 +27,17 @@ python migrate_sqlite.py --sqlite-path ./local_sessions.db --database-url postgr
 ```
 
 Skript preslika vse shranjene seje in revizije v novo bazo ter o uspehu izpiše statistiko prenosa.
+
+## Migracija baze znanja iz JSON v PostgreSQL
+
+Za hitrejši dostop do vsebin lahko JSON datoteke, ki sestavljajo lokalno bazo znanja, preselite
+v SQL bazo. Pred prvo uporabo nastavite `DATABASE_URL` (ali ustrezne `POSTGRES_*` spremenljivke)
+in nato zaženite:
+
+```bash
+python migrate_knowledge_base.py --purge
+```
+
+Parameter `--purge` poskrbi, da se obstoječi vnosi izbrišejo in naložijo sveži podatki iz JSON
+datotek. Po migraciji aplikacija samodejno bere podatke iz tabele `knowledge_resources`, medtem
+ko v odsotnosti SQL povezave še vedno uporablja originalne JSON datoteke kot rezervni vir.

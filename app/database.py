@@ -150,6 +150,15 @@ class DatabaseManager:
                         ) CHARACTER SET utf8mb4
                         """
                     )
+                    cursor.execute(
+                        """
+                        CREATE TABLE IF NOT EXISTS knowledge_resources (
+                            name VARCHAR(100) PRIMARY KEY,
+                            payload_json LONGTEXT NOT NULL,
+                            updated_at DATETIME NOT NULL
+                        ) CHARACTER SET utf8mb4
+                        """
+                    )
                 conn.commit()
             else:  # postgresql
                 with conn.cursor() as cursor:
@@ -207,6 +216,15 @@ class DatabaseManager:
                         """
                         CREATE INDEX IF NOT EXISTS idx_reports_session
                         ON generated_reports (session_id, created_at DESC)
+                        """
+                    )
+                    cursor.execute(
+                        """
+                        CREATE TABLE IF NOT EXISTS knowledge_resources (
+                            name VARCHAR(100) PRIMARY KEY,
+                            payload_json JSONB NOT NULL,
+                            updated_at TIMESTAMPTZ NOT NULL
+                        )
                         """
                     )
                 conn.commit()
@@ -531,6 +549,111 @@ class DatabaseManager:
             record["created_at"] = self._normalise_timestamp(record.get("created_at"))
             parsed.append(record)
         return parsed
+
+    # ------------------------------------------------------------------
+    # Knowledge base storage
+    # ------------------------------------------------------------------
+    def upsert_knowledge_resource(self, name: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """Insert or update a knowledge base resource payload."""
+
+        encoded = json.dumps(payload or {}, ensure_ascii=False)
+        timestamp = datetime.utcnow().isoformat()
+        with self.lock, self.connect() as conn:
+            if self.backend == "mysql":
+                with conn.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        INSERT INTO knowledge_resources (name, payload_json, updated_at)
+                        VALUES (%s, %s, %s)
+                        ON DUPLICATE KEY UPDATE
+                            payload_json = VALUES(payload_json),
+                            updated_at = VALUES(updated_at)
+                        """,
+                        (name, encoded, timestamp),
+                    )
+                conn.commit()
+            else:
+                with conn.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        INSERT INTO knowledge_resources (name, payload_json, updated_at)
+                        VALUES (%s, %s::jsonb, %s)
+                        ON CONFLICT (name) DO UPDATE SET
+                            payload_json = EXCLUDED.payload_json,
+                            updated_at = EXCLUDED.updated_at
+                        """,
+                        (name, encoded, timestamp),
+                    )
+                conn.commit()
+        return {"updated_at": timestamp}
+
+    def fetch_knowledge_resource(self, name: str) -> Optional[Dict[str, Any]]:
+        """Return a decoded knowledge resource payload if present."""
+
+        with self.lock, self.connect() as conn:
+            if self.backend == "mysql":
+                with conn.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT payload_json, updated_at FROM knowledge_resources WHERE name = %s",
+                        (name,),
+                    )
+                    row = cursor.fetchone()
+            else:
+                with conn.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT payload_json, updated_at FROM knowledge_resources WHERE name = %s",
+                        (name,),
+                    )
+                    row = cursor.fetchone()
+        if not row:
+            return None
+        payload = row.get("payload_json") if isinstance(row, dict) else row[0]
+        if isinstance(payload, (bytes, str)):
+            payload = self._load_json(payload.decode() if isinstance(payload, bytes) else payload, default={})
+        elif payload is None:
+            payload = {}
+        result = {
+            "name": name,
+            "payload": payload,
+            "updated_at": self._normalise_timestamp(row.get("updated_at") if isinstance(row, dict) else row[1]),
+        }
+        return result
+
+    def fetch_all_knowledge_resources(self) -> Dict[str, Any]:
+        """Return all knowledge resources as a mapping."""
+
+        with self.lock, self.connect() as conn:
+            if self.backend == "mysql":
+                with conn.cursor() as cursor:
+                    cursor.execute("SELECT name, payload_json FROM knowledge_resources")
+                    rows = cursor.fetchall()
+            else:
+                with conn.cursor() as cursor:
+                    cursor.execute("SELECT name, payload_json FROM knowledge_resources")
+                    rows = cursor.fetchall()
+
+        resources: Dict[str, Any] = {}
+        for row in rows:
+            if not isinstance(row, dict):
+                row = dict(row)
+            payload = row.get("payload_json")
+            if isinstance(payload, (bytes, str)):
+                payload = self._load_json(payload.decode() if isinstance(payload, bytes) else payload, default={})
+            elif payload is None:
+                payload = {}
+            resources[row["name"]] = payload
+        return resources
+
+    def delete_all_knowledge_resources(self) -> None:
+        with self.lock, self.connect() as conn:
+            if self.backend == "mysql":
+                with conn.cursor() as cursor:
+                    cursor.execute("DELETE FROM knowledge_resources")
+                conn.commit()
+            else:
+                with conn.cursor() as cursor:
+                    cursor.execute("DELETE FROM knowledge_resources")
+                conn.commit()
 
     # ------------------------------------------------------------------
     # Helpers

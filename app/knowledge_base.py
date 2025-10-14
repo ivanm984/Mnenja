@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 from .config import PROJECT_ROOT
+from .database import DatabaseManager
 
 KEYWORD_TO_CLEN = {
     # Gradnja in objekti
@@ -81,13 +82,19 @@ def load_json(path: Path) -> Dict[str, Any]:
         return {}
 
 
-def load_knowledge_base() -> Tuple[Dict, Dict, List, Dict, str, str]:
-    base_dir = PROJECT_ROOT
-    with (base_dir / "OPN.json").open("r", encoding="utf-8") as handle:
-        opn_katalog = json.load(handle)
+KNOWLEDGE_RESOURCE_FILES = {
+    "opn": "OPN.json",
+    "priloga1": "priloga1.json",
+    "priloga2": "priloga2.json",
+    "priloga3-4": "priloga3-4.json",
+    "izrazi": "Izrazi.json",
+    "uredba": "UredbaObjekti.json",
+}
 
+
+def _build_clen_data(opn_katalog: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     clen_data_map: Dict[str, Dict[str, Any]] = {}
-    for cat_key, cat_data in opn_katalog.items():
+    for cat_data in opn_katalog.values():
         if "clen" in cat_data and "podrocja" in cat_data and isinstance(cat_data["podrocja"], dict):
             for raba_key, raba_data in cat_data["podrocja"].items():
                 clen_data_map[raba_key.upper()] = {
@@ -96,48 +103,83 @@ def load_knowledge_base() -> Tuple[Dict, Dict, List, Dict, str, str]:
                     "content_structured": raba_data,
                     "parent_clen_key": f"{cat_data['clen']}_clen",
                 }
+    return clen_data_map
 
-    priloge = {}
-    priloge_path = {
-        "priloga1": base_dir / "priloga1.json",
-        "priloga2": base_dir / "priloga2.json",
-        "priloga3-4": base_dir / "priloga3-4.json",
-        "Izrazi": base_dir / "Izrazi.json",
+
+def _build_knowledge_response(resources: Dict[str, Any]) -> Tuple[Dict, Dict, List, Dict, str, str]:
+    opn_katalog = resources.get("opn", {})
+
+    priloge: Dict[str, Any] = {
+        "priloga1": resources.get("priloga1", {}),
+        "priloga2": resources.get("priloga2", {}),
+        "Izrazi": resources.get("izrazi", {}),
     }
 
-    for key, path in priloge_path.items():
-        try:
-            with path.open("r", encoding="utf-8") as handle:
-                if key == "priloga3-4":
-                    data_3_4 = json.load(handle)
-                    priloge.update({
-                        "priloga3": data_3_4.get("priloga3", {}),
-                        "priloga4": data_3_4.get("priloga4", {}),
-                    })
-                else:
-                    priloge[key] = json.load(handle)
-        except (FileNotFoundError, json.JSONDecodeError):
-            priloge[key] = {}
+    priloga_3_4 = resources.get("priloga3-4", {})
+    if isinstance(priloga_3_4, dict):
+        priloge["priloga3"] = priloga_3_4.get("priloga3", {})
+        priloge["priloga4"] = priloga_3_4.get("priloga4", {})
+    else:
+        priloge["priloga3"] = {}
+        priloge["priloga4"] = {}
 
-    try:
-        with (base_dir / "UredbaObjekti.json").open("r", encoding="utf-8") as handle:
-            uredba_data = json.load(handle)
-    except (FileNotFoundError, json.JSONDecodeError):
-        uredba_data = {}
+    uredba_data = resources.get("uredba", {})
 
-    all_eups = [item.get("enota_urejanja", "") for item in priloge.get("priloga2", {}).get("table_entries", [])]
-    all_eups.extend([item.get("urejevalna_enota", "") for item in priloge.get("priloga3", {}).get("entries", [])])
+    all_eups = [
+        item.get("enota_urejanja", "")
+        for item in priloge.get("priloga2", {}).get("table_entries", [])
+    ]
+    all_eups.extend(
+        [item.get("urejevalna_enota", "") for item in priloge.get("priloga3", {}).get("entries", [])]
+    )
     unique_eups = sorted(list(set(filter(None, all_eups))), key=len, reverse=True)
 
     izrazi_data = priloge.get("Izrazi", {})
-    izrazi_text = "\n".join([
-        f"- **{term['term']}**: {term['definition']}"
-        for term in izrazi_data.get("terms", [])
-    ])
+    izrazi_text = "\n".join(
+        [f"- **{term['term']}**: {term['definition']}" for term in izrazi_data.get("terms", [])]
+    )
 
     uredba_text = format_uredba_summary(uredba_data)
-
+    clen_data_map = _build_clen_data(opn_katalog)
     return opn_katalog, priloge, unique_eups, clen_data_map, izrazi_text, uredba_text
+
+
+def _load_resources_from_files() -> Dict[str, Any]:
+    base_dir = PROJECT_ROOT
+    resources: Dict[str, Any] = {}
+    for key, filename in KNOWLEDGE_RESOURCE_FILES.items():
+        path = base_dir / filename
+        try:
+            with path.open("r", encoding="utf-8") as handle:
+                resources[key] = json.load(handle)
+        except (FileNotFoundError, json.JSONDecodeError):
+            resources[key] = {}
+    return resources
+
+
+def _load_resources_from_database() -> Optional[Dict[str, Any]]:
+    try:
+        manager = DatabaseManager()
+    except Exception:
+        return None
+
+    try:
+        resources = manager.fetch_all_knowledge_resources()
+    except Exception:
+        return None
+
+    if not resources:
+        return None
+    return resources
+
+
+def load_knowledge_base() -> Tuple[Dict, Dict, List, Dict, str, str]:
+    db_resources = _load_resources_from_database()
+    if db_resources:
+        return _build_knowledge_response(db_resources)
+
+    file_resources = _load_resources_from_files()
+    return _build_knowledge_response(file_resources)
 
 
 OPN_KATALOG, PRILOGE, ALL_EUPS, CLEN_DATA_MAP, IZRAZI_TEXT, UREDBA_TEXT = load_knowledge_base()
@@ -329,6 +371,7 @@ __all__ = [
     "CLEN_DATA_MAP",
     "IZRAZI_TEXT",
     "UREDBA_TEXT",
+    "KNOWLEDGE_RESOURCE_FILES",
     "format_structured_content",
     "build_requirements_from_db",
     "build_priloga1_text",
