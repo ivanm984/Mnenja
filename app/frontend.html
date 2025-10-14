@@ -95,6 +95,17 @@
             box-shadow: var(--shadow-sm);
             display: grid;
             gap: 8px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .step-card.active {
+            border-color: rgba(37, 99, 235, 0.65);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+            transform: translateY(-2px);
+        }
+
+        .step-card.completed {
+            border-color: rgba(22, 163, 74, 0.45);
         }
 
         .step-card strong {
@@ -702,7 +713,7 @@
                 <p>Napredni pregled projektne dokumentacije, ki združuje AI ekstrakcijo ključnih podatkov, preglednost korakov in jasne povratne informacije za vašo ekipo.</p>
             </div>
             <div class="steps">
-                <div class="step-card" v-for="step in heroSteps" :key="step.title">
+                <div class="step-card" v-for="step in heroSteps" :key="step.title" :class="heroStepClass(step.id)">
                     <strong>{{ step.id }}</strong>
                     <div>{{ step.title }}</div>
                     <small class="subtitle">{{ step.description }}</small>
@@ -1088,11 +1099,27 @@
                         isLong: this.longFieldKeys.has(key)
                     }));
                 },
+                heroActiveStep() {
+                    if (Array.isArray(this.requirements) && this.requirements.length) {
+                        return 3;
+                    }
+                    if (this.showReview) {
+                        return 2;
+                    }
+                    return 1;
+                },
                 showReview() {
                     return !!this.sessionId && this.eupPairs.length > 0;
                 }
             },
             methods: {
+                heroStepClass(stepId) {
+                    const active = this.heroActiveStep;
+                    return {
+                        active: stepId === active,
+                        completed: stepId < active
+                    };
+                },
                 setStatus(type, message) {
                     this.status = { type, message };
                 },
