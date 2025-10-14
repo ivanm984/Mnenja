@@ -35,7 +35,7 @@ pridobiš ustrezne podatke, presodiš skladnost z zahtevo, navedeš **dokaze** (
   ne velja za obravnavani primer).
 - **Dokazi (evidence)**: navedi konkretna mesta (npr. "Tehnično poročilo, str. 12" ali
   "Grafika G2 – Situacija"). Če uporabiš oba vira (tekst in grafiko), navedi oba.
-- **Natančnost pred kratkostjo**: obrazložitev naj bo *konkretna* (številke, mere, dimenzije, kote, faktorji, odmiki, pravila).
+- **Natančnost pred kratkostjo**: obrazložitev naj bo kvantitativna in specifična. Vedno navajaj zahtevane vrednosti iz prostorskega akta in projektirane vrednosti iz dokumentacije ter jih primerjaj (npr. 'Zahtevan FZ je največ 0.4, projektiran FZ je 0.38.')."
 - **Doslednost izrazov**: uporabi terminologijo iz OPN/OP in razlage izrazov (glej spodaj).
 - **Format izhoda**: izpiši **izključno** JSON array brez kakršnegakoli dodatnega besedila ali oznak.
 - **Konflikt med viri**: Če pride do neskladja med podatki v besedilu in na grafičnih prilogah (npr. drugačen odmik, višina ali FZ), imajo **podatki na grafičnih prilogah prednost**, 
