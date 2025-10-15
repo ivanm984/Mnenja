@@ -29,6 +29,7 @@ from .prompts import build_prompt
 from .reporting import generate_word_report
 from .schemas import ConfirmReportPayload, SaveSessionPayload
 from .utils import infer_project_name
+from .vector_search import search_vector_knowledge
 
 
 db_manager = DatabaseManager()
@@ -427,7 +428,28 @@ async def analyze_report(
         {data['project_text']}
         """
 
-    prompt = build_prompt(modified_project_text, zahteve_za_analizo, IZRAZI_TEXT, UREDBA_TEXT)
+    vector_context_text = ""
+    vector_rows: List[Dict[str, Any]] = []
+    if db_manager.supports_vector_search():
+        vector_context_text, vector_rows = search_vector_knowledge(
+            db_manager,
+            modified_project_text,
+            limit=12,
+            eup=final_eup_list_cleaned,
+            namenske_rabe=final_raba_list_cleaned,
+        )
+        data["vector_context"] = {
+            "text": vector_context_text,
+            "rows": vector_rows,
+        }
+
+    prompt = build_prompt(
+        modified_project_text,
+        zahteve_za_analizo,
+        IZRAZI_TEXT,
+        UREDBA_TEXT,
+        vector_context=vector_context_text,
+    )
     ai_response = call_gemini(prompt, data["images"])
     results_map = parse_ai_response(ai_response, zahteve_za_analizo)
 
@@ -522,6 +544,8 @@ async def analyze_report(
         "requirement_revisions": requirement_revisions,
         "final_key_data": final_key_data,
         "source_files": data.get("source_files", []),
+        "vector_context": vector_context_text,
+        "vector_rows": vector_rows,
     }
 
     return {

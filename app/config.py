@@ -18,6 +18,7 @@ if not API_KEY:
     raise RuntimeError("❌ GEMINI_API_KEY manjka v .env datoteki!")
 
 MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-2.5-pro")
+EMBEDDING_MODEL = os.environ.get("GEMINI_EMBEDDING_MODEL", "models/text-embedding-004")
 
 GEN_CFG = {
     "temperature": float(os.environ.get("GEMINI_TEMPERATURE", 0.0)),
@@ -67,6 +68,7 @@ DEFAULT_SQLITE_PATH = PROJECT_ROOT / "local_sessions.db"
 __all__ = [
     "API_KEY",
     "MODEL_NAME",
+    "EMBEDDING_MODEL",
     "GEN_CFG",
     "DATABASE_URL",
     "build_mysql_dsn",
