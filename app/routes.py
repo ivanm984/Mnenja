@@ -417,7 +417,7 @@ async def analyze_report(
 
     data["final_key_data"] = final_key_data
 
-        metadata_formatted = "\n".join([f"- {k.replace('_', ' ').capitalize()}: {v}" for k, v in data["metadata"].items()])
+    metadata_formatted = "\n".join([f"- {k.replace('_', ' ').capitalize()}: {v}" for k, v in data["metadata"].items()])
     key_data_formatted = "\n".join([f"- {k.replace('_', ' ').capitalize()}: {v}" for k, v in final_key_data.items()])
     modified_project_text = f"""
         --- OSNOVNI PODATKI O PROJEKTU (iz obrazcev v dokumentaciji) ---
