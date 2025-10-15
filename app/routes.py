@@ -431,9 +431,10 @@ async def analyze_report(
     vector_context_text = ""
     vector_rows: List[Dict[str, Any]] = []
     if db_manager.supports_vector_search():
+        # --- SPREMEMBA TUKAJ: Pošljemo `final_key_data` namesto `modified_project_text` ---
         vector_context_text, vector_rows = search_vector_knowledge(
             db_manager,
-            modified_project_text,
+            final_key_data,  # <-- KLJUČNA SPREMEMBA
             limit=12,
             eup=final_eup_list_cleaned,
             namenske_rabe=final_raba_list_cleaned,
