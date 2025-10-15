@@ -443,7 +443,7 @@ async def analyze_report(
     print(vector_context_text)
     print("="*50 + "\n")
 
-        data["vector_context"] = {
+    data["vector_context"] = {
             "text": vector_context_text,
             "rows": vector_rows,
         }
