@@ -12,13 +12,11 @@ from fastapi.responses import FileResponse, HTMLResponse
 from fastapi import FastAPI
 
 from . import state
-# --- SPREMEMBA TUKAJ: Posodobljen uvoz ---
 from .ai import (
     call_gemini,
     call_gemini_for_initial_extraction,
     parse_ai_response,
 )
-# --- KONEC SPREMEMBE ---
 from .database import DatabaseManager, compute_session_summary
 from .files import save_revision_files
 from .forms import generate_priloga_10a
@@ -170,12 +168,10 @@ async def extract_data(
     project_text = "\n\n".join(combined_text_parts)
     images = all_images
 
-    # --- SPREMEMBA TUKAJ: En sam klic namesto treh ---
     extraction_result = call_gemini_for_initial_extraction(project_text, images)
     ai_details = extraction_result["details"]
     metadata = extraction_result["metadata"]
     key_data = extraction_result["key_data"]
-    # --- KONEC SPREMEMBE ---
 
     state.TEMP_STORAGE[session_id] = {
         "project_text": project_text,
