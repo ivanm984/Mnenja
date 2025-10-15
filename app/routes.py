@@ -438,6 +438,11 @@ async def analyze_report(
             eup=final_eup_list_cleaned,
             namenske_rabe=final_raba_list_cleaned,
         )
+    print("\n" + "="*50)
+    print("🔍 NAJDEN VEKTORSKI KONTEKST:")
+    print(vector_context_text)
+    print("="*50 + "\n")
+
         data["vector_context"] = {
             "text": vector_context_text,
             "rows": vector_rows,
