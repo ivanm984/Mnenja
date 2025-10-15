@@ -18,6 +18,7 @@ if not API_KEY:
     raise RuntimeError("❌ GEMINI_API_KEY manjka v .env datoteki!")
 
 MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-2.5-pro")
+EXTRACTION_MODEL_NAME = os.environ.get("GEMINI_EXTRACTION_MODEL", "gemini-2.5-flash")
 EMBEDDING_MODEL = os.environ.get("GEMINI_EMBEDDING_MODEL", "models/text-embedding-004")
 
 GEN_CFG = {
