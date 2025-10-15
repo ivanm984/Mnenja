@@ -8,7 +8,8 @@ def build_prompt(
     project_text: str,
     zahteve: List[Dict[str, Any]],
     izrazi_text: str,
-    uredba_text: str
+    uredba_text: str,
+    vector_context: str = "",
 ) -> str:
     """
     Zgradi navodila za LLM, da preveri skladnost projektne dokumentacije
@@ -73,6 +74,9 @@ Za vse, kjer podatki manjkajo ali so dvomljivi, preglej grafične priloge:
 # ZAHTEVE (vsaka mora biti obravnavana natanko enkrat)
 {zahteve_text}
 
+**Relevantni izseki iz vektorske baze znanja:**
+{vector_context or "Ni dodatnih izsekov iz baze znanja."}
+
 # VHODNI PODATKI
 **Projektna dokumentacija – BESEDILO (do 300.000 znakov):**
 {project_text[:300000]}
@@ -118,6 +122,7 @@ Za **vsako** zahtevo vrni en JSON objekt z natančno temi polji:
   }}
 ]
 
-# KONČNI IZPIS
-Vrni **IZKLJUČNO** JSON array (brez uvodnega ali zaključnega besedila, brez markdown oznak).
-""".strip()
+  # KONČNI IZPIS
+  Vrni **IZKLJUČNO** JSON array (brez uvodnega ali zaključnega besedila, brez markdown oznak).
+
+  """.strip()

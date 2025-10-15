@@ -6,7 +6,7 @@ import threading
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 from urllib.parse import parse_qs, urlparse, unquote
 
 try:  # MySQL is optional
@@ -654,6 +654,56 @@ class DatabaseManager:
                 with conn.cursor() as cursor:
                     cursor.execute("DELETE FROM knowledge_resources")
                 conn.commit()
+
+    def supports_vector_search(self) -> bool:
+        return self.backend == "postgresql"
+
+    def search_vector_knowledge(
+        self,
+        embedding: Sequence[float],
+        *,
+        limit: int = 20,
+        sources: Optional[Sequence[str]] = None,
+    ) -> List[Dict[str, Any]]:
+        """Run a nearest-neighbour search over the vectorised knowledge base."""
+
+        if self.backend != "postgresql":
+            raise RuntimeError("Vektorsko iskanje je podprto le pri PostgreSQL bazi podatkov.")
+        if not embedding:
+            return []
+
+        clean_embedding = [float(x) for x in embedding]
+        source_list: List[str] = []
+        if sources:
+            source_list = [str(item) for item in sources if str(item).strip()]
+
+        with self.lock, self.connect() as conn:
+            with conn.cursor() as cursor:
+                params: List[Any] = [clean_embedding]
+                where_clause = ""
+                if source_list:
+                    where_clause = "WHERE vir = ANY(%s)"
+                    params.append(source_list)
+                params.extend([clean_embedding, int(limit)])
+                cursor.execute(
+                    f"""
+                    SELECT id, vir, kljuc, vsebina,
+                           1.0 / (1.0 + (vektor <-> %s)) AS similarity
+                    FROM vektorizirano_znanje
+                    {where_clause}
+                    ORDER BY vektor <-> %s
+                    LIMIT %s
+                    """,
+                    params,
+                )
+                rows = cursor.fetchall()
+
+        results: List[Dict[str, Any]] = []
+        for row in rows:
+            record = dict(row)
+            record["similarity"] = float(record.get("similarity") or 0.0)
+            results.append(record)
+        return results
 
     # ------------------------------------------------------------------
     # Helpers
