@@ -1,38 +1,25 @@
 """Gemini integration helpers."""
 from __future__ import annotations
-from .config import API_KEY, GEN_CFG, MODEL_NAME, EXTRACTION_MODEL_NAME # <-- Dodajte EXTRACTION_MODEL_NAME
 
 import json
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from fastapi import HTTPException
 from PIL import Image
 
 import google.generativeai as genai
 
-from .config import API_KEY, GEN_CFG, MODEL_NAME
-
+from .config import API_KEY, GEN_CFG, MODEL_NAME, EXTRACTION_MODEL_NAME
 
 genai.configure(api_key=API_KEY)
 
 
-# --- SPREMEMBA TUKAJ: Nova, združena funkcija ---
 def call_gemini_for_initial_extraction(project_text: str, images: List[Image.Image]) -> Dict[str, Any]:
     """
-    Izvede en sam klic za ekstrakcijo vseh začetnih podatkov...
+    Izvede en sam klic za ekstrakcijo vseh začetnih podatkov:
+    detajlov (EUP, raba), metapodatkov in ključnih tehničnih podatkov.
     """
-    # ... celoten prompt ostane enak ...
-
-    try:
-        # --- SPREMEMBA TUKAJ: Uporabite nov model ---
-        model = genai.GenerativeModel(EXTRACTION_MODEL_NAME, generation_config={"response_mime_type": "application/json"})
-        # --- KONEC SPREMEMBE ---
-        content_parts = [prompt]
-        if images:
-            content_parts.extend(images)
-        
-        response = model.generate_content(content_parts)
     KEY_DATA_PROMPT_MAP = {
         "glavni_objekt": "Natančen opis glavnega objekta (npr. enostanovanjska hiša, gospodarski objekt, opiši funkcijo).",
         "vrsta_gradnje": "Vrsta gradnje (npr. novogradnja, dozidava, nadzidava, rekonstrukcija, sprememba namembnosti).",
@@ -117,20 +104,19 @@ Odgovori SAMO z enim JSON objektom, ki ima natančno tri ključe na najvišjem n
 {project_text[:40000]}
 """
     try:
-        model = genai.GenerativeModel(MODEL_NAME, generation_config={"response_mime_type": "application/json"})
+        model = genai.GenerativeModel(EXTRACTION_MODEL_NAME, generation_config={"response_mime_type": "application/json"})
         content_parts = [prompt]
         if images:
             content_parts.extend(images)
-        
+
         response = model.generate_content(content_parts)
         clean_response = re.sub(r"```(json)?", "", response.text, flags=re.IGNORECASE).strip()
         result = json.loads(clean_response)
 
-        # Zagotovimo pravilno strukturo, tudi če AI naredi napako
         final_result = {
             "details": result.get("details", {"eup": [], "namenska_raba": []}),
             "metadata": result.get("metadata", {}),
-            "key_data": result.get("key_data", {})
+            "key_data": result.get("key_data", {}),
         }
         return final_result
 
@@ -139,9 +125,8 @@ Odgovori SAMO z enim JSON objektom, ki ima natančno tri ključe na najvišjem n
         return {
             "details": {"eup": [], "namenska_raba": []},
             "metadata": {"ime_projekta": "Napaka", "stevilka_projekta": "Napaka", "datum_projekta": "Napaka", "projektant": "Napaka"},
-            "key_data": {key: "Napaka pri ekstrakciji" for key in KEY_DATA_PROMPT_MAP.keys()}
+            "key_data": {key: "Napaka pri ekstrakciji" for key in KEY_DATA_PROMPT_MAP.keys()},
         }
-# --- KONEC SPREMEMBE ---
 
 
 def call_gemini(prompt: str, images: List[Image.Image]) -> str:
