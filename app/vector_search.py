@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import re
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 import google.generativeai as genai
 
@@ -25,25 +25,43 @@ def _normalise_embedding(raw_embedding: object) -> List[float]:
     raise ValueError("Gemini embed_content ni vrnil veljavnega vektorja.")
 
 
+# --- SPREMEMBA TUKAJ: Funkcija zdaj sestavi fokusiran povzetek ---
 def _build_query_text(
-    project_text: str,
+    key_data: Dict[str, Any],
     *,
     eup: Optional[Sequence[str]] = None,
     namenske_rabe: Optional[Sequence[str]] = None,
 ) -> str:
-    parts: List[str] = []
+    parts: List[str] = ["Ključne značilnosti projekta za iskanje relevantnih prostorskih pravil:"]
+    
+    # Osnovni podatki
+    vrsta_gradnje = key_data.get("vrsta_gradnje", "gradnja")
+    glavni_objekt = key_data.get("glavni_objekt", "objekt")
+    parts.append(f"- Vrsta gradnje: {vrsta_gradnje}")
+    parts.append(f"- Glavni objekt: {glavni_objekt}")
+
+    # Lokacija
     eup_clean = [item.strip() for item in eup or [] if item and item.strip()]
     rabe_clean = [item.strip() for item in namenske_rabe or [] if item and item.strip()]
     if rabe_clean:
-        parts.append("Namenske rabe: " + ", ".join(sorted(dict.fromkeys(rabe_clean))))
+        parts.append("- Namenske rabe: " + ", ".join(sorted(dict.fromkeys(rabe_clean))))
     if eup_clean:
-        parts.append("Enote urejanja prostora: " + ", ".join(sorted(dict.fromkeys(eup_clean))))
-    trimmed_text = " ".join((project_text or "").split())
-    if len(trimmed_text) > 8000:
-        trimmed_text = trimmed_text[:8000]
-    if trimmed_text:
-        parts.append(trimmed_text)
-    return "\n\n".join(parts)
+        parts.append("- Enote urejanja prostora: " + ", ".join(sorted(dict.fromkeys(eup_clean))))
+
+    # Ključni tehnični podatki, ki vplivajo na pravila
+    tehnicni_podatki = {
+        "Faktor zazidanosti (FZ)": key_data.get("faktor_zazidanosti_fz"),
+        "Faktor izrabe (FI)": key_data.get("faktor_izrabe_fi"),
+        "Etažnost": key_data.get("gabariti_etaznost"),
+        "Odmiki od parcelnih mej": key_data.get("odmiki_parcel"),
+        "Naklon strehe": key_data.get("naklon_strehe"),
+    }
+    for label, value in tehnicni_podatki.items():
+        if value and "ni podatka" not in str(value).lower():
+            parts.append(f"- {label}: {value}")
+            
+    return "\n".join(parts)
+# --- KONEC SPREMEMBE ---
 
 
 def embed_query(text: str) -> List[float]:
@@ -75,9 +93,10 @@ def summarise_chunk(text: str, *, max_chars: int = 700) -> str:
     return truncated + "…"
 
 
+# --- SPREMEMBA TUKAJ: Funkcija zdaj sprejme `key_data` ---
 def search_vector_knowledge(
     db_manager: DatabaseManager,
-    project_text: str,
+    key_data: Dict[str, Any],
     *,
     limit: int = 12,
     eup: Optional[Sequence[str]] = None,
@@ -86,7 +105,8 @@ def search_vector_knowledge(
     """Return formatted context and raw rows from the vector knowledge base."""
 
     try:
-        query_text = _build_query_text(project_text, eup=eup, namenske_rabe=namenske_rabe)
+        # Sedaj uporabimo novo funkcijo za sestavo poizvedbe
+        query_text = _build_query_text(key_data, eup=eup, namenske_rabe=namenske_rabe)
         embedding = embed_query(query_text)
     except Exception as exc:  # pragma: no cover - external service
         print(f"⚠️ Napaka pri pripravi vektorske poizvedbe: {exc}")
