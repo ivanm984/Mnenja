@@ -675,39 +675,29 @@ class DatabaseManager:
             return []
 
         clean_embedding = [float(x) for x in embedding]
-        vector_literal = "[" + ",".join(format(value, ".12f") for value in clean_embedding) + "]"
         source_list: List[str] = []
         if sources:
             source_list = [str(item) for item in sources if str(item).strip()]
 
-        if not psycopg_sql:
-            raise RuntimeError(
-                "Manjka modul 'psycopg'. Namestite ga z `pip install psycopg[binary]`."
-            )
-
-        vector_sql = psycopg_sql.SQL("{literal}::vector").format(
-            literal=psycopg_sql.Literal(vector_literal)
-        )
-
         with self.lock, self.connect() as conn:
             with conn.cursor() as cursor:
-                params: List[Any] = []
-                where_sql = psycopg_sql.SQL("")
+                params: List[Any] = [clean_embedding]
+                where_clause = ""
                 if source_list:
-                    where_sql = psycopg_sql.SQL("WHERE vir = ANY(%s)")
+                    where_clause = "WHERE vir = ANY(%s)"
                     params.append(source_list)
-                params.append(int(limit))
-                query = psycopg_sql.SQL(
-                    """
+                params.extend([clean_embedding, int(limit)])
+                cursor.execute(
+                    f"""
                     SELECT id, vir, kljuc, vsebina,
-                           1.0 / (1.0 + (vektor <-> {vector})) AS similarity
+                           1.0 / (1.0 + (vektor <-> %s)) AS similarity
                     FROM vektorizirano_znanje
                     {where_clause}
-                    ORDER BY vektor <-> {vector}
+                    ORDER BY vektor <-> %s
                     LIMIT %s
-                    """
-                ).format(vector=vector_sql, where_clause=where_sql)
-                cursor.execute(query, params)
+                    """,
+                    params,
+                )
                 rows = cursor.fetchall()
 
         results: List[Dict[str, Any]] = []
