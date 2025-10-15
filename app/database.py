@@ -6,7 +6,7 @@ import threading
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 from urllib.parse import parse_qs, urlparse, unquote
 
 try:  # MySQL is optional
@@ -18,9 +18,11 @@ except Exception:  # pragma: no cover - optional dependency
 
 try:  # PostgreSQL is optional
     import psycopg
+    from psycopg import sql as psycopg_sql
     from psycopg.rows import dict_row as PostgresDictRow
 except Exception:  # pragma: no cover - optional dependency
     psycopg = None
+    psycopg_sql = None
     PostgresDictRow = None
 
 from .config import DATABASE_URL, build_mysql_dsn, build_postgres_dsn
@@ -53,7 +55,7 @@ class DatabaseManager:
                 )
             return "mysql", self._build_mysql_params(parsed)
         if scheme in {"postgresql", "postgres"}:
-            if not psycopg or not PostgresDictRow:
+            if not psycopg or not PostgresDictRow or not psycopg_sql:
                 raise RuntimeError(
                     "PostgreSQL DSN je podan, vendar modul 'psycopg' ni nameščen. "
                     "Namestite ga z `pip install psycopg[binary]`."
@@ -654,6 +656,66 @@ class DatabaseManager:
                 with conn.cursor() as cursor:
                     cursor.execute("DELETE FROM knowledge_resources")
                 conn.commit()
+
+    def supports_vector_search(self) -> bool:
+        return self.backend == "postgresql"
+
+    def search_vector_knowledge(
+        self,
+        embedding: Sequence[float],
+        *,
+        limit: int = 20,
+        sources: Optional[Sequence[str]] = None,
+    ) -> List[Dict[str, Any]]:
+        """Run a nearest-neighbour search over the vectorised knowledge base."""
+
+        if self.backend != "postgresql":
+            raise RuntimeError("Vektorsko iskanje je podprto le pri PostgreSQL bazi podatkov.")
+        if not embedding:
+            return []
+
+        clean_embedding = [float(x) for x in embedding]
+        vector_literal = "[" + ",".join(format(value, ".12f") for value in clean_embedding) + "]"
+        source_list: List[str] = []
+        if sources:
+            source_list = [str(item) for item in sources if str(item).strip()]
+
+        if not psycopg_sql:
+            raise RuntimeError(
+                "Manjka modul 'psycopg'. Namestite ga z `pip install psycopg[binary]`."
+            )
+
+        vector_sql = psycopg_sql.SQL("{literal}::vector").format(
+            literal=psycopg_sql.Literal(vector_literal)
+        )
+
+        with self.lock, self.connect() as conn:
+            with conn.cursor() as cursor:
+                params: List[Any] = []
+                where_sql = psycopg_sql.SQL("")
+                if source_list:
+                    where_sql = psycopg_sql.SQL("WHERE vir = ANY(%s)")
+                    params.append(source_list)
+                params.append(int(limit))
+                query = psycopg_sql.SQL(
+                    """
+                    SELECT id, vir, kljuc, vsebina,
+                           1.0 / (1.0 + (vektor <-> {vector})) AS similarity
+                    FROM vektorizirano_znanje
+                    {where_clause}
+                    ORDER BY vektor <-> {vector}
+                    LIMIT %s
+                    """
+                ).format(vector=vector_sql, where_clause=where_sql)
+                cursor.execute(query, params)
+                rows = cursor.fetchall()
+
+        results: List[Dict[str, Any]] = []
+        for row in rows:
+            record = dict(row)
+            record["similarity"] = float(record.get("similarity") or 0.0)
+            results.append(record)
+        return results
 
     # ------------------------------------------------------------------
     # Helpers
