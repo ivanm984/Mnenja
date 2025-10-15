@@ -417,14 +417,16 @@ async def analyze_report(
 
     data["final_key_data"] = final_key_data
 
-    metadata_formatted = "\n".join([f"- {k.replace('_', ' ').capitalize()}: {v}" for k, v in data["metadata"].items()])
+        metadata_formatted = "\n".join([f"- {k.replace('_', ' ').capitalize()}: {v}" for k, v in data["metadata"].items()])
     key_data_formatted = "\n".join([f"- {k.replace('_', ' ').capitalize()}: {v}" for k, v in final_key_data.items()])
     modified_project_text = f"""
-        --- METAPODATKI PROJEKTA ---
+        --- OSNOVNI PODATKI O PROJEKTU (iz obrazcev v dokumentaciji) ---
         {metadata_formatted}
-        --- KLJUČNI GABARITNI IN LOKACIJSKI PODATKI PROJEKTA (Ekstrahirano in POTRJENO) ---
+        
+        --- TEHNIČNI PODATKI O GRADNJI (potrjeno s strani uporabnika) ---
         {key_data_formatted}
-        --- DOKUMENTACIJA (Besedilo in grafike) ---
+        
+        --- CELOTNO BESEDILO PROJEKTNE DOKUMENTACIJE ---
         {data['project_text']}
         """
 
