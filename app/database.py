@@ -18,9 +18,11 @@ except Exception:  # pragma: no cover - optional dependency
 
 try:  # PostgreSQL is optional
     import psycopg
+    from psycopg import sql as psycopg_sql
     from psycopg.rows import dict_row as PostgresDictRow
 except Exception:  # pragma: no cover - optional dependency
     psycopg = None
+    psycopg_sql = None
     PostgresDictRow = None
 
 from .config import DATABASE_URL, build_mysql_dsn, build_postgres_dsn
@@ -53,7 +55,7 @@ class DatabaseManager:
                 )
             return "mysql", self._build_mysql_params(parsed)
         if scheme in {"postgresql", "postgres"}:
-            if not psycopg or not PostgresDictRow:
+            if not psycopg or not PostgresDictRow or not psycopg_sql:
                 raise RuntimeError(
                     "PostgreSQL DSN je podan, vendar modul 'psycopg' ni nameščen. "
                     "Namestite ga z `pip install psycopg[binary]`."
