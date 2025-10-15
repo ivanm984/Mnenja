@@ -673,26 +673,25 @@ class DatabaseManager:
             return []
 
         clean_embedding = [float(x) for x in embedding]
-        vector_literal = "[" + ",".join(format(value, ".12f") for value in clean_embedding) + "]"
         source_list: List[str] = []
         if sources:
             source_list = [str(item) for item in sources if str(item).strip()]
 
         with self.lock, self.connect() as conn:
             with conn.cursor() as cursor:
-                params: List[Any] = [vector_literal]
+                params: List[Any] = [clean_embedding]
                 where_clause = ""
                 if source_list:
                     where_clause = "WHERE vir = ANY(%s)"
                     params.append(source_list)
-                params.extend([vector_literal, int(limit)])
+                params.extend([clean_embedding, int(limit)])
                 cursor.execute(
                     f"""
                     SELECT id, vir, kljuc, vsebina,
-                           1.0 / (1.0 + (vektor <-> %s::vector)) AS similarity
+                           1.0 / (1.0 + (vektor <-> %s)) AS similarity
                     FROM vektorizirano_znanje
                     {where_clause}
-                    ORDER BY vektor <-> %s::vector
+                    ORDER BY vektor <-> %s
                     LIMIT %s
                     """,
                     params,
