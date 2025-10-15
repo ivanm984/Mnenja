@@ -61,8 +61,10 @@ Za vse, kjer podatki manjkajo ali so dvomljivi, preglej grafične priloge:
   - `"predlagani_ukrep"` = navedi *katero soglasje/mnenje* je treba pridobiti.
 - Pri **odmikih** v obrazložitvi navedi **vse citirane odmike** iz dokumentacije, tudi če presegajo 4 m (ne filtriraj vrednosti).
 - Če podrobni prostorski pogoji govorijo o samo določenem faktorju (zazidanosti, izrabe itd.), lahko projekt upošteva samo ta navedeni faktor, četudi je v splošnih določiih navedenih več faktorjev. Zahteva je skladna, če je zahtevani faktor v podrobnih določilih skladen.
+- V podrobnik prostorskih pogojih se naj v odgovoru opredeli kratek povzetek gradnje in sicer tlorisne dimenzije, višinske kote in etažnost ter naklon strehe in smer slemena in kritina. 
 - Zahteve za požarno varnost so splošne in lahko projekt vsebuje samo določilo, da se bodo obravnavali v projektu za izvedbo, zahteva je skladna.
 - Če se pojavijo različni podatki v projektu in je vseeno možno oceniti skladnost zahteve jo izvedi, pri čemer uporabi tisto vrednost, ki je večja (recimo da je po enem izračunu FZ=0,4, po drugem pa 0,38, vzami za presojo višjo vrednost).
+- Če ima objekt prevideno ponikovalnico oz. ponikanje meteorne in druge vode, zaradi tega NI POTREBNO pridobiti vodnega soglasja. 
 
 # DEFINICIJE IN PRAVNI OKVIR
 **Razlaga izrazov (OPN):**
