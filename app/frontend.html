@@ -313,6 +313,38 @@
             margin: 0;
         }
 
+        .session-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: var(--hint-bg);
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--primary);
+            max-width: 100%;
+        }
+
+        .session-status .session-label {
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .session-status .session-value {
+            color: var(--text-strong);
+            word-break: break-all;
+        }
+
+        .session-status.is-inactive {
+            background: rgba(148, 163, 184, 0.18);
+            color: var(--text-subtle);
+        }
+
+        .session-status.is-inactive .session-value {
+            color: var(--text-soft);
+        }
+
         .upload-drop {
             border: 2px dashed rgba(37, 99, 235, 0.3);
             border-radius: var(--radius-md);
@@ -1295,7 +1327,15 @@
                     <span class="badge">2</span>
                     Pregled in potrditev podatkov
                 </div>
-                <div class="subtitle">Seja: {{ sessionId || 'ni začeta' }}</div>
+                <div
+                    class="session-status"
+                    :class="{ 'is-inactive': !sessionId }"
+                    role="status"
+                    aria-live="polite"
+                >
+                    <span class="session-label">Seja</span>
+                    <span class="session-value">{{ sessionId || 'ni začeta' }}</span>
+                </div>
             </div>
 
             <div class="section-layout">
