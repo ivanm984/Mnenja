@@ -1,10 +1,8 @@
 """Gemini integration helpers."""
-
 from __future__ import annotations
 
 import json
 import re
-from time import perf_counter
 from typing import Any, Dict, List
 
 from fastapi import HTTPException
@@ -12,11 +10,7 @@ from PIL import Image
 
 import google.generativeai as genai
 
-from app.logging_config import get_logger
-
 from .config import API_KEY, GEN_CFG, MODEL_NAME, EXTRACTION_MODEL_NAME
-
-logger = get_logger(__name__)
 
 genai.configure(api_key=API_KEY)
 
@@ -109,32 +103,14 @@ Odgovori SAMO z enim JSON objektom, ki ima natančno tri ključe na najvišjem n
 # DOKUMENTACIJA ZA ANALIZO
 {project_text[:40000]}
 """
-    start = perf_counter()
-    logger.info(
-        "call_gemini_for_initial_extraction: starting (chars=%d, images=%d)",
-        len(project_text or ""),
-        len(images or []),
-    )
-    logger.debug(
-        "call_gemini_for_initial_extraction: prompt preview=%r",
-        prompt[:500],
-    )
-
     try:
-        model = genai.GenerativeModel(
-            EXTRACTION_MODEL_NAME,
-            generation_config={"response_mime_type": "application/json"},
-        )
+        model = genai.GenerativeModel(EXTRACTION_MODEL_NAME, generation_config={"response_mime_type": "application/json"})
         content_parts = [prompt]
         if images:
             content_parts.extend(images)
 
         response = model.generate_content(content_parts)
         clean_response = re.sub(r"```(json)?", "", response.text, flags=re.IGNORECASE).strip()
-        logger.debug(
-            "call_gemini_for_initial_extraction: raw response preview=%s",
-            clean_response[:500],
-        )
         result = json.loads(clean_response)
 
         final_result = {
@@ -142,38 +118,18 @@ Odgovori SAMO z enim JSON objektom, ki ima natančno tri ključe na najvišjem n
             "metadata": result.get("metadata", {}),
             "key_data": result.get("key_data", {}),
         }
-        duration = perf_counter() - start
-        logger.info(
-            "call_gemini_for_initial_extraction: completed in %.2fs (eup=%d, namenska=%d, key_fields=%d)",
-            duration,
-            len(final_result["details"].get("eup", [])),
-            len(final_result["details"].get("namenska_raba", [])),
-            len(final_result["key_data"]),
-        )
         return final_result
 
     except Exception as exc:
-        logger.exception("call_gemini_for_initial_extraction: failed")
+        print(f"⚠️ Napaka pri združeni AI ekstrakciji: {exc}.")
         return {
             "details": {"eup": [], "namenska_raba": []},
-            "metadata": {
-                "ime_projekta": "Napaka",
-                "stevilka_projekta": "Napaka",
-                "datum_projekta": "Napaka",
-                "projektant": "Napaka",
-            },
+            "metadata": {"ime_projekta": "Napaka", "stevilka_projekta": "Napaka", "datum_projekta": "Napaka", "projektant": "Napaka"},
             "key_data": {key: "Napaka pri ekstrakciji" for key in KEY_DATA_PROMPT_MAP.keys()},
         }
 
 
 def call_gemini(prompt: str, images: List[Image.Image]) -> str:
-    start = perf_counter()
-    logger.info(
-        "call_gemini: starting (prompt_chars=%d, images=%d)",
-        len(prompt or ""),
-        len(images or []),
-    )
-    logger.debug("call_gemini: prompt preview=%r", prompt[:500])
     try:
         model = genai.GenerativeModel(MODEL_NAME, generation_config=GEN_CFG)
         content_parts = [prompt]
@@ -183,33 +139,19 @@ def call_gemini(prompt: str, images: List[Image.Image]) -> str:
             reason = response.candidates[0].finish_reason if response.candidates else "NEZNAN"
             raise RuntimeError(f"Gemini ni vrnil veljavnega odgovora. Razlog: {reason}")
         text = "".join(part.text for part in response.parts)
-        duration = perf_counter() - start
-        logger.info(
-            "call_gemini: completed in %.2fs (response_chars=%d)",
-            duration,
-            len(text),
-        )
-        logger.debug("call_gemini: response preview=%r", text[:500])
         return text
     except Exception as exc:  # pragma: no cover
-        logger.exception("call_gemini: failed")
         raise HTTPException(status_code=500, detail=f"Gemini napaka (Analitik): {exc}") from exc
 
 
 def parse_ai_response(response_text: str, expected_zahteve: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
     clean = re.sub(r"```(json)?", "", response_text, flags=re.IGNORECASE).strip()
-    logger.debug("parse_ai_response: raw response preview=%r", clean[:500])
     try:
         data = json.loads(clean)
     except json.JSONDecodeError as exc:
-        logger.exception("parse_ai_response: invalid JSON")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Neveljaven JSON iz AI: {exc}\n\nOdgovor:\n{response_text[:500]}",
-        ) from exc
+        raise HTTPException(status_code=500, detail=f"Neveljaven JSON iz AI: {exc}\n\nOdgovor:\n{response_text[:500]}") from exc
 
     if not isinstance(data, list):
-        logger.error("parse_ai_response: JSON root is not a list")
         raise HTTPException(status_code=500, detail="AI ni vrnil seznama objektov v JSON formatu.")
 
     results_map: Dict[str, Dict[str, Any]] = {}
@@ -226,12 +168,6 @@ def parse_ai_response(response_text: str, expected_zahteve: List[Dict[str, Any]]
                 "skladnost": "Neznano",
                 "predlagani_ukrep": "Ročno preverjanje.",
             }
-
-    logger.info(
-        "parse_ai_response: mapped %d results (expected=%d)",
-        len(results_map),
-        len(expected_zahteve),
-    )
     return results_map
 
 
