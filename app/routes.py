@@ -1,4 +1,3 @@
-from __future__ import annotations
 # -*- coding: utf-8 -*-
 """
 routes.py
@@ -15,18 +14,17 @@ Odvisnosti:
 """
 
 """Application routes for the Mnenja assistant UI and API."""
-from typing import Any, Dict, Optional, Tuple
-
+from __future__ import annotations
+from typing import Any, Dict, Iterable, List, Optional, Tuple
+import sys
 import io
 import json
 import logging
 import threading
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, HTTPException
 from fastapi import (
     APIRouter,
     Depends,
@@ -63,7 +61,6 @@ from .vector_search import get_vector_context
 # ---------------------------------------------------------
 logger = logging.getLogger(__name__)
 if not logger.handlers:
-    import sys
     handler = logging.StreamHandler(sys.stdout)
     logger.addHandler(handler)
 logger.setLevel(logging.INFO)
@@ -690,58 +687,29 @@ legacy_router = APIRouter()
 
 _build_prompt = None
 _call_llm = None
-    # Poskusi najti v ai.py tipične funkcije
 try:  # pragma: no cover - dinamično zaznavanje AI adapterja
     import ai  # type: ignore
+
     for name in ("build_prompt", "make_prompt", "compose_prompt"):
         if hasattr(ai, name):
             _build_prompt = getattr(ai, name)
-            logger.info(f"routes: našel build_prompt v ai.py: {name}()")
             LOGGER.info("routes: našel build_prompt v ai.py: %s()", name)
             break
     for name in ("call_llm", "ask_llm", "generate", "infer"):
         if hasattr(ai, name):
             _call_llm = getattr(ai, name)
-            logger.info(f"routes: našel LLM klic v ai.py: {name}()")
             LOGGER.info("routes: našel LLM klic v ai.py: %s()", name)
             break
-except Exception as e:
-    logger.debug(f"routes: ai adapter ni na voljo ({e})")
+except Exception as exc:  # pragma: no cover - informativno
+    LOGGER.debug("routes: ai adapter ni na voljo (%s)", exc)
 
-# ---------------------------------------------------------
-# DB manager (sem postavi svojo injekcijo ali import)
-# ---------------------------------------------------------
 
-def get_db_manager() -> Any:
-    """
-    V tvoj projekt vnesi pravi db_manager.
-    Primer:
-        from mydb import DatabaseManager
-        return DatabaseManager(...)
-    Trenutno vrnemo globalni objekt, če obstaja, sicer pa sprožimo napako ob uporabi.
-    """
-    try:
-        # Če imaš svoj global ali provider, sem ga daj.
-        import db  # type: ignore
-        if hasattr(db, "db_manager"):
-            return getattr(db, "db_manager")
-    except Exception:
-        pass
-    # Fallback: uporabnik naj prepiše to funkcijo na svoj vir
-    class _Dummy:
-        def __getattr__(self, item):
-            raise RuntimeError("DB manager ni konfiguriran. Uredi get_db_manager() v routes.py.")
-    return _Dummy()
-
-# ---------------------------------------------------------
-# Pomožne funkcije za pripravo promp­ta
-# ---------------------------------------------------------
 def prepare_prompt_parts(
     *,
     question: str,
     key_data: Dict[str, Any],
     eup: Optional[str],
-    namenska_raba: Optional[str],def p
+    namenska_raba: Optional[str],
     db_manager: Optional[DatabaseManager],
 ) -> Tuple[str, Dict[str, Any]]:
     """
@@ -750,14 +718,6 @@ def prepare_prompt_parts(
       - debug_payload: vsebina za log ali UI.
     """
     # 1) Pridobi kontekst iz hibridnega iskanja
-    vector_context_text, rows = get_vector_context(
-        db_manager=db_manager,
-        key_data=key_data or {},
-        eup=eup,
-        namenska_raba=namenska_raba,
-        k=12,
-        embed_fn=None,  # če želiš, lahko podaš svojo embed funkcijo
-    )
     if not db_manager:
         context_text, rows = "", []
     else:
@@ -770,37 +730,26 @@ def prepare_prompt_parts(
             embed_fn=None,
         )
 
+    # 2) Zgradi prompt (če imaš funkcijo v ai.py), drugače minimalni fallback
+    prompt_text = (
+        "NAVODILA: Odgovori natančno in citiraj samo vire v razdelku 'Relevantna pravila (citati)'.\n\n"
+        + context_text
+        + "\n\n"
+        + f"VPRAŠANJE: {question}"
+    )
+
     if _build_prompt:
         try:
             prompt_text = _build_prompt(  # type: ignore[misc]
                 question=question,
-                vector_context=vector_context_text,
                 vector_context=context_text,
-                extra={"key_data": key_data, "eup": eup, "namenska_raba": namenska_raba},
+                extra={"key_data": key_data, "eup": eup, "namenska_raba": namensak_raba},
             )
-        except Exception as e:
-            logger.warning(f"build_prompt padel, uporabim fallback: {e}")
         except Exception as exc:
             LOGGER.warning("build_prompt padel, uporabim fallback: %s", exc)
-            prompt_text = (
-                "NAVODILA: Odgovori natančno in citiraj samo vire v razdelku 'Relevantna pravila (citati)'.\n\n"
-                + vector_context_text + "\n\n"
-                + context_text
-                + "\n\n"
-                + f"VPRAŠANJE: {question}"
-            )
-    else:
-        prompt_text = (
-            "NAVODILA: Odgovori natančno in citiraj samo vire v razdelku 'Relevantna pravila (citati)'.\n\n"
-            + vector_context_text + "\n\n"
-            + context_text
-            + "\n\n"
-            + f"VPRAŠANJE: {question}"
-        )
+            # prompt_text ostane nastavljen na privzeto obliko zgoraj
 
     debug_payload = {
-        "vector_context_preview": vector_context_text,
-        "rows": rows,  # za UI ali log
         "vector_context_preview": context_text,
         "rows": rows,
         "key_data": key_data,
@@ -822,7 +771,6 @@ class AskOut(BaseModel):
     debug: Dict[str, Any]
 
 
-    # Če obstaja LLM klic v ai.py, ga uporabimo
 @legacy_router.post("/ask", response_model=AskOut)
 def ask_endpoint(payload: AskIn, db_manager: Optional[DatabaseManager] = Depends(get_db_manager)) -> AskOut:
     prompt_text, debug_payload = prepare_prompt_parts(
@@ -835,11 +783,8 @@ def ask_endpoint(payload: AskIn, db_manager: Optional[DatabaseManager] = Depends
 
     if _call_llm:
         try:
-            answer = _call_llm(prompt_text)
             answer = _call_llm(prompt_text)  # type: ignore[misc]
             return AskOut(answer=answer, debug=debug_payload)
-        except Exception as e:
-            logger.warning(f"LLM klic padel, vrnem fallback: {e}")
         except Exception as exc:  # pragma: no cover - varnostni mehanizem
             LOGGER.warning("LLM klic ni uspel: %s", exc)
 
