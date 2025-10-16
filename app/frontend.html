@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="sl">
+<html lang="sl" data-theme="light">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,25 +9,70 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
+            --transition-theme: 0.4s ease;
+            font-size: 16px;
+        }
+
+        :root[data-theme="light"] {
             color-scheme: light;
-            --bg-gradient: radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 50%),
-                            radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.12), transparent 60%),
+            --bg-gradient: radial-gradient(circle at top left, rgba(37, 99, 235, 0.14), transparent 55%),
+                            radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.16), transparent 60%),
                             #f5f7ff;
-            --card: #ffffff;
-            --muted: #6b7280;
+            --card: rgba(255, 255, 255, 0.92);
+            --muted: #5b6479;
             --text: #0f172a;
-            --border: #d6deeb;
+            --text-strong: #0f172a;
+            --text-soft: rgba(15, 23, 42, 0.72);
+            --text-subtle: rgba(15, 23, 42, 0.65);
+            --border: rgba(148, 163, 184, 0.32);
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
             --danger: #dc2626;
             --success: #16a34a;
             --warning: #f97316;
+            --glow: rgba(37, 99, 235, 0.18);
+            --hint-bg: rgba(37, 99, 235, 0.08);
+            --table-header-bg: rgba(37, 99, 235, 0.08);
+            --table-row-hover: rgba(37, 99, 235, 0.05);
+            --floating-bg: rgba(255, 255, 255, 0.9);
+            --floating-border: rgba(148, 163, 184, 0.35);
+            --floating-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
             --radius-lg: 22px;
             --radius-md: 16px;
             --shadow-lg: 0 28px 60px rgba(15, 23, 42, 0.16);
             --shadow-md: 0 20px 40px rgba(15, 23, 42, 0.12);
             --shadow-sm: 0 12px 24px rgba(15, 23, 42, 0.08);
-            font-size: 16px;
+        }
+
+        :root[data-theme="dark"] {
+            color-scheme: dark;
+            --bg-gradient: radial-gradient(circle at top left, rgba(96, 165, 250, 0.12), transparent 50%),
+                            radial-gradient(circle at bottom right, rgba(45, 212, 191, 0.12), transparent 60%),
+                            #0b1220;
+            --card: rgba(15, 23, 42, 0.9);
+            --muted: rgba(209, 213, 219, 0.7);
+            --text: #e2e8f0;
+            --text-strong: #f8fafc;
+            --text-soft: rgba(226, 232, 240, 0.86);
+            --text-subtle: rgba(148, 163, 184, 0.9);
+            --border: rgba(51, 65, 85, 0.6);
+            --primary: #60a5fa;
+            --primary-dark: #3b82f6;
+            --danger: #f87171;
+            --success: #34d399;
+            --warning: #fb923c;
+            --glow: rgba(96, 165, 250, 0.28);
+            --hint-bg: rgba(96, 165, 250, 0.12);
+            --table-header-bg: rgba(30, 41, 59, 0.9);
+            --table-row-hover: rgba(37, 99, 235, 0.12);
+            --floating-bg: rgba(15, 23, 42, 0.86);
+            --floating-border: rgba(96, 165, 250, 0.3);
+            --floating-shadow: 0 24px 48px rgba(8, 13, 23, 0.55);
+            --radius-lg: 22px;
+            --radius-md: 16px;
+            --shadow-lg: 0 32px 80px rgba(8, 13, 23, 0.6);
+            --shadow-md: 0 24px 48px rgba(8, 13, 23, 0.5);
+            --shadow-sm: 0 16px 32px rgba(8, 13, 23, 0.45);
         }
 
         * {
@@ -42,7 +87,26 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            padding: clamp(32px, 4vw, 64px) clamp(16px, 4vw, 56px);
+            padding: clamp(28px, 4vw, 64px) clamp(20px, 4vw, 72px);
+            transition: background var(--transition-theme), color var(--transition-theme);
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at 20% 20%, var(--glow), transparent 55%),
+                        radial-gradient(circle at 80% 30%, rgba(34, 197, 94, 0.12), transparent 65%);
+            opacity: 0.6;
+            transition: opacity var(--transition-theme), background var(--transition-theme);
+        }
+
+        :root[data-theme="dark"] body::before {
+            opacity: 0.45;
+            background: radial-gradient(circle at 18% 25%, rgba(96, 165, 250, 0.25), transparent 55%),
+                        radial-gradient(circle at 75% 25%, rgba(45, 212, 191, 0.2), transparent 60%);
         }
 
         [v-cloak] { display: none !important; }
@@ -50,7 +114,7 @@
         a { color: inherit; }
 
         .app-shell {
-            width: min(1160px, 100%);
+            width: min(1360px, 100%);
             display: flex;
             flex-direction: column;
             gap: 32px;
@@ -61,9 +125,183 @@
             padding: clamp(32px, 3vw, 48px);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-lg);
-            color: #0f172a;
+            color: var(--text);
             display: grid;
             gap: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: -120px;
+            background: radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.18), transparent 55%),
+                        radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.18), transparent 60%);
+            opacity: 0.7;
+            pointer-events: none;
+            transition: opacity var(--transition-theme);
+        }
+
+        :root[data-theme="dark"] .hero {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.22), rgba(13, 148, 136, 0.18));
+        }
+
+        :root[data-theme="dark"] .hero::after {
+            opacity: 0.45;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .floating-shell {
+            position: sticky;
+            top: clamp(16px, 4vw, 32px);
+            z-index: 30;
+            display: flex;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .floating-actions {
+            pointer-events: auto;
+            width: min(1360px, 100%);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            padding: 18px;
+            background: var(--floating-bg);
+            border: 1px solid var(--floating-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--floating-shadow);
+            backdrop-filter: blur(18px);
+        }
+
+        .floating-actions .btn {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 10px;
+            padding: 18px 20px;
+            min-height: 132px;
+            border-radius: var(--radius-md);
+            text-align: left;
+        }
+
+        .floating-actions .btn .action-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: rgba(37, 99, 235, 0.12);
+            color: var(--primary);
+            font-size: 1.4rem;
+        }
+
+        :root[data-theme="dark"] .floating-actions .btn .action-icon {
+            background: rgba(96, 165, 250, 0.16);
+            color: #bfdbfe;
+        }
+
+        .floating-actions .btn strong {
+            font-size: 1.02rem;
+            color: inherit;
+        }
+
+        .floating-actions .btn small {
+            color: inherit;
+            opacity: 0.8;
+            font-size: 0.86rem;
+            line-height: 1.4;
+        }
+
+        .floating-actions .btn.btn-outline strong,
+        .floating-actions .btn.btn-secondary strong,
+        .floating-actions .btn.btn-danger strong {
+            color: var(--text-strong);
+        }
+
+        .floating-actions .btn.btn-outline small,
+        .floating-actions .btn.btn-secondary small,
+        .floating-actions .btn.btn-danger small {
+            color: var(--text-subtle);
+            opacity: 1;
+        }
+
+        .floating-actions .btn:focus-visible {
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18);
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            letter-spacing: 0.04em;
+        }
+
+        .brand-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.22);
+            color: var(--primary);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+        }
+
+        :root[data-theme="dark"] .brand-icon {
+            background: rgba(148, 163, 184, 0.12);
+            color: #bfdbfe;
+            box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.25);
+        }
+
+        .theme-toggle {
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.18);
+            color: var(--text);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+            backdrop-filter: blur(12px);
+        }
+
+        .theme-toggle span.icon {
+            font-size: 1.2rem;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.24);
+        }
+
+        :root[data-theme="dark"] .theme-toggle {
+            border-color: rgba(148, 163, 184, 0.4);
+            background: rgba(30, 41, 59, 0.65);
+            color: #e2e8f0;
+        }
+
+        :root[data-theme="dark"] .theme-toggle:hover {
+            background: rgba(30, 41, 59, 0.8);
         }
 
         .hero h1 {
@@ -75,7 +313,7 @@
         .hero p {
             margin: 0;
             max-width: 680px;
-            color: rgba(15, 23, 42, 0.82);
+            color: var(--text-soft);
             font-size: 1.05rem;
             line-height: 1.65;
         }
@@ -88,8 +326,8 @@
 
         .step-card {
             backdrop-filter: blur(12px);
-            background: rgba(255, 255, 255, 0.88);
-            border: 2px solid rgba(148, 163, 184, 0.35);
+            background: var(--card);
+            border: 2px solid var(--border);
             border-radius: var(--radius-md);
             padding: 18px 20px;
             box-shadow: var(--shadow-sm);
@@ -118,6 +356,16 @@
             background: rgba(37, 99, 235, 0.14);
             color: var(--primary);
             font-size: 1.1rem;
+        }
+
+        :root[data-theme="dark"] .step-card {
+            background: rgba(15, 23, 42, 0.86);
+            border-color: rgba(96, 165, 250, 0.22);
+        }
+
+        :root[data-theme="dark"] .step-card strong {
+            background: rgba(96, 165, 250, 0.18);
+            color: #bfdbfe;
         }
 
         .surface {
@@ -159,17 +407,49 @@
         }
 
         .subtitle {
-            color: var(--muted);
+            color: var(--text-soft);
             font-size: 0.98rem;
             line-height: 1.6;
             margin: 0;
+        }
+
+        .session-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: var(--hint-bg);
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--primary);
+            max-width: 100%;
+        }
+
+        .session-status .session-label {
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .session-status .session-value {
+            color: var(--text-strong);
+            word-break: break-all;
+        }
+
+        .session-status.is-inactive {
+            background: rgba(148, 163, 184, 0.18);
+            color: var(--text-subtle);
+        }
+
+        .session-status.is-inactive .session-value {
+            color: var(--text-soft);
         }
 
         .upload-drop {
             border: 2px dashed rgba(37, 99, 235, 0.3);
             border-radius: var(--radius-md);
             padding: clamp(24px, 2.6vw, 36px);
-            background: rgba(248, 250, 255, 0.8);
+            background: var(--card);
             display: grid;
             gap: 18px;
             transition: border 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
@@ -179,6 +459,16 @@
             border-color: var(--primary);
             background: rgba(237, 242, 255, 0.95);
             box-shadow: 0 22px 46px rgba(37, 99, 235, 0.16);
+        }
+
+        :root[data-theme="dark"] .upload-drop {
+            border-color: rgba(96, 165, 250, 0.35);
+            background: rgba(15, 23, 42, 0.85);
+        }
+
+        :root[data-theme="dark"] .upload-drop.is-dragging {
+            background: rgba(30, 41, 59, 0.95);
+            box-shadow: 0 22px 46px rgba(37, 99, 235, 0.28);
         }
 
         .upload-actions {
@@ -198,9 +488,14 @@
             gap: 12px;
             border-radius: var(--radius-md);
             padding: 16px 18px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(15, 23, 42, 0.08);
+            background: var(--card);
+            border: 1px solid var(--border);
             box-shadow: var(--shadow-sm);
+        }
+
+        :root[data-theme="dark"] .file-item {
+            background: rgba(15, 23, 42, 0.86);
+            border-color: rgba(71, 85, 105, 0.6);
         }
 
         .file-row {
@@ -211,14 +506,14 @@
         }
 
         .file-meta {
-            color: var(--muted);
+            color: var(--text-subtle);
             font-size: 0.85rem;
         }
 
         label {
             font-weight: 600;
             font-size: 0.96rem;
-            color: var(--text);
+            color: var(--text-strong);
         }
 
         input[type="text"],
@@ -226,10 +521,11 @@
         select {
             width: 100%;
             border-radius: 14px;
-            border: 1px solid rgba(148, 163, 184, 0.5);
+            border: 1px solid var(--border);
             padding: 12px 14px;
             font-size: 0.98rem;
-            background: rgba(248, 250, 255, 0.9);
+            background: var(--card);
+            color: var(--text);
             transition: border 0.2s ease, box-shadow 0.2s ease;
         }
 
@@ -238,6 +534,20 @@
             outline: none;
             border-color: rgba(37, 99, 235, 0.7);
             box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+        }
+
+        :root[data-theme="dark"] input[type="text"],
+        :root[data-theme="dark"] textarea,
+        :root[data-theme="dark"] select {
+            border-color: rgba(71, 85, 105, 0.6);
+            background: rgba(15, 23, 42, 0.8);
+            color: #e2e8f0;
+        }
+
+        :root[data-theme="dark"] input[type="text"]:focus,
+        :root[data-theme="dark"] textarea:focus {
+            border-color: rgba(96, 165, 250, 0.7);
+            box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.2);
         }
 
         textarea {
@@ -349,6 +659,30 @@
             transform: translateY(-50%);
         }
 
+        :root[data-theme="dark"] .btn-outline {
+            background: rgba(30, 41, 59, 0.65);
+            border-color: rgba(96, 165, 250, 0.35);
+            color: var(--text);
+        }
+
+        :root[data-theme="dark"] .btn-outline:hover:not(:disabled) {
+            background: rgba(37, 99, 235, 0.28);
+        }
+
+        :root[data-theme="dark"] .btn-secondary {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(71, 85, 105, 0.65);
+            color: var(--text);
+        }
+
+        :root[data-theme="dark"] .btn-secondary:hover:not(:disabled) {
+            background: rgba(37, 99, 235, 0.2);
+        }
+
+        :root[data-theme="dark"] .btn-danger {
+            color: #fecaca;
+        }
+
         .btn[data-state="success"] {
             background: rgba(22, 163, 74, 0.14);
             border-color: rgba(22, 163, 74, 0.4);
@@ -395,16 +729,23 @@
         .status-banner {
             border-radius: var(--radius-md);
             padding: 16px 18px;
-            border: 1px solid transparent;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 12px;
         }
 
-        .status-banner.status-success { background: #ecfdf5; border-color: rgba(16, 185, 129, 0.32); color: #047857; }
-        .status-banner.status-error { background: #fef2f2; border-color: rgba(220, 38, 38, 0.28); color: #b91c1c; }
-        .status-banner.status-info { background: #eff6ff; border-color: rgba(37, 99, 235, 0.28); color: var(--primary); }
+        .status-banner.status-success { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.32); color: #047857; }
+        .status-banner.status-error { background: rgba(220, 38, 38, 0.1); border-color: rgba(220, 38, 38, 0.28); color: #b91c1c; }
+        .status-banner.status-info { background: rgba(59, 130, 246, 0.12); border-color: rgba(37, 99, 235, 0.28); color: var(--primary); }
+
+        :root[data-theme="dark"] .status-banner { border-color: rgba(71, 85, 105, 0.6); }
+        :root[data-theme="dark"] .status-banner.status-success { background: rgba(34, 197, 94, 0.18); color: #bbf7d0; border-color: rgba(34, 197, 94, 0.35); }
+        :root[data-theme="dark"] .status-banner.status-error { background: rgba(239, 68, 68, 0.2); color: #fecaca; border-color: rgba(248, 113, 113, 0.4); }
+        :root[data-theme="dark"] .status-banner.status-info { background: rgba(96, 165, 250, 0.2); color: #bfdbfe; border-color: rgba(96, 165, 250, 0.45); }
 
         .fade-enter-active, .fade-leave-active {
             transition: opacity 0.25s ease;
@@ -423,7 +764,7 @@
         .pair-card {
             border-radius: var(--radius-md);
             border: 1px solid rgba(37, 99, 235, 0.18);
-            background: rgba(255, 255, 255, 0.92);
+            background: var(--card);
             padding: 16px 18px;
             display: grid;
             gap: 12px;
@@ -436,10 +777,15 @@
             box-shadow: 0 22px 40px rgba(37, 99, 235, 0.18);
         }
 
+        :root[data-theme="dark"] .pair-card {
+            background: rgba(15, 23, 42, 0.86);
+            border-color: rgba(96, 165, 250, 0.25);
+        }
+
         .pair-card .hint {
             font-size: 0.85rem;
-            color: var(--muted);
-            background: rgba(37, 99, 235, 0.08);
+            color: var(--text-subtle);
+            background: var(--hint-bg);
             padding: 10px 12px;
             border-radius: 12px;
         }
@@ -455,14 +801,19 @@
             gap: 10px;
             padding: 18px 20px;
             border-radius: var(--radius-md);
-            background: rgba(248, 250, 255, 0.92);
-            border: 1px solid rgba(148, 163, 184, 0.28);
+            background: var(--card);
+            border: 1px solid var(--border);
             box-shadow: var(--shadow-sm);
         }
 
         .key-field.modified {
             border-color: rgba(37, 99, 235, 0.5);
             box-shadow: 0 22px 46px rgba(37, 99, 235, 0.18);
+        }
+
+        :root[data-theme="dark"] .key-field {
+            background: rgba(15, 23, 42, 0.86);
+            border-color: rgba(71, 85, 105, 0.6);
         }
 
         .metadata-grid {
@@ -472,17 +823,22 @@
         }
 
         .meta-field {
-            background: rgba(255, 255, 255, 0.92);
+            background: var(--card);
             border-radius: var(--radius-md);
-            border: 1px solid rgba(148, 163, 184, 0.28);
+            border: 1px solid var(--border);
             padding: 14px 16px;
             display: grid;
             gap: 6px;
             box-shadow: var(--shadow-sm);
         }
 
+        :root[data-theme="dark"] .meta-field {
+            background: rgba(15, 23, 42, 0.86);
+            border-color: rgba(71, 85, 105, 0.6);
+        }
+
         .meta-label {
-            color: var(--muted);
+            color: var(--text-subtle);
             font-size: 0.85rem;
             letter-spacing: 0.04em;
             text-transform: uppercase;
@@ -490,13 +846,13 @@
 
         .meta-value {
             font-weight: 600;
-            color: var(--text);
+            color: var(--text-strong);
         }
 
         .field-hint {
             font-size: 0.85rem;
-            color: rgba(15, 23, 42, 0.65);
-            background: rgba(37, 99, 235, 0.08);
+            color: var(--text-subtle);
+            background: var(--hint-bg);
             padding: 8px 10px;
             border-radius: 10px;
             white-space: pre-line;
@@ -510,15 +866,25 @@
         th, td {
             padding: 14px 16px;
             text-align: left;
-            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
             vertical-align: top;
+        }
+
+        :root[data-theme="dark"] th,
+        :root[data-theme="dark"] td {
+            border-bottom: 1px solid rgba(71, 85, 105, 0.5);
         }
 
         .results-table {
             overflow-x: auto;
             border-radius: var(--radius-md);
-            border: 1px solid rgba(15, 23, 42, 0.08);
+            border: 1px solid rgba(148, 163, 184, 0.25);
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        :root[data-theme="dark"] .results-table {
+            border-color: rgba(71, 85, 105, 0.6);
+            box-shadow: inset 0 1px 0 rgba(15, 23, 42, 0.35);
         }
 
         .results-table table {
@@ -544,6 +910,10 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
             background: rgba(37, 99, 235, 0.08);
+        }
+
+        :root[data-theme="dark"] .analysis-editor {
+            background: rgba(37, 99, 235, 0.12);
         }
 
         .analysis-display {
@@ -582,7 +952,7 @@
 
         .analysis-section strong {
             font-size: 0.92rem;
-            color: rgba(15, 23, 42, 0.72);
+            color: var(--text-soft);
         }
 
         .analysis-section div {
@@ -591,7 +961,7 @@
 
         .analysis-hint {
             font-size: 0.84rem;
-            color: var(--muted);
+            color: var(--text-subtle);
         }
 
         .analysis-hover {
@@ -623,7 +993,7 @@
         .analysis-hover label {
             font-weight: 600;
             font-size: 0.92rem;
-            color: rgba(15, 23, 42, 0.86);
+            color: var(--text-strong);
         }
 
         .analysis-hover textarea {
@@ -635,7 +1005,7 @@
             font-family: inherit;
             font-size: 0.95rem;
             line-height: 1.5;
-            background: rgba(15, 23, 42, 0.02);
+            background: rgba(255, 255, 255, 0.85);
             transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
         }
 
@@ -643,20 +1013,28 @@
             border-color: var(--primary);
             outline: none;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-            background: #ffffff;
+            background: var(--card);
+        }
+
+        :root[data-theme="dark"] .analysis-hover textarea {
+            background: rgba(30, 41, 59, 0.75);
+        }
+
+        :root[data-theme="dark"] .analysis-hover textarea:focus {
+            background: rgba(30, 41, 59, 0.92);
         }
 
         .analysis-empty {
-            color: rgba(15, 23, 42, 0.6);
+            color: var(--text-subtle);
             font-style: italic;
         }
 
         thead {
-            background: rgba(37, 99, 235, 0.08);
+            background: var(--table-header-bg);
         }
 
         tbody tr:hover {
-            background: rgba(37, 99, 235, 0.05);
+            background: var(--table-row-hover);
         }
 
         .status-pill {
@@ -682,7 +1060,12 @@
         .status-pill.skladno { color: var(--success); background: rgba(16, 185, 129, 0.16); }
         .status-pill.neskladno { color: var(--danger); background: rgba(220, 38, 38, 0.16); }
         .status-pill.ni-relevantno { color: var(--primary); background: rgba(37, 99, 235, 0.16); }
-        .status-pill.neznano { color: rgba(15, 23, 42, 0.75); background: rgba(15, 23, 42, 0.12); }
+        .status-pill.neznano { color: var(--text-soft); background: rgba(148, 163, 184, 0.2); }
+
+        :root[data-theme="dark"] .status-pill.neznano {
+            color: var(--text-subtle);
+            background: rgba(148, 163, 184, 0.26);
+        }
 
         .status-cell {
             min-width: 200px;
@@ -701,7 +1084,7 @@
             font-size: 0.9rem;
             letter-spacing: 0.05em;
             text-transform: uppercase;
-            background: rgba(15, 23, 42, 0.03);
+            background: rgba(255, 255, 255, 0.85);
             color: var(--text);
             cursor: pointer;
             transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
@@ -711,7 +1094,16 @@
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-            background: #ffffff;
+            background: var(--card);
+        }
+
+        :root[data-theme="dark"] .status-control select {
+            background: rgba(30, 41, 59, 0.75);
+            color: var(--text);
+        }
+
+        :root[data-theme="dark"] .status-control select:focus {
+            background: rgba(30, 41, 59, 0.92);
         }
 
         .actions-row {
@@ -741,13 +1133,18 @@
         }
 
         .sidebar-card {
-            background: rgba(255, 255, 255, 0.95);
-            border: 1px solid rgba(148, 163, 184, 0.35);
+            background: var(--card);
+            border: 1px solid var(--border);
             border-radius: var(--radius-md);
             padding: 20px 22px;
             box-shadow: var(--shadow-sm);
             display: grid;
             gap: 16px;
+        }
+
+        :root[data-theme="dark"] .sidebar-card {
+            background: rgba(15, 23, 42, 0.86);
+            border-color: rgba(71, 85, 105, 0.6);
         }
 
         .sidebar-title {
@@ -758,9 +1155,34 @@
 
         .sidebar-hint {
             margin: 0;
-            color: var(--muted);
+            color: var(--text-subtle);
             font-size: 0.9rem;
             line-height: 1.5;
+        }
+
+        .sidebar-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        .sidebar-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.92rem;
+            color: var(--text-soft);
+        }
+
+        .sidebar-list .list-label {
+            color: var(--text-subtle);
+        }
+
+        .sidebar-list .list-value {
+            font-weight: 600;
+            color: var(--text-strong);
         }
 
         .actions-stack {
@@ -769,7 +1191,7 @@
         }
 
         .empty-note {
-            color: var(--muted);
+            color: var(--text-subtle);
             font-style: italic;
         }
 
@@ -782,9 +1204,38 @@
             gap: 14px;
         }
 
+        :root[data-theme="dark"] .revision-card {
+            border-color: rgba(96, 165, 250, 0.35);
+            background: rgba(37, 99, 235, 0.16);
+        }
+
         @media (max-width: 1080px) {
             .section-layout { grid-template-columns: 1fr; }
             .section-sidebar { position: static; }
+            .floating-actions { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+        }
+
+        @media (max-width: 900px) {
+            .floating-actions {
+                border-radius: 28px;
+                gap: 12px;
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            }
+            .floating-actions .btn {
+                min-height: 120px;
+            }
+        }
+
+        @media (max-width: 680px) {
+            body {
+                padding: clamp(20px, 6vw, 36px) clamp(16px, 6vw, 36px);
+            }
+            .floating-shell {
+                top: 16px;
+            }
+            .floating-actions {
+                grid-template-columns: 1fr;
+            }
         }
 
         .modal-backdrop {
@@ -816,7 +1267,7 @@
             gap: 6px;
         }
 
-        .saved-item small { color: var(--muted); }
+        .saved-item small { color: var(--text-subtle); }
 
         .spinner-overlay {
             position: fixed;
@@ -843,23 +1294,30 @@
 
         footer {
             text-align: center;
-            color: var(--muted);
+            color: var(--text-subtle);
             font-size: 0.9rem;
         }
 
         @media (max-width: 720px) {
-            body { padding: 28px 14px 40px; }
             .section-head { align-items: stretch; }
             .actions-row { flex-direction: column; }
-            .section-layout { grid-template-columns: 1fr; }
-            .section-sidebar { position: static; }
         }
     </style>
 </head>
 <body>
     <div id="app" class="app-shell" v-cloak>
         <header class="hero">
-            <div>
+            <div class="top-bar">
+                <div class="brand">
+                    <span class="brand-icon">✨</span>
+                    <span>Mnenja AI Studio</span>
+                </div>
+                <button class="theme-toggle" @click="toggleTheme" :aria-label="theme === 'dark' ? 'Preklopi na svetli način' : 'Preklopi na temni način'">
+                    <span class="icon" v-text="theme === 'dark' ? '🌙' : '☀️'"></span>
+                    <span>{{ theme === 'dark' ? 'Dark' : 'Light' }} mode</span>
+                </button>
+            </div>
+            <div style="position:relative; z-index:1;">
                 <h1>IZDELAVA MNENJA O SKADNOSTI S PIA</h1>
                 <p>Napredni pregled projektne dokumentacije, ki združuje AI ekstrakcijo ključnih podatkov, preglednost korakov in jasne povratne informacije za vašo ekipo.</p>
             </div>
@@ -871,6 +1329,61 @@
                 </div>
             </div>
         </header>
+
+        <div class="floating-shell">
+            <div class="floating-actions" role="toolbar" aria-label="Glavne akcije">
+                <button type="button" class="btn btn-outline" @click.prevent="$refs.fileInput && $refs.fileInput.click()" :disabled="isBusy">
+                    <span class="action-icon">📄</span>
+                    <strong>Dodaj PDF datoteke</strong>
+                    <small>Naložite projektno dokumentacijo za analizo.</small>
+                </button>
+                <button type="button" class="btn btn-primary" @click="extractData" :disabled="!files.length || isBusy" :data-state="actionStates.extract">
+                    <span class="action-icon">🤖</span>
+                    <strong>Ekstrahiraj podatke</strong>
+                    <small>Pridobi pare EUP/Rabe iz dodanih dokumentov.</small>
+                </button>
+                <button type="button" class="btn btn-primary" @click="runAnalysis()" :disabled="isBusy" :data-state="actionStates.run">
+                    <span class="action-icon">📊</span>
+                    <strong>Izvedi podrobno analizo</strong>
+                    <small>Analiziraj skladnost in pripravi rezultate pregleda.</small>
+                </button>
+                <button type="button" class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">
+                    <span class="action-icon">💾</span>
+                    <strong>Shrani napredek</strong>
+                    <small>Ohrani trenutno stanje in podatke seje.</small>
+                </button>
+                <button type="button" class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy" :data-state="actionStates.reset">
+                    <span class="action-icon">🧹</span>
+                    <strong>Ponastavi analizo</strong>
+                    <small>Začni postopek znova s čistim delovnim prostorom.</small>
+                </button>
+                <button type="button" class="btn btn-secondary" @click="openSavedModal" :disabled="savedSessionsLoading">
+                    <span class="action-icon">📂</span>
+                    <strong>Odpri shranjeno analizo</strong>
+                    <small>Izberi prejšnjo sejo in nadaljuj z urejanjem.</small>
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    v-if="highlightedSession"
+                    @click="restoreHighlighted"
+                >
+                    <span class="action-icon">⏯️</span>
+                    <strong>Nadaljuj z zadnjo sejo</strong>
+                    <small>Ponovno naloži zadnje samodejno shranjeno stanje.</small>
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    v-if="highlightedSession"
+                    @click="discardHighlighted"
+                >
+                    <span class="action-icon">🗑️</span>
+                    <strong>Izbriši shranjeno</strong>
+                    <small>Odstrani shranjeno sejo iz zadnjih aktivnosti.</small>
+                </button>
+            </div>
+        </div>
 
         <transition name="fade">
             <div v-if="status.message" class="status-banner" :class="`status-${status.type}`">
@@ -884,11 +1397,6 @@
                 <div class="section-title">
                     <span class="badge">1</span>
                     Priprava dokumentacije
-                </div>
-                <div class="actions-row" style="gap:10px;">
-                    <button class="btn btn-outline" @click="openSavedModal" :disabled="savedSessionsLoading">Odpri shranjeno analizo</button>
-                    <button class="btn btn-secondary" v-if="highlightedSession" @click="restoreHighlighted">Nadaljuj z zadnjo sejo</button>
-                    <button class="btn btn-secondary" v-if="highlightedSession" @click="discardHighlighted">Izbriši shranjeno</button>
                 </div>
             </div>
             <p class="subtitle">Dodajte vse PDF priloge projekta. Za grafične priloge lahko določite strani, ki jih bo sistem pretvoril v slike.</p>
@@ -917,9 +1425,7 @@
                 <p class="subtitle" v-else>Trenutno ni izbranih datotek. Po dodajanju bo vsak dokument prikazan z dodatnimi možnostmi.</p>
             </div>
 
-            <div class="actions-row">
-                <button class="btn btn-primary" @click="extractData" :disabled="!files.length || isBusy" :data-state="actionStates.extract">Ekstrahiraj ključne podatke in EUP/Rabe</button>
-            </div>
+            <p class="subtitle">Za začetek ekstrakcije uporabite gumbe v zgornji vrstici, ki so vedno vidni med pomikanjem.</p>
         </section>
 
         <section class="surface" v-if="showReview">
@@ -928,7 +1434,15 @@
                     <span class="badge">2</span>
                     Pregled in potrditev podatkov
                 </div>
-                <div class="subtitle">Seja: {{ sessionId || 'ni začeta' }}</div>
+                <div
+                    class="session-status"
+                    :class="{ 'is-inactive': !sessionId }"
+                    role="status"
+                    aria-live="polite"
+                >
+                    <span class="session-label">Seja</span>
+                    <span class="session-value">{{ sessionId || 'ni začeta' }}</span>
+                </div>
             </div>
 
             <div class="section-layout">
@@ -989,12 +1503,25 @@
                 <aside class="section-sidebar">
                     <div class="sidebar-card">
                         <h4 class="sidebar-title">Upravljanje analize</h4>
-                        <p class="sidebar-hint">Gumbi so razporejeni po pomembnosti. Po kliku se barva spremeni in potrdi izvedbo.</p>
-                        <div class="actions-stack">
-                            <button class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy" :data-state="actionStates.reset">Ponastavi analizo</button>
-                            <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">Shrani napredek</button>
-                            <button class="btn btn-primary" @click="runAnalysis()" :disabled="isBusy" :data-state="actionStates.run">Izvedi podrobno analizo</button>
-                        </div>
+                        <p class="sidebar-hint">Glavne akcije so vedno na voljo v zgornji vrstici. Tukaj lahko spremljate ključne kazalnike napredka.</p>
+                        <ul class="sidebar-list">
+                            <li>
+                                <span class="list-label">Dokumenti</span>
+                                <span class="list-value">{{ files.length }}</span>
+                            </li>
+                            <li>
+                                <span class="list-label">EUP/Rabe</span>
+                                <span class="list-value">{{ eupPairs.length }}</span>
+                            </li>
+                            <li>
+                                <span class="list-label">Ključni podatki</span>
+                                <span class="list-value">{{ Object.keys(keyData).length }}</span>
+                            </li>
+                            <li>
+                                <span class="list-label">Aktivna seja</span>
+                                <span class="list-value">{{ sessionId || 'ni aktivna' }}</span>
+                            </li>
+                        </ul>
                     </div>
                 </aside>
             </div>
@@ -1181,6 +1708,8 @@
         createApp({
             data() {
                 return {
+                    theme: 'light',
+                    themeStorageKey: 'mnenja-theme',
                     files: [],
                     pageOverrides: {},
                     isDragging: false,
@@ -1296,6 +1825,40 @@
                 }
             },
             methods: {
+                applyTheme(theme) {
+                    const normalized = theme === 'dark' ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', normalized);
+                    this.theme = normalized;
+                },
+                setTheme(theme) {
+                    this.applyTheme(theme);
+                    try {
+                        localStorage.setItem(this.themeStorageKey, this.theme);
+                    } catch (error) {
+                        console.warn('Shranjevanje teme ni uspelo:', error);
+                    }
+                },
+                toggleTheme() {
+                    const next = this.theme === 'dark' ? 'light' : 'dark';
+                    this.setTheme(next);
+                },
+                initializeTheme() {
+                    let savedTheme = null;
+                    try {
+                        savedTheme = localStorage.getItem(this.themeStorageKey);
+                    } catch (error) {
+                        savedTheme = null;
+                    }
+                    if (savedTheme === 'light' || savedTheme === 'dark') {
+                        this.applyTheme(savedTheme);
+                        return;
+                    }
+                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        this.applyTheme('dark');
+                    } else {
+                        this.applyTheme('light');
+                    }
+                },
                 heroStepClass(stepId) {
                     const active = this.heroActiveStep;
                     return {
@@ -1984,6 +2547,7 @@
                     if (!this.sessionId) return null;
                     return {
                         sessionId: this.sessionId,
+                        theme: this.theme,
                         eupPairs: this.eupPairs,
                         keyData: this.keyData,
                         initialKeyData: this.initialKeyData,
@@ -2019,6 +2583,9 @@
                         if (!raw) return;
                         const state = JSON.parse(raw);
                         if (!state || !state.sessionId) return;
+                        if (state.theme) {
+                            this.applyTheme(state.theme);
+                        }
                         this.sessionId = state.sessionId;
                         this.eupPairs = state.eupPairs || [];
                         this.keyData = state.keyData || {};
@@ -2184,6 +2751,7 @@
                 }
             },
             mounted() {
+                this.initializeTheme();
                 this.restoreFromLocal();
                 this.fetchSavedSessions();
             }
