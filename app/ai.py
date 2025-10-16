@@ -10,7 +10,7 @@ from PIL import Image
 
 import google.generativeai as genai
 
-from .config import API_KEY, GEN_CFG, MODEL_NAME, EXTRACTION_MODEL_NAME
+from .config import API_KEY, GEN_CFG, MODEL_NAME, EXTRACTION_MODEL_NAME, EMBEDDING_MODEL
 
 genai.configure(api_key=API_KEY)
 
@@ -20,40 +20,50 @@ def _clean_json_string(text: str) -> str:
     clean = re.sub(r"```(json)?", "", text, flags=re.IGNORECASE).strip()
     return clean.replace('\ufeff', '') # Odstranitev BOM znaka, če je prisoten
 
+def embed_query(text: str) -> List[float]:
+    """
+    Generira vektorsko predstavitev (embedding) za podano besedilo
+    z uporabo Googlovega modela.
+    """
+    cleaned_text = (text or "").strip()
+    if not cleaned_text:
+        return []
+    try:
+        result = genai.embed_content(
+            model=EMBEDDING_MODEL,
+            content=cleaned_text,
+            task_type="RETRIEVAL_QUERY"
+        )
+        return result.get("embedding", [])
+    except Exception as exc:
+        print(f"⚠️ Napaka pri generiranju embeddinga: {exc}")
+        return []
+
+
 def call_gemini_for_initial_extraction(project_text: str, images: List[Image.Image]) -> Dict[str, Any]:
     """
-    Izvede en sam klic za ekstrakcijo vseh začetnih podatkov:
-    detajlov (EUP, raba), metapodatkov in ključnih tehničnih podatkov,
-    ki so usklajeni s prikazom v uporabniškem vmesniku.
+    Izvede en sam klic za ekstrakcijo vseh začetnih podatkov po dogovorjeni strukturi.
     """
     # --- ZAČETEK POPRAVKA ---
-    # Ta slovar je bil zamenjan, da se ključi ujemajo s 'keyLabels' v frontend.html.
+    # Ta slovar je sedaj usklajen s končno dogovorjeno strukturo.
     KEY_DATA_PROMPT_MAP = {
-        "glavni_objekt": "Natančen opis glavnega objekta (npr. enostanovanjska hiša, gospodarski objekt, opiši funkcijo).",
-        "vrsta_gradnje": "Vrsta gradnje (npr. novogradnja, dozidava, nadzidava, rekonstrukcija, sprememba namembnosti).",
-        "klasifikacija_cc_si": "CC-SI oziroma druga uradna klasifikacija objekta, če je navedena.",
-        "nezahtevni_objekti": "Ali projekt vključuje nezahtevne objekte (navedi katere in njihove dimenzije).",
-        "enostavni_objekti": "Ali projekt vključuje enostavne objekte (navedi katere in njihove dimenzije).",
-        "vzdrzevalna_dela": "Opiši načrtovana vzdrževalna dela ali manjše rekonstrukcije, če so predvidene.",
-        "parcela_objekta": "Številka gradbene/osnovne parcele (npr. 123/5).",
-        "stevilke_parcel_ko": "Vse parcele in katastrska občina, ki so del projekta (npr. 123/5, 124/6, k.o. Litija).",
-        "velikost_parcel": "Skupna velikost vseh parcel (npr. 1500 m2).",
-        "velikost_obstojecega_objekta": "Velikost in etažnost obstoječih objektov na parceli (npr. hiša 10x8m P+1N, pomožni objekt 5x4m).",
-        "tlorisne_dimenzije": "Zunanje tlorisne dimenzije NOVEGA glavnega objekta (npr. 12.0 m x 8.5 m).",
-        "gabariti_etaznost": "Navedi etažnost in vertikalni gabarit NOVEGA objekta (npr. K+P+1N+M, višina kolenčnega zidu 1.5 m).",
-        "faktor_zazidanosti": "Vrednost faktorja zazidanosti (FZ) (npr. 0.35 ali FZ=35%).",
-        "faktor_izkoristenosti": "Vrednost faktorja izrabe (FI) (npr. 0.70 ali FI=0.7).",
-        "zelene_povrsine": "Velikost in/ali faktor zelenih površin (npr. 700 m2, FZP=0.47).",
-        "naklon_strehe": "Naklon strehe v stopinjah in tip (npr. 40° ali simetrična dvokapnica, 40 stopinj).",
-        "kritina_barva": "Material in barva strešne kritine (npr. opečna kritina, temno rdeča).",
-        "materiali_gradnje": "Tipični materiali (npr. masivna lesena hiša ali opeka, klasična gradnja).",
-        "smer_slemena": "Orientacija slemena glede na plastnice (npr. vzporedno s cesto/vrstnim redom gradnje).",
-        "visinske_kote": "Pomembne kote (k.n.t., k.p. pritličja, k. slemena) (npr. k.p. = 345.50 m n.m.).",
-        "odmik_od_meja": "Najmanjši in najpomembnejši navedeni odmiki od sosednjih parcelnih meja (npr. Južna meja: 4.5 m; Severna meja: 8.0 m).",
-        "komunalni_prikljucki": "Opis priključitve na javno komunalno omrežje (elektrika, vodovod, kanalizacija itd.).",
-        "parkirna_mesta": "Število potrebnih ali zagotovljenih parkirnih mest.",
-        "vodovarstveni_rezim": "Ali se objekt nahaja v vodovarstvenem območju in kakšen je režim.",
+        "naziv_gradnje": "Celoten naziv gradnje, ki združuje vrsto gradnje in opis objekta (npr. 'Novogradnja enostanovanjske stavbe').",
+        "glavni_objekt": "Kratek, jedrnat opis glavnega objekta.",
+        "pomozni_objekti": "Opis vseh pomožnih, nezahtevnih ali enostavnih objektov, ki so del projekta.",
+        "parcela_in_ko": "Navedba vseh parcelnih številk in ime katastrske občine.",
+        "dimenzije_objektov": "Tlorisne dimenzije glavnega objekta in morebitnih pomožnih objektov.",
+        "bruto_etazna_povrsina": "Bruto etažna površina (BTP) glavnega objekta in pomožnih objektov v m².",
+        "etaznost": "Etažnost glavnega objekta (npr. K+P+M ali P+1).",
+        "visinski_gabariti": "Ključni višinski gabariti: višina slemena, višina kapi/venca in višina kolenčnega zidu.",
+        "streha_naklon_smer_kritina": "Združen opis strehe: naklon v stopinjah, smer slemena in vrsta ter barva kritine.",
+        "barva_fasade": "Opis materialov in barve fasade.",
+        "odmiki": "Najpomembnejši odmiki objekta od parcelnih mej ali drugih objektov.",
+        "parkirna_mesta": "Navedba števila zagotovljenih ali potrebnih parkirnih mest (PM).",
+        "prikljucki_gji": "Podroben opis načina priključitve objekta na gospodarsko javno infrastrukturo (voda, elektrika, kanalizacija, telekomunikacije).",
+        "faktorji_in_ozelenitev": "Vrednosti za Faktor Zazidanosti (FZ), Faktor Izrabe (FI) in Faktor Zelenih Površin (FZP).",
     }
+    # --- KONEC POPRAVKA ---
+
     prompt_items = "\n".join([f"- **{key}**: {desc}" for key, desc in KEY_DATA_PROMPT_MAP.items()])
 
     prompt = f"""
@@ -61,16 +71,16 @@ def call_gemini_for_initial_extraction(project_text: str, images: List[Image.Ima
 Deluješ kot visoko natančen asistent za ekstrakcijo podatkov iz projektne dokumentacije (besedila in slik).
 
 # NALOGA
-Analiziraj priloženo dokumentacijo in izlušči VSE zahtevane podatke v en sam JSON objekt.
+Analiziraj priloženo dokumentacijo in izlušči VSE zahtevane podatke v en sam JSON objekt. Tvoj odgovor mora biti strukturiran točno po spodnjih navodilih.
 
 # IZHODNI FORMAT (STROGO)
 Odgovori SAMO z enim JSON objektom, ki ima natančno tri ključe na najvišjem nivoju: "details", "metadata", in "key_data".
 
 - **details**: Vsebuje seznama (array) za "eup" in "namenska_raba".
 - **metadata**: Vsebuje objekt s polji "ime_projekta", "stevilka_projekta", "datum_projekta", "projektant".
-- **key_data**: Vsebuje objekt z vsemi tehničnimi podatki.
+- **key_data**: Vsebuje objekt z vsemi tehničnimi podatki o gradnji, kot so zahtevani spodaj.
 
-Če katerega podatka ne najdeš, uporabi prazne vrednosti (prazen seznam `[]` za EUP/rabo, "Ni podatka" za metapodatke, "Ni podatka v dokumentaciji" za tehnične podatke).
+Če katerega podatka ne najdeš, uporabi ustrezne privzete vrednosti (prazen seznam `[]` za EUP/rabo, "Ni podatka" za metapodatke, "Ni podatka v dokumentaciji" za tehnične podatke).
 
 ---
 # ZAHTEVANI PODATKI
@@ -79,13 +89,13 @@ Odgovori SAMO z enim JSON objektom, ki ima natančno tri ključe na najvišjem n
 - **eup**: Seznam VSEH oznak Enot Urejanja Prostora.
 - **namenska_raba**: Seznam VSEH kratic podrobnejših namenskih rab (npr. SSe, IG).
 
-## 2. Metadata (Osnovni Podatki)
+## 2. Metadata (Osnovni Podatki Projekta)
 - **ime_projekta**: Polno ime projekta.
 - **stevilka_projekta**: Številka projekta.
 - **datum_projekta**: Datum izdelave.
 - **projektant**: Ime projektanta.
 
-## 3. Key Data (Tehnični Podatki)
+## 3. Key Data (Podatki o Gradnji)
 {prompt_items}
 ---
 
@@ -102,9 +112,10 @@ Odgovori SAMO z enim JSON objektom, ki ima natančno tri ključe na najvišjem n
     "projektant": "Projekt d.o.o."
   }},
   "key_data": {{
-    "glavni_objekt": "Enostanovanjska hiša",
-    "vrsta_gradnje": "Novogradnja",
-    "faktor_zazidanosti_fz": "0.35",
+    "naziv_gradnje": "Novogradnja enostanovanjske stavbe",
+    "glavni_objekt": "Enostanovanjska hiša etažnosti P+M",
+    "bruto_etazna_povrsina": "180 m²",
+    "faktorji_in_ozelenitev": "FZ = 0.35, FI = 0.7, FZP = 45%",
     "...": "..."
   }}
 }}
@@ -120,32 +131,25 @@ Odgovori SAMO z enim JSON objektom, ki ima natančno tri ključe na najvišjem n
             content_parts.extend(images)
 
         response = model.generate_content(content_parts)
-        
-        # Ključna sprememba: Uporaba robustnega čiščenja JSON niza
         clean_response = _clean_json_string(response.text)
         result = json.loads(clean_response)
 
-        # Ključna sprememba: Normalizacija in zagotavljanje vseh ključev
         final_result = {
             "details": result.get("details", {"eup": [], "namenska_raba": []}),
             "metadata": result.get("metadata", {}),
             "key_data": result.get("key_data", {}),
         }
         
-        # Zagotavljanje stringov za metapodatke
         for key in ["ime_projekta", "stevilka_projekta", "datum_projekta", "projektant"]:
             final_result["metadata"][key] = str(final_result["metadata"].get(key) or "Ni podatka")
             
-        # Zagotavljanje stringov za vse key_data ključe
         for key in KEY_DATA_PROMPT_MAP.keys():
             final_result["key_data"][key] = str(final_result["key_data"].get(key) or "Ni podatka v dokumentaciji")
-
 
         return final_result
 
     except Exception as exc:
         print(f"⚠️ Napaka pri združeni AI ekstrakciji: {exc}.")
-        # Povratni odgovor ob napaki
         return {
             "details": {"eup": [], "namenska_raba": []},
             "metadata": {"ime_projekta": "NAPAKA", "stevilka_projekta": "NAPAKA", "datum_projekta": "NAPAKA", "projektant": "NAPAKA"},
@@ -199,4 +203,5 @@ __all__ = [
     "call_gemini_for_initial_extraction",
     "call_gemini",
     "parse_ai_response",
+    "embed_query",
 ]
