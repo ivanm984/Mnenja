@@ -4,9 +4,14 @@ from __future__ import annotations
 import re
 from datetime import datetime
 from pathlib import Path
+from time import perf_counter
 from typing import Iterable, List, Tuple
 
+from app.logging_config import get_logger
+
 from .config import DATA_DIR
+
+logger = get_logger(__name__)
 
 REVISION_ROOT = DATA_DIR / "revisions"
 REVISION_ROOT.mkdir(parents=True, exist_ok=True)
@@ -34,6 +39,8 @@ def save_revision_files(
     filenames: List[str] = []
     file_paths: List[str] = []
     mime_types: List[str] = []
+    total_bytes = 0
+    start = perf_counter()
 
     for original_name, content, mime in files:
         safe_name = sanitize_filename(original_name)
@@ -43,6 +50,23 @@ def save_revision_files(
         filenames.append(original_name or safe_name)
         file_paths.append(str(destination.relative_to(DATA_DIR)))
         mime_types.append(mime or "application/octet-stream")
+        total_bytes += len(content or b"")
+        logger.debug(
+            "save_revision_files: stored %s (%d bytes) -> %s",
+            original_name or safe_name,
+            len(content or b""),
+            destination,
+        )
+
+    duration = perf_counter() - start
+    logger.info(
+        "save_revision_files: saved %d files (bytes=%d, requirement=%s) in %.3fs to %s",
+        len(filenames),
+        total_bytes,
+        requirement_id or "full",
+        duration,
+        target_dir,
+    )
     return filenames, file_paths, mime_types
 
 
