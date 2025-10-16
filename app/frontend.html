@@ -21,9 +21,6 @@
             --card: rgba(255, 255, 255, 0.92);
             --muted: #5b6479;
             --text: #0f172a;
-            --text-strong: #0f172a;
-            --text-soft: rgba(15, 23, 42, 0.72);
-            --text-subtle: rgba(15, 23, 42, 0.65);
             --border: rgba(148, 163, 184, 0.32);
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
@@ -31,12 +28,6 @@
             --success: #16a34a;
             --warning: #f97316;
             --glow: rgba(37, 99, 235, 0.18);
-            --hint-bg: rgba(37, 99, 235, 0.08);
-            --table-header-bg: rgba(37, 99, 235, 0.08);
-            --table-row-hover: rgba(37, 99, 235, 0.05);
-            --floating-bg: rgba(255, 255, 255, 0.9);
-            --floating-border: rgba(148, 163, 184, 0.35);
-            --floating-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
             --radius-lg: 22px;
             --radius-md: 16px;
             --shadow-lg: 0 28px 60px rgba(15, 23, 42, 0.16);
@@ -52,9 +43,6 @@
             --card: rgba(15, 23, 42, 0.9);
             --muted: rgba(209, 213, 219, 0.7);
             --text: #e2e8f0;
-            --text-strong: #f8fafc;
-            --text-soft: rgba(226, 232, 240, 0.86);
-            --text-subtle: rgba(148, 163, 184, 0.9);
             --border: rgba(51, 65, 85, 0.6);
             --primary: #60a5fa;
             --primary-dark: #3b82f6;
@@ -62,12 +50,6 @@
             --success: #34d399;
             --warning: #fb923c;
             --glow: rgba(96, 165, 250, 0.28);
-            --hint-bg: rgba(96, 165, 250, 0.12);
-            --table-header-bg: rgba(30, 41, 59, 0.9);
-            --table-row-hover: rgba(37, 99, 235, 0.12);
-            --floating-bg: rgba(15, 23, 42, 0.86);
-            --floating-border: rgba(96, 165, 250, 0.3);
-            --floating-shadow: 0 24px 48px rgba(8, 13, 23, 0.55);
             --radius-lg: 22px;
             --radius-md: 16px;
             --shadow-lg: 0 32px 80px rgba(8, 13, 23, 0.6);
@@ -87,7 +69,7 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            padding: clamp(28px, 4vw, 64px) clamp(20px, 4vw, 72px);
+            padding: clamp(32px, 4vw, 64px) clamp(16px, 4vw, 56px);
             transition: background var(--transition-theme), color var(--transition-theme);
             position: relative;
         }
@@ -158,88 +140,6 @@
             gap: 16px;
             position: relative;
             z-index: 1;
-        }
-
-        .floating-shell {
-            position: sticky;
-            top: clamp(16px, 4vw, 32px);
-            z-index: 30;
-            display: flex;
-            justify-content: center;
-            pointer-events: none;
-        }
-
-        .floating-actions {
-            pointer-events: auto;
-            width: min(1360px, 100%);
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            padding: 18px;
-            background: var(--floating-bg);
-            border: 1px solid var(--floating-border);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--floating-shadow);
-            backdrop-filter: blur(18px);
-        }
-
-        .floating-actions .btn {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: center;
-            gap: 10px;
-            padding: 18px 20px;
-            min-height: 132px;
-            border-radius: var(--radius-md);
-            text-align: left;
-        }
-
-        .floating-actions .btn .action-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 42px;
-            height: 42px;
-            border-radius: 14px;
-            background: rgba(37, 99, 235, 0.12);
-            color: var(--primary);
-            font-size: 1.4rem;
-        }
-
-        :root[data-theme="dark"] .floating-actions .btn .action-icon {
-            background: rgba(96, 165, 250, 0.16);
-            color: #bfdbfe;
-        }
-
-        .floating-actions .btn strong {
-            font-size: 1.02rem;
-            color: inherit;
-        }
-
-        .floating-actions .btn small {
-            color: inherit;
-            opacity: 0.8;
-            font-size: 0.86rem;
-            line-height: 1.4;
-        }
-
-        .floating-actions .btn.btn-outline strong,
-        .floating-actions .btn.btn-secondary strong,
-        .floating-actions .btn.btn-danger strong {
-            color: var(--text-strong);
-        }
-
-        .floating-actions .btn.btn-outline small,
-        .floating-actions .btn.btn-secondary small,
-        .floating-actions .btn.btn-danger small {
-            color: var(--text-subtle);
-            opacity: 1;
-        }
-
-        .floating-actions .btn:focus-visible {
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18);
         }
 
         .brand {
@@ -1212,17 +1112,19 @@
         @media (max-width: 1080px) {
             .section-layout { grid-template-columns: 1fr; }
             .section-sidebar { position: static; }
-            .floating-actions { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+            .floating-actions { justify-content: center; }
         }
 
         @media (max-width: 900px) {
             .floating-actions {
                 border-radius: 28px;
-                gap: 12px;
-                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 10px;
             }
             .floating-actions .btn {
-                min-height: 120px;
+                flex: 1 1 200px;
+            }
+            .floating-actions .toolbar-separator {
+                display: none;
             }
         }
 
@@ -1234,7 +1136,16 @@
                 top: 16px;
             }
             .floating-actions {
-                grid-template-columns: 1fr;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .floating-actions .toolbar-group {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .floating-actions .btn {
+                width: 100%;
             }
         }
 
@@ -1332,56 +1243,38 @@
 
         <div class="floating-shell">
             <div class="floating-actions" role="toolbar" aria-label="Glavne akcije">
-                <button type="button" class="btn btn-outline" @click.prevent="$refs.fileInput && $refs.fileInput.click()" :disabled="isBusy">
-                    <span class="action-icon">📄</span>
-                    <strong>Dodaj PDF datoteke</strong>
-                    <small>Naložite projektno dokumentacijo za analizo.</small>
-                </button>
-                <button type="button" class="btn btn-primary" @click="extractData" :disabled="!files.length || isBusy" :data-state="actionStates.extract">
-                    <span class="action-icon">🤖</span>
-                    <strong>Ekstrahiraj podatke</strong>
-                    <small>Pridobi pare EUP/Rabe iz dodanih dokumentov.</small>
-                </button>
-                <button type="button" class="btn btn-primary" @click="runAnalysis()" :disabled="isBusy" :data-state="actionStates.run">
-                    <span class="action-icon">📊</span>
-                    <strong>Izvedi podrobno analizo</strong>
-                    <small>Analiziraj skladnost in pripravi rezultate pregleda.</small>
-                </button>
-                <button type="button" class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">
-                    <span class="action-icon">💾</span>
-                    <strong>Shrani napredek</strong>
-                    <small>Ohrani trenutno stanje in podatke seje.</small>
-                </button>
-                <button type="button" class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy" :data-state="actionStates.reset">
-                    <span class="action-icon">🧹</span>
-                    <strong>Ponastavi analizo</strong>
-                    <small>Začni postopek znova s čistim delovnim prostorom.</small>
-                </button>
-                <button type="button" class="btn btn-secondary" @click="openSavedModal" :disabled="savedSessionsLoading">
-                    <span class="action-icon">📂</span>
-                    <strong>Odpri shranjeno analizo</strong>
-                    <small>Izberi prejšnjo sejo in nadaljuj z urejanjem.</small>
-                </button>
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    v-if="highlightedSession"
-                    @click="restoreHighlighted"
-                >
-                    <span class="action-icon">⏯️</span>
-                    <strong>Nadaljuj z zadnjo sejo</strong>
-                    <small>Ponovno naloži zadnje samodejno shranjeno stanje.</small>
-                </button>
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    v-if="highlightedSession"
-                    @click="discardHighlighted"
-                >
-                    <span class="action-icon">🗑️</span>
-                    <strong>Izbriši shranjeno</strong>
-                    <small>Odstrani shranjeno sejo iz zadnjih aktivnosti.</small>
-                </button>
+                <div class="toolbar-group">
+                    <button class="btn btn-outline" @click.prevent="$refs.fileInput && $refs.fileInput.click()" :disabled="isBusy">
+                        Dodaj PDF datoteke
+                    </button>
+                    <button class="btn btn-primary" @click="extractData" :disabled="!files.length || isBusy" :data-state="actionStates.extract">
+                        Ekstrahiraj podatke (EUP/Rabe)
+                    </button>
+                </div>
+                <span class="toolbar-separator" aria-hidden="true"></span>
+                <div class="toolbar-group">
+                    <button class="btn btn-primary" @click="runAnalysis()" :disabled="isBusy" :data-state="actionStates.run">
+                        Izvedi podrobno analizo
+                    </button>
+                    <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">
+                        Shrani napredek
+                    </button>
+                    <button class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy" :data-state="actionStates.reset">
+                        Ponastavi analizo
+                    </button>
+                </div>
+                <span class="toolbar-separator" aria-hidden="true"></span>
+                <div class="toolbar-group">
+                    <button class="btn btn-secondary" @click="openSavedModal" :disabled="savedSessionsLoading">
+                        Odpri shranjeno analizo
+                    </button>
+                    <button class="btn btn-secondary" v-if="highlightedSession" @click="restoreHighlighted">
+                        Nadaljuj z zadnjo sejo
+                    </button>
+                    <button class="btn btn-secondary" v-if="highlightedSession" @click="discardHighlighted">
+                        Izbriši shranjeno
+                    </button>
+                </div>
             </div>
         </div>
 
