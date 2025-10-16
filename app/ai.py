@@ -54,13 +54,13 @@ def call_gemini_for_initial_extraction(project_text: str, images: List[Image.Ima
         "dimenzije_objektov": "Tlorisne dimenzije glavnega objekta in morebitnih pomožnih objektov.",
         "bruto_etazna_povrsina": "Bruto etažna površina (BTP) glavnega objekta in pomožnih objektov v m².",
         "etaznost": "Etažnost glavnega objekta (npr. K+P+M ali P+1).",
-        "visinski_gabariti": "Ključni višinski gabariti: višina slemena, višina kapi/venca in višina kolenčnega zidu.",
+        "visinski_gabariti": "Ključni višinski gabariti: višinska kota pritličja, terena, etaž, višina slemena, višina kapi/venca in višina kolenčnega zidu.",
         "streha_naklon_smer_kritina": "Združen opis strehe: naklon v stopinjah, smer slemena in vrsta ter barva kritine.",
         "barva_fasade": "Opis materialov in barve fasade.",
         "odmiki": "Najpomembnejši odmiki objekta od parcelnih mej ali drugih objektov.",
         "parkirna_mesta": "Navedba števila zagotovljenih ali potrebnih parkirnih mest (PM).",
         "prikljucki_gji": "Podroben opis načina priključitve objekta na gospodarsko javno infrastrukturo (voda, elektrika, kanalizacija, telekomunikacije).",
-        "faktorji_in_ozelenitev": "Vrednosti za Faktor Zazidanosti (FZ), Faktor Izrabe (FI) in Faktor Zelenih Površin (FZP).",
+        "faktorji_in_ozelenitev": "Vrednosti za Faktor Zazidanosti (FZ), Faktor Izrabe (FI), Faktor Zelenih Površin (FZP) ter drugi morebitni faktorji.",
     }
     # --- KONEC POPRAVKA ---
 
