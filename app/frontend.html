@@ -1481,26 +1481,8 @@
                     </div>
 
                     <div>
-                        <h3>B. Ključni gabaritni podatki</h3>
-                        <p class="subtitle">Preglejte podatke in jih po potrebi dopolnite. Originalni AI izsek ostane prikazan za transparentnost.</p>
-                        <div class="key-grid">
-                            <div class="key-field" v-for="field in keyFieldList" :key="field.key" :class="{ modified: keyFieldModified(field.key) }">
-                                <div>
-                                    <label :for="field.key">{{ field.label }}</label>
-                                    <textarea v-if="field.isLong" :id="field.key" v-model="keyData[field.key]"></textarea>
-                                    <input v-else :id="field.key" type="text" v-model="keyData[field.key]" />
-                                </div>
-                                <div class="field-hint">
-                                    <strong>AI ekstrakcija:</strong>
-                                    <div>{{ initialKeyData[field.key] || 'Ni podatka v dokumentaciji' }}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3>C. Osnovni metapodatki</h3>
-                        <p class="subtitle">Sistem je avtomatsko določil osnovne podatke.</p>
+                        <h3>B. Osnovni podatki projekta</h3>
+                        <p class="subtitle">Sistem je avtomatsko določil osnovne podatke. Preglejte jih in po potrebi popravite.</p>
                         <div class="metadata-grid">
                             <div class="meta-field">
                                 <span class="meta-label">Ime projekta</span>
@@ -1514,9 +1496,27 @@
                                 <span class="meta-label">Datum projekta</span>
                                 <input type="text" v-model="metadata.datum_projekta" />
                             </div>
-                            <div class="meta-field">
+                             <div class="meta-field">
                                 <span class="meta-label">Projektant</span>
                                 <input type="text" v-model="metadata.projektant" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3>C. Podatki o gradnji</h3>
+                        <p class="subtitle">Preglejte ključne tehnične podatke in jih dopolnite. Originalni AI izsek ostane prikazan za transparentnost.</p>
+                        <div class="key-grid">
+                            <div class="key-field" v-for="field in keyFieldList" :key="field.key" :class="{ modified: keyFieldModified(field.key) }">
+                                <div>
+                                    <label :for="field.key">{{ field.label }}</label>
+                                    <textarea v-if="field.isLong" :id="field.key" v-model="keyData[field.key]"></textarea>
+                                    <input v-else :id="field.key" type="text" v-model="keyData[field.key]" />
+                                </div>
+                                <div class="field-hint">
+                                    <strong>AI ekstrakcija:</strong>
+                                    <div>{{ initialKeyData[field.key] || 'Ni podatka v dokumentaciji' }}</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1898,22 +1898,25 @@
                     savedSessions: [],
                     savedSessionsLoading: false,
                     highlightedSession: null,
+                    // --- SPREMEMBA: Usklajeno z backendom in novo strukturo ---
                     keyLabels: {
-                        izracun_pgf: 'Izračun površin PGF (m²)',
-                        prikaz_pgf: 'Prikaz nameravanih površin PGF (m²)',
-                        faktor_zazidanosti: 'Faktor zazidanosti (FZ)',
-                        faktor_izkoristenosti: 'Faktor izkoriščenosti (FI)',
-                        visina_objekta: 'Višina objekta (m)',
-                        stevilo_etaz: 'Število etaž',
-                        odmik_od_meja: 'Odmik od meja (m)',
-                        parkirna_mesta: 'Potrebna parkirna mesta (PM)',
-                        opomba_splosno: 'Splošna opomba/povzetek projekta (dolgo)',
-                        obrazlozitev_zazidljivost: 'Obrazložitev zazidljivosti in rabe (dolgo)',
-                        izracun_zelenih_povrsin: 'Izračun zelenih površin (m²)',
-                        dostop_in_komunalni_prikljucki: 'Dostop in komunalni priključki (dolgo)',
-                        vodovarstveni_rezim: 'Vodovarstveni režim (dolgo)',
+                        'naziv_gradnje': 'Naziv gradnje',
+                        'glavni_objekt': 'Glavni objekt',
+                        'pomozni_objekti': 'Pomožni objekti',
+                        'parcela_in_ko': 'Parcelna št. in katastrska občina',
+                        'dimenzije_objektov': 'Dimenzije objektov',
+                        'etaznost': 'Etažnost',
+                        'visinski_gabariti': 'Višinski gabariti',
+                        'streha_naklon_smer_kritina': 'Streha (naklon, smer, kritina)',
+                        'barva_fasade': 'Barva in materiali fasade',
+                        'odmiki': 'Odmiki',
+                        'parkirna_mesta': 'Število parkirnih mest',
+                        'prikljucki_gji': 'Priključki na GJI',
+                        'bruto_etazna_povrsina': 'Bruto etažna površina (BEP)',
+                        'faktorji_in_ozelenitev': 'Faktorji (FZ, FI) in ozelenitev (FZP)'
                     },
-                    longFieldKeys: new Set(['opomba_splosno', 'obrazlozitev_zazidljivost', 'dostop_in_komunalni_prikljucki', 'vodovarstveni_rezim']),
+                    longFieldKeys: new Set(['prikljucki_gji']),
+                    // --- KONEC SPREMEMBE ---
                     actionStates: {
                         extract: '',
                         run: '',
@@ -1945,7 +1948,7 @@
                     return 1;
                 },
                 showReview() {
-                    return !!this.sessionId && this.eupPairs.length > 0;
+                    return !!this.sessionId && (this.eupPairs.length > 0 || Object.keys(this.keyData).length > 0);
                 },
                 filteredRevisions() {
                     const filtered = {};
@@ -1958,7 +1961,6 @@
                 }
             },
             methods: {
-                // ... (Ostal del Vue metod ostane nespremenjen, ker ni bil predmet napake)
                 applyTheme(theme) {
                     const normalized = theme === 'dark' ? 'dark' : 'light';
                     document.documentElement.setAttribute('data-theme', normalized);
@@ -2134,30 +2136,17 @@
                         }
                         const result = await response.json();
                         this.sessionId = result.session_id;
-                        this.eupPairs = result.eup.map((eup, index) => ({
+                        this.eupPairs = (result.details.eup || []).map((eup, index) => ({
                             id: index,
                             eup: eup,
-                            raba: result.namenska_raba[index] || '',
+                            raba: (result.details.namenska_raba || [])[index] || '',
                             originalEup: eup,
-                            originalRaba: result.namenska_raba[index] || ''
+                            originalRaba: (result.details.namenska_raba || [])[index] || ''
                         }));
-                        delete result.session_id;
-                        delete result.eup;
-                        delete result.namenska_raba;
-
-                        this.initialKeyData = { ...result };
-                        this.keyData = { ...result };
-                        this.metadata = {
-                            ime_projekta: result.ime_projekta || '',
-                            stevilka_projekta: result.stevilka_projekta || '',
-                            datum_projekta: result.datum_projekta || '',
-                            projektant: result.projektant || '',
-                        };
-                        delete this.keyData.ime_projekta;
-                        delete this.keyData.stevilka_projekta;
-                        delete this.keyData.datum_projekta;
-                        delete this.keyData.projektant;
-                        this.initialKeyData = { ...this.keyData, ...this.metadata };
+                        
+                        this.metadata = result.metadata || {};
+                        this.keyData = result.key_data || {};
+                        this.initialKeyData = { ...result.key_data };
 
                         this.persistState(true);
                         this.markActionResult('extract', 'success');
@@ -2183,10 +2172,9 @@
                     Object.entries(this.keyData).forEach(([key, value]) => {
                         formData.append(key, value || '');
                     });
-                    formData.append('ime_projekta', this.metadata.ime_projekta || '');
-                    formData.append('stevilka_projekta', this.metadata.stevilka_projekta || '');
-                    formData.append('datum_projekta', this.metadata.datum_projekta || '');
-                    formData.append('projektant', this.metadata.projektant || '');
+                    Object.entries(this.metadata).forEach(([key, value]) => {
+                        formData.append(key, value || '');
+                    });
                     formData.append('selected_ids_json', JSON.stringify(this.selectedRequirementIds));
 
                     try {
@@ -2287,7 +2275,6 @@
                     this.initialEditableActions = newInitialActions;
                 },
                 saveEditableResults() {
-                    // This function is only for triggering state persistence, actual modification is v-model based
                     this.persistState(true);
                 },
                 isAnalysisModified(id) {
@@ -2538,7 +2525,6 @@
                     this.downloadReady = state.downloadReady || false;
                     this.excludeNonCompliant = state.excludeNonCompliant === false ? false : true;
 
-                    // Re-calculate derived values
                     if (!this.initialEditableFindings || Object.keys(this.initialEditableFindings).length === 0) {
                         this.prepareEditableResults();
                     }
@@ -2555,7 +2541,6 @@
                         const result = await response.json();
                         let remoteSessions = result.sessions || [];
 
-                        // Include local session if it exists and is not already in remote
                         if (this.highlightedSession && this.highlightedSession.source === 'local') {
                             const isAlreadyRemote = remoteSessions.some(s => s.session_id === this.highlightedSession.session_id);
                             if (!isAlreadyRemote) {
@@ -2563,7 +2548,6 @@
                             }
                         }
 
-                        // Ensure local session is at the very top if it exists
                         const localIndex = remoteSessions.findIndex(s => s.source === 'local');
                         if (localIndex > 0) {
                             const localSession = remoteSessions.splice(localIndex, 1)[0];
@@ -2601,7 +2585,7 @@
                         if (!state) throw new Error('Podatki seje so neveljavni.');
 
                         this.loadState(state);
-                        this.persistState(true); // Persist to local for recovery
+                        this.persistState(true);
                         this.stopLoading('success', `Seja '${state.metadata?.ime_projekta || state.sessionId}' uspešno naložena.`);
 
                     } catch (error) {
@@ -2639,11 +2623,11 @@
                         this.setStatus('success', 'Shranjena seja je odstranjena.');
                         this.highlightedSession = null;
                         if (this.savedSessions.length > 0) {
-                            this.fetchSavedSessions(); // Re-fetch to highlight the next one
+                            this.fetchSavedSessions();
                         }
                     } else if (this.highlightedSession.session_id) {
                         await this.deleteSession(this.highlightedSession.session_id);
-                        this.fetchSavedSessions(); // Re-fetch to update the list and highlight the new latest (local or remote)
+                        this.fetchSavedSessions();
                     }
                 },
                 addPair() {
