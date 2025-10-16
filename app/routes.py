@@ -20,7 +20,7 @@ import logging
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from .vector_search import search_vector_knowledge
+from .vector_search import get_vector_context
 
 # ---------------------------------------------------------
 # Logging
