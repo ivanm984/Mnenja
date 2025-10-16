@@ -694,7 +694,6 @@ try:
     # Poskusi najti v ai.py tipične funkcije
 try:  # pragma: no cover - dinamično zaznavanje AI adapterja
     import ai  # type: ignore
-
     for name in ("build_prompt", "make_prompt", "compose_prompt"):
         if hasattr(ai, name):
             _build_prompt = getattr(ai, name)
