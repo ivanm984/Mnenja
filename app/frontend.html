@@ -96,7 +96,7 @@
         a { color: inherit; }
 
         .app-shell {
-            width: min(1160px, 100%);
+            width: min(1360px, 100%);
             display: flex;
             flex-direction: column;
             gap: 32px;
@@ -213,7 +213,7 @@
         .hero p {
             margin: 0;
             max-width: 680px;
-            color: rgba(15, 23, 42, 0.82);
+            color: var(--text-soft);
             font-size: 1.05rem;
             line-height: 1.65;
         }
@@ -307,7 +307,7 @@
         }
 
         .subtitle {
-            color: var(--muted);
+            color: var(--text-soft);
             font-size: 0.98rem;
             line-height: 1.6;
             margin: 0;
@@ -374,14 +374,14 @@
         }
 
         .file-meta {
-            color: var(--muted);
+            color: var(--text-subtle);
             font-size: 0.85rem;
         }
 
         label {
             font-weight: 600;
             font-size: 0.96rem;
-            color: var(--text);
+            color: var(--text-strong);
         }
 
         input[type="text"],
@@ -527,6 +527,30 @@
             transform: translateY(-50%);
         }
 
+        :root[data-theme="dark"] .btn-outline {
+            background: rgba(30, 41, 59, 0.65);
+            border-color: rgba(96, 165, 250, 0.35);
+            color: var(--text);
+        }
+
+        :root[data-theme="dark"] .btn-outline:hover:not(:disabled) {
+            background: rgba(37, 99, 235, 0.28);
+        }
+
+        :root[data-theme="dark"] .btn-secondary {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(71, 85, 105, 0.65);
+            color: var(--text);
+        }
+
+        :root[data-theme="dark"] .btn-secondary:hover:not(:disabled) {
+            background: rgba(37, 99, 235, 0.2);
+        }
+
+        :root[data-theme="dark"] .btn-danger {
+            color: #fecaca;
+        }
+
         .btn[data-state="success"] {
             background: rgba(22, 163, 74, 0.14);
             border-color: rgba(22, 163, 74, 0.4);
@@ -628,8 +652,8 @@
 
         .pair-card .hint {
             font-size: 0.85rem;
-            color: var(--muted);
-            background: rgba(37, 99, 235, 0.08);
+            color: var(--text-subtle);
+            background: var(--hint-bg);
             padding: 10px 12px;
             border-radius: 12px;
         }
@@ -682,7 +706,7 @@
         }
 
         .meta-label {
-            color: var(--muted);
+            color: var(--text-subtle);
             font-size: 0.85rem;
             letter-spacing: 0.04em;
             text-transform: uppercase;
@@ -690,13 +714,13 @@
 
         .meta-value {
             font-weight: 600;
-            color: var(--text);
+            color: var(--text-strong);
         }
 
         .field-hint {
             font-size: 0.85rem;
-            color: rgba(15, 23, 42, 0.65);
-            background: rgba(37, 99, 235, 0.08);
+            color: var(--text-subtle);
+            background: var(--hint-bg);
             padding: 8px 10px;
             border-radius: 10px;
             white-space: pre-line;
@@ -710,15 +734,25 @@
         th, td {
             padding: 14px 16px;
             text-align: left;
-            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
             vertical-align: top;
+        }
+
+        :root[data-theme="dark"] th,
+        :root[data-theme="dark"] td {
+            border-bottom: 1px solid rgba(71, 85, 105, 0.5);
         }
 
         .results-table {
             overflow-x: auto;
             border-radius: var(--radius-md);
-            border: 1px solid rgba(15, 23, 42, 0.08);
+            border: 1px solid rgba(148, 163, 184, 0.25);
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        :root[data-theme="dark"] .results-table {
+            border-color: rgba(71, 85, 105, 0.6);
+            box-shadow: inset 0 1px 0 rgba(15, 23, 42, 0.35);
         }
 
         .results-table table {
@@ -744,6 +778,10 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
             background: rgba(37, 99, 235, 0.08);
+        }
+
+        :root[data-theme="dark"] .analysis-editor {
+            background: rgba(37, 99, 235, 0.12);
         }
 
         .analysis-display {
@@ -782,7 +820,7 @@
 
         .analysis-section strong {
             font-size: 0.92rem;
-            color: rgba(15, 23, 42, 0.72);
+            color: var(--text-soft);
         }
 
         .analysis-section div {
@@ -791,7 +829,7 @@
 
         .analysis-hint {
             font-size: 0.84rem;
-            color: var(--muted);
+            color: var(--text-subtle);
         }
 
         .analysis-hover {
@@ -823,7 +861,7 @@
         .analysis-hover label {
             font-weight: 600;
             font-size: 0.92rem;
-            color: rgba(15, 23, 42, 0.86);
+            color: var(--text-strong);
         }
 
         .analysis-hover textarea {
@@ -835,7 +873,7 @@
             font-family: inherit;
             font-size: 0.95rem;
             line-height: 1.5;
-            background: rgba(15, 23, 42, 0.02);
+            background: rgba(255, 255, 255, 0.85);
             transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
         }
 
@@ -843,20 +881,28 @@
             border-color: var(--primary);
             outline: none;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-            background: #ffffff;
+            background: var(--card);
+        }
+
+        :root[data-theme="dark"] .analysis-hover textarea {
+            background: rgba(30, 41, 59, 0.75);
+        }
+
+        :root[data-theme="dark"] .analysis-hover textarea:focus {
+            background: rgba(30, 41, 59, 0.92);
         }
 
         .analysis-empty {
-            color: rgba(15, 23, 42, 0.6);
+            color: var(--text-subtle);
             font-style: italic;
         }
 
         thead {
-            background: rgba(37, 99, 235, 0.08);
+            background: var(--table-header-bg);
         }
 
         tbody tr:hover {
-            background: rgba(37, 99, 235, 0.05);
+            background: var(--table-row-hover);
         }
 
         .status-pill {
@@ -882,7 +928,12 @@
         .status-pill.skladno { color: var(--success); background: rgba(16, 185, 129, 0.16); }
         .status-pill.neskladno { color: var(--danger); background: rgba(220, 38, 38, 0.16); }
         .status-pill.ni-relevantno { color: var(--primary); background: rgba(37, 99, 235, 0.16); }
-        .status-pill.neznano { color: rgba(15, 23, 42, 0.75); background: rgba(15, 23, 42, 0.12); }
+        .status-pill.neznano { color: var(--text-soft); background: rgba(148, 163, 184, 0.2); }
+
+        :root[data-theme="dark"] .status-pill.neznano {
+            color: var(--text-subtle);
+            background: rgba(148, 163, 184, 0.26);
+        }
 
         .status-cell {
             min-width: 200px;
@@ -901,7 +952,7 @@
             font-size: 0.9rem;
             letter-spacing: 0.05em;
             text-transform: uppercase;
-            background: rgba(15, 23, 42, 0.03);
+            background: rgba(255, 255, 255, 0.85);
             color: var(--text);
             cursor: pointer;
             transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
@@ -911,7 +962,16 @@
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-            background: #ffffff;
+            background: var(--card);
+        }
+
+        :root[data-theme="dark"] .status-control select {
+            background: rgba(30, 41, 59, 0.75);
+            color: var(--text);
+        }
+
+        :root[data-theme="dark"] .status-control select:focus {
+            background: rgba(30, 41, 59, 0.92);
         }
 
         .actions-row {
@@ -963,9 +1023,34 @@
 
         .sidebar-hint {
             margin: 0;
-            color: var(--muted);
+            color: var(--text-subtle);
             font-size: 0.9rem;
             line-height: 1.5;
+        }
+
+        .sidebar-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 10px;
+        }
+
+        .sidebar-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.92rem;
+            color: var(--text-soft);
+        }
+
+        .sidebar-list .list-label {
+            color: var(--text-subtle);
+        }
+
+        .sidebar-list .list-value {
+            font-weight: 600;
+            color: var(--text-strong);
         }
 
         .actions-stack {
@@ -974,7 +1059,7 @@
         }
 
         .empty-note {
-            color: var(--muted);
+            color: var(--text-subtle);
             font-style: italic;
         }
 
@@ -995,6 +1080,41 @@
         @media (max-width: 1080px) {
             .section-layout { grid-template-columns: 1fr; }
             .section-sidebar { position: static; }
+            .floating-actions { justify-content: center; }
+        }
+
+        @media (max-width: 900px) {
+            .floating-actions {
+                border-radius: 28px;
+                gap: 10px;
+            }
+            .floating-actions .btn {
+                flex: 1 1 200px;
+            }
+            .floating-actions .toolbar-separator {
+                display: none;
+            }
+        }
+
+        @media (max-width: 680px) {
+            body {
+                padding: clamp(20px, 6vw, 36px) clamp(16px, 6vw, 36px);
+            }
+            .floating-shell {
+                top: 16px;
+            }
+            .floating-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .floating-actions .toolbar-group {
+                width: 100%;
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .floating-actions .btn {
+                width: 100%;
+            }
         }
 
         .modal-backdrop {
@@ -1026,7 +1146,7 @@
             gap: 6px;
         }
 
-        .saved-item small { color: var(--muted); }
+        .saved-item small { color: var(--text-subtle); }
 
         .spinner-overlay {
             position: fixed;
@@ -1053,16 +1173,13 @@
 
         footer {
             text-align: center;
-            color: var(--muted);
+            color: var(--text-subtle);
             font-size: 0.9rem;
         }
 
         @media (max-width: 720px) {
-            body { padding: 28px 14px 40px; }
             .section-head { align-items: stretch; }
             .actions-row { flex-direction: column; }
-            .section-layout { grid-template-columns: 1fr; }
-            .section-sidebar { position: static; }
         }
     </style>
 </head>
@@ -1092,6 +1209,43 @@
             </div>
         </header>
 
+        <div class="floating-shell">
+            <div class="floating-actions" role="toolbar" aria-label="Glavne akcije">
+                <div class="toolbar-group">
+                    <button class="btn btn-outline" @click.prevent="$refs.fileInput && $refs.fileInput.click()" :disabled="isBusy">
+                        Dodaj PDF datoteke
+                    </button>
+                    <button class="btn btn-primary" @click="extractData" :disabled="!files.length || isBusy" :data-state="actionStates.extract">
+                        Ekstrahiraj podatke (EUP/Rabe)
+                    </button>
+                </div>
+                <span class="toolbar-separator" aria-hidden="true"></span>
+                <div class="toolbar-group">
+                    <button class="btn btn-primary" @click="runAnalysis()" :disabled="isBusy" :data-state="actionStates.run">
+                        Izvedi podrobno analizo
+                    </button>
+                    <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">
+                        Shrani napredek
+                    </button>
+                    <button class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy" :data-state="actionStates.reset">
+                        Ponastavi analizo
+                    </button>
+                </div>
+                <span class="toolbar-separator" aria-hidden="true"></span>
+                <div class="toolbar-group">
+                    <button class="btn btn-secondary" @click="openSavedModal" :disabled="savedSessionsLoading">
+                        Odpri shranjeno analizo
+                    </button>
+                    <button class="btn btn-secondary" v-if="highlightedSession" @click="restoreHighlighted">
+                        Nadaljuj z zadnjo sejo
+                    </button>
+                    <button class="btn btn-secondary" v-if="highlightedSession" @click="discardHighlighted">
+                        Izbriši shranjeno
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <transition name="fade">
             <div v-if="status.message" class="status-banner" :class="`status-${status.type}`">
                 <span>{{ status.message }}</span>
@@ -1104,11 +1258,6 @@
                 <div class="section-title">
                     <span class="badge">1</span>
                     Priprava dokumentacije
-                </div>
-                <div class="actions-row" style="gap:10px;">
-                    <button class="btn btn-outline" @click="openSavedModal" :disabled="savedSessionsLoading">Odpri shranjeno analizo</button>
-                    <button class="btn btn-secondary" v-if="highlightedSession" @click="restoreHighlighted">Nadaljuj z zadnjo sejo</button>
-                    <button class="btn btn-secondary" v-if="highlightedSession" @click="discardHighlighted">Izbriši shranjeno</button>
                 </div>
             </div>
             <p class="subtitle">Dodajte vse PDF priloge projekta. Za grafične priloge lahko določite strani, ki jih bo sistem pretvoril v slike.</p>
@@ -1137,9 +1286,7 @@
                 <p class="subtitle" v-else>Trenutno ni izbranih datotek. Po dodajanju bo vsak dokument prikazan z dodatnimi možnostmi.</p>
             </div>
 
-            <div class="actions-row">
-                <button class="btn btn-primary" @click="extractData" :disabled="!files.length || isBusy" :data-state="actionStates.extract">Ekstrahiraj ključne podatke in EUP/Rabe</button>
-            </div>
+            <p class="subtitle">Za začetek ekstrakcije uporabite gumbe v zgornji vrstici, ki so vedno vidni med pomikanjem.</p>
         </section>
 
         <section class="surface" v-if="showReview">
@@ -1209,12 +1356,25 @@
                 <aside class="section-sidebar">
                     <div class="sidebar-card">
                         <h4 class="sidebar-title">Upravljanje analize</h4>
-                        <p class="sidebar-hint">Gumbi so razporejeni po pomembnosti. Po kliku se barva spremeni in potrdi izvedbo.</p>
-                        <div class="actions-stack">
-                            <button class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy" :data-state="actionStates.reset">Ponastavi analizo</button>
-                            <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">Shrani napredek</button>
-                            <button class="btn btn-primary" @click="runAnalysis()" :disabled="isBusy" :data-state="actionStates.run">Izvedi podrobno analizo</button>
-                        </div>
+                        <p class="sidebar-hint">Glavne akcije so vedno na voljo v zgornji vrstici. Tukaj lahko spremljate ključne kazalnike napredka.</p>
+                        <ul class="sidebar-list">
+                            <li>
+                                <span class="list-label">Dokumenti</span>
+                                <span class="list-value">{{ files.length }}</span>
+                            </li>
+                            <li>
+                                <span class="list-label">EUP/Rabe</span>
+                                <span class="list-value">{{ eupPairs.length }}</span>
+                            </li>
+                            <li>
+                                <span class="list-label">Ključni podatki</span>
+                                <span class="list-value">{{ Object.keys(keyData).length }}</span>
+                            </li>
+                            <li>
+                                <span class="list-label">Aktivna seja</span>
+                                <span class="list-value">{{ sessionId || 'ni aktivna' }}</span>
+                            </li>
+                        </ul>
                     </div>
                 </aside>
             </div>
