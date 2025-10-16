@@ -1,4 +1,9 @@
+
++642
+–74
+
 <!DOCTYPE html>
+<html lang="sl">
 <html lang="sl" data-theme="light">
 <head>
     <meta charset="UTF-8" />
@@ -15,12 +20,20 @@
 
         :root[data-theme="light"] {
             color-scheme: light;
+            --bg-gradient: radial-gradient(circle at top left, rgba(37, 99, 235, 0.12), transparent 50%),
+                            radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.12), transparent 60%),
             --bg-gradient: radial-gradient(circle at top left, rgba(37, 99, 235, 0.14), transparent 55%),
                             radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.16), transparent 60%),
                             #f5f7ff;
+            --card: #ffffff;
+            --muted: #6b7280;
             --card: rgba(255, 255, 255, 0.92);
             --muted: #5b6479;
             --text: #0f172a;
+            --border: #d6deeb;
+            --text-strong: #0f172a;
+            --text-soft: rgba(15, 23, 42, 0.72);
+            --text-subtle: rgba(15, 23, 42, 0.65);
             --border: rgba(148, 163, 184, 0.32);
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
@@ -28,11 +41,18 @@
             --success: #16a34a;
             --warning: #f97316;
             --glow: rgba(37, 99, 235, 0.18);
+            --hint-bg: rgba(37, 99, 235, 0.08);
+            --table-header-bg: rgba(37, 99, 235, 0.08);
+            --table-row-hover: rgba(37, 99, 235, 0.05);
+            --floating-bg: rgba(255, 255, 255, 0.9);
+            --floating-border: rgba(148, 163, 184, 0.35);
+            --floating-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
             --radius-lg: 22px;
             --radius-md: 16px;
             --shadow-lg: 0 28px 60px rgba(15, 23, 42, 0.16);
             --shadow-md: 0 20px 40px rgba(15, 23, 42, 0.12);
             --shadow-sm: 0 12px 24px rgba(15, 23, 42, 0.08);
+            font-size: 16px;
         }
 
         :root[data-theme="dark"] {
@@ -43,6 +63,9 @@
             --card: rgba(15, 23, 42, 0.9);
             --muted: rgba(209, 213, 219, 0.7);
             --text: #e2e8f0;
+            --text-strong: #f8fafc;
+            --text-soft: rgba(226, 232, 240, 0.86);
+            --text-subtle: rgba(148, 163, 184, 0.9);
             --border: rgba(51, 65, 85, 0.6);
             --primary: #60a5fa;
             --primary-dark: #3b82f6;
@@ -50,6 +73,12 @@
             --success: #34d399;
             --warning: #fb923c;
             --glow: rgba(96, 165, 250, 0.28);
+            --hint-bg: rgba(96, 165, 250, 0.12);
+            --table-header-bg: rgba(30, 41, 59, 0.9);
+            --table-row-hover: rgba(37, 99, 235, 0.12);
+            --floating-bg: rgba(15, 23, 42, 0.86);
+            --floating-border: rgba(96, 165, 250, 0.3);
+            --floating-shadow: 0 24px 48px rgba(8, 13, 23, 0.55);
             --radius-lg: 22px;
             --radius-md: 16px;
             --shadow-lg: 0 32px 80px rgba(8, 13, 23, 0.6);
@@ -70,6 +99,7 @@
             display: flex;
             justify-content: center;
             padding: clamp(32px, 4vw, 64px) clamp(16px, 4vw, 56px);
+            padding: clamp(28px, 4vw, 64px) clamp(20px, 4vw, 72px);
             transition: background var(--transition-theme), color var(--transition-theme);
             position: relative;
         }
@@ -96,6 +126,7 @@
         a { color: inherit; }
 
         .app-shell {
+            width: min(1160px, 100%);
             width: min(1360px, 100%);
             display: flex;
             flex-direction: column;
@@ -107,6 +138,7 @@
             padding: clamp(32px, 3vw, 48px);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-lg);
+            color: #0f172a;
             color: var(--text);
             display: grid;
             gap: 24px;
@@ -140,6 +172,88 @@
             gap: 16px;
             position: relative;
             z-index: 1;
+        }
+
+        .floating-shell {
+            position: sticky;
+            top: clamp(16px, 4vw, 32px);
+            z-index: 30;
+            display: flex;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .floating-actions {
+            pointer-events: auto;
+            width: min(1360px, 100%);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            padding: 18px;
+            background: var(--floating-bg);
+            border: 1px solid var(--floating-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--floating-shadow);
+            backdrop-filter: blur(18px);
+        }
+
+        .floating-actions .btn {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 10px;
+            padding: 18px 20px;
+            min-height: 132px;
+            border-radius: var(--radius-md);
+            text-align: left;
+        }
+
+        .floating-actions .btn .action-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            background: rgba(37, 99, 235, 0.12);
+            color: var(--primary);
+            font-size: 1.4rem;
+        }
+
+        :root[data-theme="dark"] .floating-actions .btn .action-icon {
+            background: rgba(96, 165, 250, 0.16);
+            color: #bfdbfe;
+        }
+
+        .floating-actions .btn strong {
+            font-size: 1.02rem;
+            color: inherit;
+        }
+
+        .floating-actions .btn small {
+            color: inherit;
+            opacity: 0.8;
+            font-size: 0.86rem;
+            line-height: 1.4;
+        }
+
+        .floating-actions .btn.btn-outline strong,
+        .floating-actions .btn.btn-secondary strong,
+        .floating-actions .btn.btn-danger strong {
+            color: var(--text-strong);
+        }
+
+        .floating-actions .btn.btn-outline small,
+        .floating-actions .btn.btn-secondary small,
+        .floating-actions .btn.btn-danger small {
+            color: var(--text-subtle);
+            opacity: 1;
+        }
+
+        .floating-actions .btn:focus-visible {
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18);
         }
 
         .brand {
@@ -213,6 +327,7 @@
         .hero p {
             margin: 0;
             max-width: 680px;
+            color: rgba(15, 23, 42, 0.82);
             color: var(--text-soft);
             font-size: 1.05rem;
             line-height: 1.65;
@@ -226,6 +341,8 @@
 
         .step-card {
             backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.88);
+            border: 2px solid rgba(148, 163, 184, 0.35);
             background: var(--card);
             border: 2px solid var(--border);
             border-radius: var(--radius-md);
@@ -307,6 +424,7 @@
         }
 
         .subtitle {
+            color: var(--muted);
             color: var(--text-soft);
             font-size: 0.98rem;
             line-height: 1.6;
@@ -349,6 +467,7 @@
             border: 2px dashed rgba(37, 99, 235, 0.3);
             border-radius: var(--radius-md);
             padding: clamp(24px, 2.6vw, 36px);
+            background: rgba(248, 250, 255, 0.8);
             background: var(--card);
             display: grid;
             gap: 18px;
@@ -388,6 +507,8 @@
             gap: 12px;
             border-radius: var(--radius-md);
             padding: 16px 18px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(15, 23, 42, 0.08);
             background: var(--card);
             border: 1px solid var(--border);
             box-shadow: var(--shadow-sm);
@@ -406,6 +527,7 @@
         }
 
         .file-meta {
+            color: var(--muted);
             color: var(--text-subtle);
             font-size: 0.85rem;
         }
@@ -413,6 +535,7 @@
         label {
             font-weight: 600;
             font-size: 0.96rem;
+            color: var(--text);
             color: var(--text-strong);
         }
 
@@ -421,9 +544,11 @@
         select {
             width: 100%;
             border-radius: 14px;
+            border: 1px solid rgba(148, 163, 184, 0.5);
             border: 1px solid var(--border);
             padding: 12px 14px;
             font-size: 0.98rem;
+            background: rgba(248, 250, 255, 0.9);
             background: var(--card);
             color: var(--text);
             transition: border 0.2s ease, box-shadow 0.2s ease;
@@ -475,65 +600,7 @@
         .btn::after {
             content: '';
             position: absolute;
-            inset: 0;
-            background: rgba(255, 255, 255, 0.08);
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
-
-        .btn:disabled {
-            cursor: not-allowed;
-            opacity: 0.7;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn:focus-visible {
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18);
-        }
-
-        .btn:hover:not(:disabled)::after {
-            opacity: 1;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), #1d8ef2);
-            color: #fff;
-            box-shadow: 0 18px 32px rgba(37, 99, 235, 0.24);
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-1px);
-        }
-
-        .btn-outline {
-            background: rgba(255, 255, 255, 0.92);
-            border-color: rgba(37, 99, 235, 0.28);
-            color: var(--primary);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .btn-outline:hover:not(:disabled) {
-            background: rgba(237, 242, 255, 0.9);
-        }
-
-        .btn-secondary {
-            background: rgba(15, 23, 42, 0.06);
-            border-color: rgba(15, 23, 42, 0.12);
-            color: var(--text);
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-            background: rgba(15, 23, 42, 0.12);
-        }
-
-        .btn-danger {
-            background: rgba(220, 38, 38, 0.12);
-            border-color: rgba(220, 38, 38, 0.28);
-            color: #991b1b;
-        }
-
+@@ -327,630 +637,834 @@
         .btn-danger:hover:not(:disabled) {
             background: rgba(220, 38, 38, 0.18);
         }
@@ -629,6 +696,7 @@
         .status-banner {
             border-radius: var(--radius-md);
             padding: 16px 18px;
+            border: 1px solid transparent;
             border: 1px solid var(--border);
             background: var(--card);
             color: var(--text);
@@ -638,6 +706,9 @@
             gap: 12px;
         }
 
+        .status-banner.status-success { background: #ecfdf5; border-color: rgba(16, 185, 129, 0.32); color: #047857; }
+        .status-banner.status-error { background: #fef2f2; border-color: rgba(220, 38, 38, 0.28); color: #b91c1c; }
+        .status-banner.status-info { background: #eff6ff; border-color: rgba(37, 99, 235, 0.28); color: var(--primary); }
         .status-banner.status-success { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.32); color: #047857; }
         .status-banner.status-error { background: rgba(220, 38, 38, 0.1); border-color: rgba(220, 38, 38, 0.28); color: #b91c1c; }
         .status-banner.status-info { background: rgba(59, 130, 246, 0.12); border-color: rgba(37, 99, 235, 0.28); color: var(--primary); }
@@ -664,6 +735,7 @@
         .pair-card {
             border-radius: var(--radius-md);
             border: 1px solid rgba(37, 99, 235, 0.18);
+            background: rgba(255, 255, 255, 0.92);
             background: var(--card);
             padding: 16px 18px;
             display: grid;
@@ -684,6 +756,8 @@
 
         .pair-card .hint {
             font-size: 0.85rem;
+            color: var(--muted);
+            background: rgba(37, 99, 235, 0.08);
             color: var(--text-subtle);
             background: var(--hint-bg);
             padding: 10px 12px;
@@ -701,6 +775,8 @@
             gap: 10px;
             padding: 18px 20px;
             border-radius: var(--radius-md);
+            background: rgba(248, 250, 255, 0.92);
+            border: 1px solid rgba(148, 163, 184, 0.28);
             background: var(--card);
             border: 1px solid var(--border);
             box-shadow: var(--shadow-sm);
@@ -723,8 +799,10 @@
         }
 
         .meta-field {
+            background: rgba(255, 255, 255, 0.92);
             background: var(--card);
             border-radius: var(--radius-md);
+            border: 1px solid rgba(148, 163, 184, 0.28);
             border: 1px solid var(--border);
             padding: 14px 16px;
             display: grid;
@@ -738,6 +816,7 @@
         }
 
         .meta-label {
+            color: var(--muted);
             color: var(--text-subtle);
             font-size: 0.85rem;
             letter-spacing: 0.04em;
@@ -746,11 +825,14 @@
 
         .meta-value {
             font-weight: 600;
+            color: var(--text);
             color: var(--text-strong);
         }
 
         .field-hint {
             font-size: 0.85rem;
+            color: rgba(15, 23, 42, 0.65);
+            background: rgba(37, 99, 235, 0.08);
             color: var(--text-subtle);
             background: var(--hint-bg);
             padding: 8px 10px;
@@ -766,6 +848,7 @@
         th, td {
             padding: 14px 16px;
             text-align: left;
+            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
             border-bottom: 1px solid rgba(148, 163, 184, 0.2);
             vertical-align: top;
         }
@@ -778,6 +861,7 @@
         .results-table {
             overflow-x: auto;
             border-radius: var(--radius-md);
+            border: 1px solid rgba(15, 23, 42, 0.08);
             border: 1px solid rgba(148, 163, 184, 0.25);
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
         }
@@ -852,6 +936,7 @@
 
         .analysis-section strong {
             font-size: 0.92rem;
+            color: rgba(15, 23, 42, 0.72);
             color: var(--text-soft);
         }
 
@@ -861,6 +946,7 @@
 
         .analysis-hint {
             font-size: 0.84rem;
+            color: var(--muted);
             color: var(--text-subtle);
         }
 
@@ -893,6 +979,7 @@
         .analysis-hover label {
             font-weight: 600;
             font-size: 0.92rem;
+            color: rgba(15, 23, 42, 0.86);
             color: var(--text-strong);
         }
 
@@ -905,6 +992,7 @@
             font-family: inherit;
             font-size: 0.95rem;
             line-height: 1.5;
+            background: rgba(15, 23, 42, 0.02);
             background: rgba(255, 255, 255, 0.85);
             transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
         }
@@ -913,6 +1001,7 @@
             border-color: var(--primary);
             outline: none;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+            background: #ffffff;
             background: var(--card);
         }
 
@@ -925,15 +1014,18 @@
         }
 
         .analysis-empty {
+            color: rgba(15, 23, 42, 0.6);
             color: var(--text-subtle);
             font-style: italic;
         }
 
         thead {
+            background: rgba(37, 99, 235, 0.08);
             background: var(--table-header-bg);
         }
 
         tbody tr:hover {
+            background: rgba(37, 99, 235, 0.05);
             background: var(--table-row-hover);
         }
 
@@ -960,6 +1052,7 @@
         .status-pill.skladno { color: var(--success); background: rgba(16, 185, 129, 0.16); }
         .status-pill.neskladno { color: var(--danger); background: rgba(220, 38, 38, 0.16); }
         .status-pill.ni-relevantno { color: var(--primary); background: rgba(37, 99, 235, 0.16); }
+        .status-pill.neznano { color: rgba(15, 23, 42, 0.75); background: rgba(15, 23, 42, 0.12); }
         .status-pill.neznano { color: var(--text-soft); background: rgba(148, 163, 184, 0.2); }
 
         :root[data-theme="dark"] .status-pill.neznano {
@@ -984,6 +1077,7 @@
             font-size: 0.9rem;
             letter-spacing: 0.05em;
             text-transform: uppercase;
+            background: rgba(15, 23, 42, 0.03);
             background: rgba(255, 255, 255, 0.85);
             color: var(--text);
             cursor: pointer;
@@ -994,6 +1088,7 @@
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+            background: #ffffff;
             background: var(--card);
         }
 
@@ -1033,6 +1128,8 @@
         }
 
         .sidebar-card {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(148, 163, 184, 0.35);
             background: var(--card);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
@@ -1055,6 +1152,7 @@
 
         .sidebar-hint {
             margin: 0;
+            color: var(--muted);
             color: var(--text-subtle);
             font-size: 0.9rem;
             line-height: 1.5;
@@ -1091,6 +1189,7 @@
         }
 
         .empty-note {
+            color: var(--muted);
             color: var(--text-subtle);
             font-style: italic;
         }
@@ -1112,19 +1211,17 @@
         @media (max-width: 1080px) {
             .section-layout { grid-template-columns: 1fr; }
             .section-sidebar { position: static; }
-            .floating-actions { justify-content: center; }
+            .floating-actions { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
         }
 
         @media (max-width: 900px) {
             .floating-actions {
                 border-radius: 28px;
-                gap: 10px;
+                gap: 12px;
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             }
             .floating-actions .btn {
-                flex: 1 1 200px;
-            }
-            .floating-actions .toolbar-separator {
-                display: none;
+                min-height: 120px;
             }
         }
 
@@ -1136,16 +1233,7 @@
                 top: 16px;
             }
             .floating-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .floating-actions .toolbar-group {
-                width: 100%;
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .floating-actions .btn {
-                width: 100%;
+                grid-template-columns: 1fr;
             }
         }
 
@@ -1178,6 +1266,7 @@
             gap: 6px;
         }
 
+        .saved-item small { color: var(--muted); }
         .saved-item small { color: var(--text-subtle); }
 
         .spinner-overlay {
@@ -1205,19 +1294,24 @@
 
         footer {
             text-align: center;
+            color: var(--muted);
             color: var(--text-subtle);
             font-size: 0.9rem;
         }
 
         @media (max-width: 720px) {
+            body { padding: 28px 14px 40px; }
             .section-head { align-items: stretch; }
             .actions-row { flex-direction: column; }
+            .section-layout { grid-template-columns: 1fr; }
+            .section-sidebar { position: static; }
         }
     </style>
 </head>
 <body>
     <div id="app" class="app-shell" v-cloak>
         <header class="hero">
+            <div>
             <div class="top-bar">
                 <div class="brand">
                     <span class="brand-icon">✨</span>
@@ -1243,38 +1337,56 @@
 
         <div class="floating-shell">
             <div class="floating-actions" role="toolbar" aria-label="Glavne akcije">
-                <div class="toolbar-group">
-                    <button class="btn btn-outline" @click.prevent="$refs.fileInput && $refs.fileInput.click()" :disabled="isBusy">
-                        Dodaj PDF datoteke
-                    </button>
-                    <button class="btn btn-primary" @click="extractData" :disabled="!files.length || isBusy" :data-state="actionStates.extract">
-                        Ekstrahiraj podatke (EUP/Rabe)
-                    </button>
-                </div>
-                <span class="toolbar-separator" aria-hidden="true"></span>
-                <div class="toolbar-group">
-                    <button class="btn btn-primary" @click="runAnalysis()" :disabled="isBusy" :data-state="actionStates.run">
-                        Izvedi podrobno analizo
-                    </button>
-                    <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">
-                        Shrani napredek
-                    </button>
-                    <button class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy" :data-state="actionStates.reset">
-                        Ponastavi analizo
-                    </button>
-                </div>
-                <span class="toolbar-separator" aria-hidden="true"></span>
-                <div class="toolbar-group">
-                    <button class="btn btn-secondary" @click="openSavedModal" :disabled="savedSessionsLoading">
-                        Odpri shranjeno analizo
-                    </button>
-                    <button class="btn btn-secondary" v-if="highlightedSession" @click="restoreHighlighted">
-                        Nadaljuj z zadnjo sejo
-                    </button>
-                    <button class="btn btn-secondary" v-if="highlightedSession" @click="discardHighlighted">
-                        Izbriši shranjeno
-                    </button>
-                </div>
+                <button type="button" class="btn btn-outline" @click.prevent="$refs.fileInput && $refs.fileInput.click()" :disabled="isBusy">
+                    <span class="action-icon">📄</span>
+                    <strong>Dodaj PDF datoteke</strong>
+                    <small>Naložite projektno dokumentacijo za analizo.</small>
+                </button>
+                <button type="button" class="btn btn-primary" @click="extractData" :disabled="!files.length || isBusy" :data-state="actionStates.extract">
+                    <span class="action-icon">🤖</span>
+                    <strong>Ekstrahiraj podatke</strong>
+                    <small>Pridobi pare EUP/Rabe iz dodanih dokumentov.</small>
+                </button>
+                <button type="button" class="btn btn-primary" @click="runAnalysis()" :disabled="isBusy" :data-state="actionStates.run">
+                    <span class="action-icon">📊</span>
+                    <strong>Izvedi podrobno analizo</strong>
+                    <small>Analiziraj skladnost in pripravi rezultate pregleda.</small>
+                </button>
+                <button type="button" class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">
+                    <span class="action-icon">💾</span>
+                    <strong>Shrani napredek</strong>
+                    <small>Ohrani trenutno stanje in podatke seje.</small>
+                </button>
+                <button type="button" class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy" :data-state="actionStates.reset">
+                    <span class="action-icon">🧹</span>
+                    <strong>Ponastavi analizo</strong>
+                    <small>Začni postopek znova s čistim delovnim prostorom.</small>
+                </button>
+                <button type="button" class="btn btn-secondary" @click="openSavedModal" :disabled="savedSessionsLoading">
+                    <span class="action-icon">📂</span>
+                    <strong>Odpri shranjeno analizo</strong>
+                    <small>Izberi prejšnjo sejo in nadaljuj z urejanjem.</small>
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    v-if="highlightedSession"
+                    @click="restoreHighlighted"
+                >
+                    <span class="action-icon">⏯️</span>
+                    <strong>Nadaljuj z zadnjo sejo</strong>
+                    <small>Ponovno naloži zadnje samodejno shranjeno stanje.</small>
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    v-if="highlightedSession"
+                    @click="discardHighlighted"
+                >
+                    <span class="action-icon">🗑️</span>
+                    <strong>Izbriši shranjeno</strong>
+                    <small>Odstrani shranjeno sejo iz zadnjih aktivnosti.</small>
+                </button>
             </div>
         </div>
 
@@ -1290,6 +1402,11 @@
                 <div class="section-title">
                     <span class="badge">1</span>
                     Priprava dokumentacije
+                </div>
+                <div class="actions-row" style="gap:10px;">
+                    <button class="btn btn-outline" @click="openSavedModal" :disabled="savedSessionsLoading">Odpri shranjeno analizo</button>
+                    <button class="btn btn-secondary" v-if="highlightedSession" @click="restoreHighlighted">Nadaljuj z zadnjo sejo</button>
+                    <button class="btn btn-secondary" v-if="highlightedSession" @click="discardHighlighted">Izbriši shranjeno</button>
                 </div>
             </div>
             <p class="subtitle">Dodajte vse PDF priloge projekta. Za grafične priloge lahko določite strani, ki jih bo sistem pretvoril v slike.</p>
@@ -1318,6 +1435,9 @@
                 <p class="subtitle" v-else>Trenutno ni izbranih datotek. Po dodajanju bo vsak dokument prikazan z dodatnimi možnostmi.</p>
             </div>
 
+            <div class="actions-row">
+                <button class="btn btn-primary" @click="extractData" :disabled="!files.length || isBusy" :data-state="actionStates.extract">Ekstrahiraj ključne podatke in EUP/Rabe</button>
+            </div>
             <p class="subtitle">Za začetek ekstrakcije uporabite gumbe v zgornji vrstici, ki so vedno vidni med pomikanjem.</p>
         </section>
 
@@ -1327,6 +1447,7 @@
                     <span class="badge">2</span>
                     Pregled in potrditev podatkov
                 </div>
+                <div class="subtitle">Seja: {{ sessionId || 'ni začeta' }}</div>
                 <div
                     class="session-status"
                     :class="{ 'is-inactive': !sessionId }"
@@ -1361,16 +1482,7 @@
                     </div>
 
                     <div>
-                        <h3>Projektni podatki</h3>
-                        <div class="metadata-grid">
-                            <div class="meta-field">
-                                <span class="meta-label">Ime projekta</span>
-                                <span class="meta-value">{{ metadata.ime_projekta || 'Ni podatka' }}</span>
-                            </div>
-                            <div class="meta-field">
-                                <span class="meta-label">Številka projekta</span>
-                                <span class="meta-value">{{ metadata.stevilka_projekta || 'Ni podatka' }}</span>
-                            </div>
+@@ -967,56 +1481,69 @@
                         </div>
                     </div>
 
@@ -1396,6 +1508,12 @@
                 <aside class="section-sidebar">
                     <div class="sidebar-card">
                         <h4 class="sidebar-title">Upravljanje analize</h4>
+                        <p class="sidebar-hint">Gumbi so razporejeni po pomembnosti. Po kliku se barva spremeni in potrdi izvedbo.</p>
+                        <div class="actions-stack">
+                            <button class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy" :data-state="actionStates.reset">Ponastavi analizo</button>
+                            <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">Shrani napredek</button>
+                            <button class="btn btn-primary" @click="runAnalysis()" :disabled="isBusy" :data-state="actionStates.run">Izvedi podrobno analizo</button>
+                        </div>
                         <p class="sidebar-hint">Glavne akcije so vedno na voljo v zgornji vrstici. Tukaj lahko spremljate ključne kazalnike napredka.</p>
                         <ul class="sidebar-list">
                             <li>
@@ -1440,142 +1558,7 @@
                                     <th style="width:200px;">Status</th>
                                     <th>Obrazložitev in popravki</th>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="req in requirements" :key="req.id" :class="{ excluded: excludedIds.includes(String(req.id)) }">
-                                    <td>
-                                        <input type="checkbox" :value="String(req.id)" v-model="selectedRequirementIds" :disabled="excludedIds.includes(String(req.id))" />
-                                    </td>
-                                    <td>
-                                        <strong>{{ req.naziv || req.naslov || 'Zahteva' }}</strong>
-                                        <div class="subtitle" v-if="req.clen">{{ req.clen }}</div>
-                                        <div class="subtitle" v-if="req.skupina || req.kategorija">{{ req.skupina || req.kategorija }}</div>
-                                        <button class="btn btn-secondary" style="margin-top:8px;" @click="toggleRequirementExclusion(req.id)">
-                                            {{ excludedIds.includes(String(req.id)) ? 'Vključi v poročilo' : 'Izloči iz končnega poročila' }}
-                                        </button>
-                                        <div v-if="requirementRevisions[String(req.id)]?.length" class="field-hint" style="margin-top:10px;">
-                                            <strong>Priloženi popravki:</strong>
-                                            <ul style="margin:6px 0 0 18px; padding:0;">
-                                                <li v-for="rev in requirementRevisions[String(req.id)]" :key="rev.filename + rev.uploaded_at">
-                                                    {{ rev.filename }} – {{ formatTimestamp(rev.uploaded_at) }}<span v-if="rev.note"> · {{ rev.note }}</span>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td>
-                                    <td class="status-cell">
-                                        <div class="status-control">
-                                            <span class="status-pill" :class="statusClass(currentStatus(req.id))">{{ displayStatus(req.id) }}</span>
-                                            <select :value="currentStatus(req.id)" @change="event => updateRequirementStatus(req.id, event.target.value)">
-                                                <option v-for="option in statusOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-                                            </select>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="analysis-editor" :class="{ modified: isResultModified(req.id), active: activeEditorId === stringId(req.id) }" @click="activateEditor(req.id, $event)">
-                                            <div class="analysis-display">
-                                                <div class="analysis-header">
-                                                    <strong>AI ugotovitve</strong>
-                                                    <span v-if="isResultModified(req.id)" class="analysis-tag">Ročno urejeno</span>
-                                                </div>
-                                                <div class="analysis-section">
-                                                    <strong>Ugotovitve</strong>
-                                                    <div :class="{ 'analysis-empty': !analysisFinding(req.id).trim() }">{{ analysisFinding(req.id).trim() ? analysisFinding(req.id) : 'Ni zabeleženih ugotovitev AI.' }}</div>
-                                                </div>
-                                                <div class="analysis-section">
-                                                    <strong>Predlagani ukrep</strong>
-                                                    <div :class="{ 'analysis-empty': !analysisAction(req.id).trim() }">{{ analysisAction(req.id).trim() ? analysisAction(req.id) : 'Ni predlaganega ukrepa.' }}</div>
-                                                </div>
-                                                <div class="analysis-hint">Zadržite miško ali tapnite za urejanje besedila.</div>
-                                            </div>
-                                            <div class="analysis-hover" @click.stop>
-                                                <label :for="`findings-${stringId(req.id)}`">AI ugotovitve</label>
-                                                <textarea
-                                                    :id="`findings-${stringId(req.id)}`"
-                                                    v-model="editableFindings[stringId(req.id)]"
-                                                    :data-editor="stringId(req.id)"
-                                                    data-field="finding"
-                                                    @focus="activateEditor(req.id, $event)"
-                                                    @blur="handleEditorBlur(req.id, $event)"
-                                                    @input="onEditableChange(req.id)"
-                                                ></textarea>
-                                                <label :for="`action-${stringId(req.id)}`">Predlagani ukrep / obrazložitev</label>
-                                                <textarea
-                                                    :id="`action-${stringId(req.id)}`"
-                                                    v-model="editableActions[stringId(req.id)]"
-                                                    :data-editor="stringId(req.id)"
-                                                    data-field="action"
-                                                    @focus="activateEditor(req.id, $event)"
-                                                    @blur="handleEditorBlur(req.id, $event)"
-                                                    @input="onEditableChange(req.id)"
-                                                ></textarea>
-                                                <div class="analysis-hint">Vnesene spremembe se shranijo samodejno.</div>
-                                            </div>
-                                        </div>
-                                        <div class="actions-row" style="margin-top:12px;">
-                                            <label class="btn btn-outline" style="cursor:pointer;">
-                                                Naloži popravek
-                                                <input type="file" accept="application/pdf" multiple style="display:none;" @change="event => queueRequirementRevision(req.id, event)" />
-                                            </label>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="revision-card">
-                        <h4 style="margin:0;">Dodaj popravljeno projektno dokumentacijo</h4>
-                        <p class="subtitle">Po prejemu dopolnitev projektanta lahko dodatne dokumente naložite in ponovno zaženete ciljno analizo.</p>
-                        <div>
-                            <label for="revision-upload">Popravljene PDF datoteke</label>
-                            <input id="revision-upload" type="file" multiple accept="application/pdf" @change="handleRevisionFiles" />
-                        </div>
-                        <div>
-                            <label for="revision-pages">Strani za podrobno analizo (neobvezno)</label>
-                            <input id="revision-pages" type="text" v-model="revisionPages" placeholder="npr. 2, 4-6" />
-                        </div>
-                        <div class="actions-row">
-                            <button class="btn btn-secondary" @click="uploadRevision" :disabled="isBusy || !revisionFiles.length" :data-state="actionStates.revision">Naloži popravek</button>
-                            <div class="subtitle">{{ revisionInfo }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <aside class="section-sidebar">
-                    <div class="sidebar-card">
-                        <h4 class="sidebar-title">Akcije rezultatov</h4>
-                        <p class="sidebar-hint">Izberite nadaljnji korak ali pripravite poročilo za deljenje.</p>
-                        <div class="actions-stack">
-                            <button class="btn btn-outline" @click="rerunNonCompliant" :disabled="isBusy || !latestNonCompliantIds.length" :data-state="actionStates.rerunNonCompliant">Analiziraj neskladne</button>
-                            <button class="btn btn-outline" @click="rerunSelected" :disabled="isBusy || !selectedRequirementIds.length" :data-state="actionStates.rerunSelected">Ponovno preveri izbrane</button>
-                            <button class="btn btn-secondary" @click="resetSelection" :disabled="isBusy">Počisti izbor</button>
-                            <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">Shrani napredek</button>
-                            <button class="btn btn-primary" @click="confirmReport" :disabled="isBusy || !sessionId" :data-state="actionStates.confirm">Potrdi in ustvari poročilo</button>
-                            <a v-if="downloadReady" class="btn btn-outline" :href="downloadHref" download>Prenesi poročilo (.docx)</a>
-                        </div>
-                    </div>
-                </aside>
-            </div>
-        </section>
-
-        <footer>
-            &copy; YEAR_PLACEHOLDER – IZDELAVA MNENJA O SKADNOSTI S PIA
-        </footer>
-
-        <div v-if="showSavedModal" class="modal-backdrop" @click.self="showSavedModal = false">
-            <div class="modal-card">
-                <h3>Izberite shranjeno analizo</h3>
-                <div class="subtitle" v-if="savedSessionsLoading">Nalagam shranjene seje...</div>
-                <div v-else>
-                    <p class="subtitle" v-if="!savedSessions.length">Ni shranjenih analiz.</p>
-                    <div v-else class="file-list">
-                        <div class="saved-item" v-for="session in savedSessions" :key="session.session_id">
-                            <strong>{{ session.project_name || 'Neimenovan projekt' }}</strong>
-                            <small>{{ session.summary || 'Brez povzetka' }}</small>
-                            <small>{{ formatTimestamp(session.updated_at) }}</small>
-                            <div class="actions-row" style="margin-top:8px;">
-                                <button class="btn btn-primary" @click="loadSession(session.session_id)">Odpri</button>
-                                <button class="btn btn-secondary" @click="deleteSession(session.session_id)">Izbriši</button>
+@@ -1159,50 +1686,52 @@
                             </div>
                         </div>
                     </div>
@@ -1628,71 +1611,7 @@
                     analysisSummary: '',
                     downloadReady: false,
                     downloadHref: '',
-                    revisionFiles: [],
-                    revisionPages: '',
-                    revisionInfo: '',
-                    savedSessions: [],
-                    savedSessionsLoading: false,
-                    showSavedModal: false,
-                    highlightedSession: null,
-                    statusOptions: [
-                        { value: '', label: 'NEZNANO' },
-                        { value: 'Skladno', label: 'SKLADNA' },
-                        { value: 'Neskladno', label: 'NESKLADNA' },
-                        { value: 'Ni relevantno', label: 'NI RELEVANTNO' }
-                    ],
-                    statusLabels: {
-                        '': 'NEZNANO',
-                        Neznano: 'NEZNANO',
-                        neznano: 'NEZNANO',
-                        Skladno: 'SKLADNA',
-                        skladno: 'SKLADNA',
-                        Neskladno: 'NESKLADNA',
-                        neskladno: 'NESKLADNA',
-                        'Ni relevantno': 'NI RELEVANTNO',
-                        'ni relevantno': 'NI RELEVANTNO'
-                    },
-                    actionStates: {
-                        extract: '',
-                        run: '',
-                        save: '',
-                        reset: '',
-                        rerunSelected: '',
-                        rerunNonCompliant: '',
-                        confirm: '',
-                        revision: ''
-                    },
-                    actionTimers: {},
-                    heroSteps: [
-                        { id: 1, title: 'Naloži dokumente', description: 'Dodajte PDF dokumentacijo in po želji označite strani za grafični pregled.' },
-                        { id: 2, title: 'Preglej osnutek', description: 'AI pripravi osnutek EUP/rab in ključnih podatkov, ki jih lahko prilagodite.' },
-                        { id: 3, title: 'Potrdi in deli', description: 'Pripravite poročilo skladnosti in ga delite s projektno ekipo.' }
-                    ],
-                    keyLabels: {
-                        glavni_objekt: 'OBJEKT (opis funkcije)',
-                        vrsta_gradnje: 'VRSTA GRADNJE',
-                        klasifikacija_cc_si: 'CC-SI klasifikacija',
-                        nezahtevni_objekti: 'Nezahtevni objekti v projektu',
-                        enostavni_objekti: 'Enostavni objekti v projektu',
-                        vzdrzevalna_dela: 'Vzdrževalna dela / manjša rekonstrukcija',
-                        parcela_objekta: 'Gradbena parcela (št.)',
-                        stevilke_parcel_ko: 'Vse parcele in k.o.',
-                        velikost_parcel: 'Skupna velikost parcel',
-                        velikost_obstojecega_objekta: 'Velikost obstoječega objekta',
-                        tlorisne_dimenzije: 'Nove tlorisne dimenzije',
-                        gabariti_etaznost: 'Novi gabarit/Etažnost',
-                        faktor_zazidanosti_fz: 'Faktor zazidanosti (FZ)',
-                        faktor_izrabe_fi: 'Faktor izrabe (FI)',
-                        zelene_povrsine: 'Zelene površine (FZP/m²)',
-                        naklon_strehe: 'Naklon strehe',
-                        kritina_barva: 'Kritina/Barva',
-                        materiali_gradnje: 'Materiali gradnje (npr. les)',
-                        smer_slemena: 'Smer slemena',
-                        visinske_kote: 'Višinske kote (k.p., k.s.)',
-                        odmiki_parcel: 'Odmiki od parcelnih mej',
-                        komunalni_prikljucki: 'Komunalni priključki/Oskrba'
-                    },
-                    longFieldKeys: new Set(['stevilke_parcel_ko', 'odmiki_parcel', 'komunalni_prikljucki', 'nezahtevni_objekti', 'enostavni_objekti', 'vzdrzevalna_dela']),
+@@ -1274,50 +1803,84 @@
                     storageKey: 'mnenja-vue-state'
                 };
             },
@@ -1777,644 +1696,7 @@
                             if (this.actionStates[key] === state) {
                                 this.actionStates[key] = '';
                             }
-                            delete this.actionTimers[key];
-                        }, timeout);
-                    }
-                },
-                markActionWorking(key) {
-                    this.setActionState(key, 'working', { autoClear: false });
-                },
-                markActionResult(key, state) {
-                    const validState = state === 'success' ? 'success' : state === 'error' ? 'error' : '';
-                    this.setActionState(key, validState);
-                },
-                resetAnalysis() {
-                    if (this.isBusy) return;
-                    const confirmed = confirm('Ali želite ponastaviti analizo in odstraniti vse trenutno zbrane podatke?');
-                    if (!confirmed) return;
-                    this.markActionWorking('reset');
-                    localStorage.removeItem(this.storageKey);
-                    if (this.$refs.fileInput) {
-                        this.$refs.fileInput.value = '';
-                    }
-                    this.files = [];
-                    this.pageOverrides = {};
-                    this.isDragging = false;
-                    this.isBusy = false;
-                    this.busyMessage = '';
-                    this.sessionId = '';
-                    this.eupPairs = [];
-                    this.initialKeyData = {};
-                    this.keyData = {};
-                    this.metadata = {};
-                    this.requirements = [];
-                    this.resultsMap = {};
-                    this.editableFindings = {};
-                    this.editableActions = {};
-                    this.initialEditableFindings = {};
-                    this.initialEditableActions = {};
-                    this.activeEditorId = '';
-                    this.selectedRequirementIds = [];
-                    this.excludedIds = [];
-                    this.requirementRevisions = {};
-                    this.latestNonCompliantIds = [];
-                    this.analysisSummary = '';
-                    this.downloadReady = false;
-                    this.downloadHref = '';
-                    this.revisionFiles = [];
-                    this.revisionPages = '';
-                    this.revisionInfo = '';
-                    this.showSavedModal = false;
-                    this.highlightedSession = this.savedSessions.length ? this.savedSessions[0] : null;
-                    Object.keys(this.actionStates).forEach(key => {
-                        if (key === 'reset') return;
-                        this.setActionState(key, '', { autoClear: false });
-                    });
-                    this.markActionResult('reset', 'success');
-                    this.setStatus('info', 'Analiza je bila ponastavljena.');
-                },
-                startLoading(message) {
-                    this.isBusy = true;
-                    this.busyMessage = message;
-                    this.setStatus('info', message);
-                },
-                stopLoading(type = 'info', message = '') {
-                    this.isBusy = false;
-                    this.busyMessage = '';
-                    if (message) {
-                        this.setStatus(type, message);
-                    }
-                },
-                stringId(value) {
-                    if (value === undefined || value === null) {
-                        return '';
-                    }
-                    return String(value);
-                },
-                ensureText(value) {
-                    if (typeof value === 'string') {
-                        return value;
-                    }
-                    if (value === undefined || value === null) {
-                        return '';
-                    }
-                    if (typeof value === 'number' || typeof value === 'boolean') {
-                        return String(value);
-                    }
-                    try {
-                        return JSON.stringify(value, null, 2);
-                    } catch (error) {
-                        return String(value);
-                    }
-                },
-                normalizeResultsMap(data) {
-                    const normalized = {};
-                    if (data && typeof data === 'object') {
-                        Object.entries(data).forEach(([key, value]) => {
-                            const safeKey = this.stringId(value && typeof value === 'object' ? value.id ?? key : key);
-                            const entry = value && typeof value === 'object' ? { ...value } : {};
-                            if (!entry.id) {
-                                entry.id = safeKey;
-                            }
-                            normalized[safeKey] = entry;
-                        });
-                    }
-                    return normalized;
-                },
-                ensureResultEntry(id) {
-                    const key = this.stringId(id);
-                    if (!key) {
-                        return {};
-                    }
-                    if (!this.resultsMap[key] || typeof this.resultsMap[key] !== 'object') {
-                        this.resultsMap[key] = { id: key };
-                    }
-                    if (!this.resultsMap[key].id) {
-                        this.resultsMap[key].id = key;
-                    }
-                    return this.resultsMap[key];
-                },
-                applyEditableValuesToResult(id, finding, action) {
-                    const key = this.stringId(id);
-                    const entry = this.ensureResultEntry(key);
-                    entry.obrazlozitev = this.ensureText(finding);
-                    entry.ugotovitve_ai = this.ensureText(finding);
-                    entry.predlagani_ukrep = this.ensureText(action);
-                    return entry;
-                },
-                prepareEditableResults(options = {}) {
-                    const {
-                        editedFindings = null,
-                        editedActions = null,
-                        initialFindings = null,
-                        initialActions = null,
-                        preferStateInitial = false
-                    } = options || {};
-
-                    const mapEntries = Object.entries(this.resultsMap || {});
-                    const nextEditableFindings = {};
-                    const nextEditableActions = {};
-                    const nextInitialFindings = {};
-                    const nextInitialActions = {};
-
-                    mapEntries.forEach(([rawKey, rawResult]) => {
-                        const key = this.stringId(rawKey);
-                        const result = rawResult && typeof rawResult === 'object' ? rawResult : {};
-                        const aiFinding = this.ensureText(result.ugotovitve_ai ?? result.obrazlozitev ?? '');
-                        const aiAction = this.ensureText(result.predlagani_ukrep ?? '');
-
-                        const baselineFinding = preferStateInitial && initialFindings && typeof initialFindings[key] === 'string'
-                            ? initialFindings[key]
-                            : aiFinding;
-                        const baselineAction = preferStateInitial && initialActions && typeof initialActions[key] === 'string'
-                            ? initialActions[key]
-                            : aiAction;
-
-                        const currentFinding = editedFindings && typeof editedFindings[key] === 'string'
-                            ? editedFindings[key]
-                            : baselineFinding;
-                        const currentAction = editedActions && typeof editedActions[key] === 'string'
-                            ? editedActions[key]
-                            : baselineAction;
-
-                        nextInitialFindings[key] = baselineFinding;
-                        nextInitialActions[key] = baselineAction;
-                        nextEditableFindings[key] = currentFinding;
-                        nextEditableActions[key] = currentAction;
-
-                        this.applyEditableValuesToResult(key, currentFinding, currentAction);
-                    });
-
-                    if (Array.isArray(this.requirements)) {
-                        this.requirements.forEach(req => {
-                            const key = this.stringId(req?.id);
-                            if (!key || Object.prototype.hasOwnProperty.call(nextEditableFindings, key)) {
-                                return;
-                            }
-                            nextInitialFindings[key] = '';
-                            nextInitialActions[key] = '';
-                            nextEditableFindings[key] = '';
-                            nextEditableActions[key] = '';
-                            this.applyEditableValuesToResult(key, '', '');
-                        });
-                    }
-
-                    this.initialEditableFindings = nextInitialFindings;
-                    this.initialEditableActions = nextInitialActions;
-                    this.editableFindings = nextEditableFindings;
-                    this.editableActions = nextEditableActions;
-                    if (!this.activeEditorId || !Object.prototype.hasOwnProperty.call(this.resultsMap || {}, this.activeEditorId)) {
-                        this.activeEditorId = '';
-                    }
-                },
-                analysisFinding(id) {
-                    const key = this.stringId(id);
-                    const value = this.editableFindings && typeof this.editableFindings[key] === 'string'
-                        ? this.editableFindings[key]
-                        : '';
-                    return value;
-                },
-                analysisAction(id) {
-                    const key = this.stringId(id);
-                    const value = this.editableActions && typeof this.editableActions[key] === 'string'
-                        ? this.editableActions[key]
-                        : '';
-                    return value;
-                },
-                isResultModified(id) {
-                    const key = this.stringId(id);
-                    const currentFinding = this.analysisFinding(key);
-                    const currentAction = this.analysisAction(key);
-                    const initialFinding = this.initialEditableFindings && typeof this.initialEditableFindings[key] === 'string'
-                        ? this.initialEditableFindings[key]
-                        : '';
-                    const initialAction = this.initialEditableActions && typeof this.initialEditableActions[key] === 'string'
-                        ? this.initialEditableActions[key]
-                        : '';
-                    return currentFinding !== initialFinding || currentAction !== initialAction;
-                },
-                onEditableChange(id) {
-                    const key = this.stringId(id);
-                    if (!key) return;
-                    const finding = this.ensureText(this.editableFindings && this.editableFindings[key]);
-                    const action = this.ensureText(this.editableActions && this.editableActions[key]);
-                    this.applyEditableValuesToResult(key, finding, action);
-                    this.persistState(true);
-                },
-                activateEditor(id, event) {
-                    const key = this.stringId(id);
-                    if (!key) return;
-                    const triggerFocus = !event || !event.target || event.target.tagName !== 'TEXTAREA';
-                    this.activeEditorId = key;
-                    if (triggerFocus) {
-                        this.$nextTick(() => {
-                            if (!this.$el) return;
-                            const selector = `textarea[data-editor="${key}"][data-field="finding"]`;
-                            const textarea = this.$el.querySelector(selector);
-                            if (textarea && typeof textarea.focus === 'function') {
-                                textarea.focus();
-                            }
-                        });
-                    }
-                },
-                handleEditorBlur(id, event) {
-                    const key = this.stringId(id);
-                    if (!key) return;
-                    const related = event && event.relatedTarget;
-                    if (related && related.dataset && related.dataset.editor === key) {
-                        return;
-                    }
-                    if (this.activeEditorId === key) {
-                        this.activeEditorId = '';
-                    }
-                },
-                formatFileSize(size) {
-                    if (!size) return '0 B';
-                    const units = ['B', 'KB', 'MB', 'GB'];
-                    let value = size;
-                    let index = 0;
-                    while (value >= 1024 && index < units.length - 1) {
-                        value /= 1024;
-                        index += 1;
-                    }
-                    const precision = index === 0 ? 0 : (value >= 10 ? 1 : 2);
-                    return `${value.toFixed(precision)} ${units[index]}`;
-                },
-                formatTimestamp(value) {
-                    if (!value) return '';
-                    const date = new Date(value);
-                    if (Number.isNaN(date.getTime())) return '';
-                    return date.toLocaleString('sl-SI');
-                },
-                handleFileSelect(event) {
-                    const incoming = Array.from(event.target.files || []);
-                    this.appendFiles(incoming);
-                    event.target.value = '';
-                },
-                handleDrop(event) {
-                    const dropped = Array.from(event.dataTransfer.files || []);
-                    this.appendFiles(dropped);
-                    this.isDragging = false;
-                },
-                appendFiles(list) {
-                    const pdfFiles = list.filter(file => file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'));
-                    const existingNames = new Set(this.files.map(f => f.file.name));
-                    pdfFiles.forEach(file => {
-                        const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-                        this.files.push({ id, file });
-                        if (!existingNames.has(file.name)) {
-                            this.pageOverrides[id] = '';
-                        }
-                    });
-                    if (!pdfFiles.length) {
-                        this.setStatus('error', 'Dodani morajo biti PDF dokumenti.');
-                    }
-                },
-                removeFile(id) {
-                    this.files = this.files.filter(item => item.id !== id);
-                    delete this.pageOverrides[id];
-                },
-                pairModified(pair) {
-                    const currentEup = (pair.eup || '').trim();
-                    const currentRaba = (pair.raba || '').trim();
-                    return currentEup !== (pair.originalEup || '').trim() || currentRaba !== (pair.originalRaba || '').trim();
-                },
-                addPair() {
-                    this.eupPairs.push({ id: `${Date.now()}-${Math.random().toString(16).slice(2)}`, eup: '', raba: '', originalEup: '', originalRaba: '' });
-                },
-                removePair(index) {
-                    this.eupPairs.splice(index, 1);
-                    if (!this.eupPairs.length) {
-                        this.addPair();
-                    }
-                },
-                keyFieldModified(key) {
-                    const current = (this.keyData[key] || '').trim();
-                    const original = (this.initialKeyData[key] || '').trim();
-                    return current !== original;
-                },
-                async extractData() {
-                    if (!this.files.length) {
-                        this.setStatus('error', 'Prosim naložite vsaj eno PDF datoteko.');
-                        return;
-                    }
-                    this.markActionWorking('extract');
-                    const formData = new FormData();
-                    const manifest = [];
-                    this.files.forEach(item => {
-                        formData.append('pdf_files', item.file);
-                        manifest.push({ name: item.file.name, pages: (this.pageOverrides[item.id] || '').trim() });
-                    });
-                    formData.append('files_meta_json', JSON.stringify(manifest));
-                    this.startLoading('Analiziram dokumente in pripravljam podatke...');
-                    try {
-                        const response = await fetch('/extract-data', { method: 'POST', body: formData });
-                        if (!response.ok) {
-                            const error = await response.json().catch(() => ({}));
-                            throw new Error(error.detail || 'Napaka pri ekstrakciji podatkov.');
-                        }
-                        const data = await response.json();
-                        this.sessionId = data.session_id;
-                        this.preparePairs(data.eup || [], data.namenska_raba || []);
-                        this.prepareKeyData(data);
-                        this.resultsMap = {};
-                        this.editableFindings = {};
-                        this.editableActions = {};
-                        this.initialEditableFindings = {};
-                        this.initialEditableActions = {};
-                        this.activeEditorId = '';
-                        this.requirements = [];
-                        this.selectedRequirementIds = [];
-                        this.excludedIds = [];
-                        this.requirementRevisions = {};
-                        this.latestNonCompliantIds = [];
-                        this.analysisSummary = '';
-                        this.downloadReady = false;
-                        this.downloadHref = '';
-                        this.revisionFiles = [];
-                        this.revisionPages = '';
-                        this.revisionInfo = '';
-                        this.persistState(true);
-                        this.markActionResult('extract', 'success');
-                        this.stopLoading('success', 'Ekstrakcija podatkov uspešna. Preglejte predloge in nadaljujte z analizo.');
-                    } catch (error) {
-                        console.error(error);
-                        this.markActionResult('extract', 'error');
-                        this.stopLoading('error', error.message || 'Napaka pri ekstrakciji.');
-                    }
-                },
-                preparePairs(eupList, rabaList) {
-                    this.eupPairs = [];
-                    const max = Math.max(eupList.length, rabaList.length);
-                    if (!max) {
-                        this.addPair();
-                        return;
-                    }
-                    for (let i = 0; i < max; i += 1) {
-                        const eup = eupList[i] || '';
-                        const raba = rabaList[i] || '';
-                        this.eupPairs.push({
-                            id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-                            eup,
-                            raba,
-                            originalEup: eup,
-                            originalRaba: raba
-                        });
-                    }
-                },
-                prepareKeyData(data) {
-                    this.initialKeyData = {};
-                    this.keyData = {};
-                    Object.keys(this.keyLabels).forEach(key => {
-                        const raw = typeof data[key] === 'string' ? data[key] : '';
-                        const normalized = raw && raw.trim() ? raw : 'Ni podatka v dokumentaciji';
-                        this.initialKeyData[key] = normalized;
-                        this.keyData[key] = normalized;
-                    });
-                    this.metadata = {
-                        ime_projekta: data.ime_projekta || '',
-                        stevilka_projekta: data.stevilka_projekta || ''
-                    };
-                },
-                collectAnalysisPayload() {
-                    const formData = new FormData();
-                    formData.append('session_id', this.sessionId);
-                    this.eupPairs.forEach(pair => {
-                        formData.append('final_eup_list', (pair.eup || '').trim());
-                        formData.append('final_raba_list', (pair.raba || '').trim());
-                    });
-                    Object.entries(this.keyData).forEach(([key, value]) => {
-                        formData.append(key, (value || '').trim());
-                    });
-                    Object.entries(this.metadata).forEach(([key, value]) => {
-                        if (value) {
-                            formData.append(key, value);
-                        }
-                    });
-                    if (Object.keys(this.resultsMap).length) {
-                        formData.append('existing_results_json', JSON.stringify(this.resultsMap));
-                    }
-                    return formData;
-                },
-                async runAnalysis(extra = {}) {
-                    const actionKey = extra.actionKey || (extra.isRerun ? 'rerunSelected' : 'run');
-                    if (!this.sessionId) {
-                        this.setStatus('error', 'Seja ni aktivna. Ponovite prvi korak.');
-                        if (actionKey) {
-                            this.markActionResult(actionKey, 'error');
-                        }
-                        return;
-                    }
-                    if (actionKey) {
-                        this.markActionWorking(actionKey);
-                    }
-                    const formData = this.collectAnalysisPayload();
-                    if (Array.isArray(extra.selectedIds) && extra.selectedIds.length) {
-                        formData.append('selected_ids_json', JSON.stringify(extra.selectedIds));
-                    }
-                    this.startLoading(extra.isRerun ? 'Ponovno preverjam izbrane zahteve...' : 'Izvajam podrobno analizo...');
-                    try {
-                        const response = await fetch('/analyze-report', { method: 'POST', body: formData });
-                        if (!response.ok) {
-                            const error = await response.json().catch(() => ({}));
-                            throw new Error(error.detail || 'Napaka pri analizi.');
-                        }
-                        const result = await response.json();
-                        this.resultsMap = this.normalizeResultsMap(result.results_map || {});
-                        this.requirements = Array.isArray(result.zahteve) ? result.zahteve : [];
-                        this.prepareEditableResults();
-                        this.requirementRevisions = result.requirement_revisions || {};
-                        this.latestNonCompliantIds = Array.isArray(result.non_compliant_ids) ? result.non_compliant_ids.map(String) : [];
-                        this.analysisSummary = this.buildAnalysisSummary(result);
-                        this.downloadReady = false;
-                        this.downloadHref = '';
-                        this.selectedRequirementIds = this.latestNonCompliantIds.slice();
-                        this.persistState(true);
-                        if (actionKey) {
-                            this.markActionResult(actionKey, 'success');
-                        }
-                        this.stopLoading('success', 'Analiza zaključena. Preglejte rezultate in po potrebi pripravite poročilo.');
-                    } catch (error) {
-                        console.error(error);
-                        if (actionKey) {
-                            this.markActionResult(actionKey, 'error');
-                        }
-                        this.stopLoading('error', error.message || 'Analiza ni uspela.');
-                    }
-                },
-                buildAnalysisSummary(result) {
-                    const analyzed = result.total_analyzed ?? result.total ?? this.requirements.length;
-                    const total = result.total_available ?? result.total ?? this.requirements.length;
-                    const nonCompliant = Array.isArray(result.non_compliant_ids) ? result.non_compliant_ids.length : 0;
-                    const scope = result.analysis_scope === 'partial' ? 'Ponovno analiziranih' : 'Analiziranih';
-                    return `${scope} ${analyzed} od ${total} zahtev. Neskladnih: ${nonCompliant}.`;
-                },
-                statusClass(text) {
-                    if (!text) return 'neznano';
-                    const normalized = text.toLowerCase();
-                    if (normalized.includes('neskladno')) return 'neskladno';
-                    if (normalized.includes('skladno')) return 'skladno';
-                    if (normalized.includes('ni relevantno')) return 'ni-relevantno';
-                    return 'neznano';
-                },
-                currentStatus(id) {
-                    const key = this.stringId(id);
-                    if (!key || !this.resultsMap[key]) {
-                        return '';
-                    }
-                    const value = this.resultsMap[key].skladnost;
-                    return typeof value === 'string' ? value : '';
-                },
-                statusLabel(value) {
-                    if (typeof value !== 'string' || !value.trim()) {
-                        return this.statusLabels[''];
-                    }
-                    const trimmed = value.trim();
-                    return this.statusLabels[trimmed] || this.statusLabels[trimmed.toLowerCase()] || trimmed;
-                },
-                displayStatus(id) {
-                    return this.statusLabel(this.currentStatus(id));
-                },
-                computeNonCompliantIds() {
-                    const ids = [];
-                    Object.entries(this.resultsMap || {}).forEach(([key, result]) => {
-                        if (!result || typeof result !== 'object') {
-                            return;
-                        }
-                        const status = typeof result.skladnost === 'string' ? result.skladnost.toLowerCase() : '';
-                        if (status.includes('nesklad')) {
-                            ids.push(this.stringId(key));
-                        }
-                    });
-                    return ids;
-                },
-                updateRequirementStatus(id, value) {
-                    const key = this.stringId(id);
-                    const entry = this.ensureResultEntry(key);
-                    if (typeof value === 'string' && value.trim()) {
-                        entry.skladnost = value;
-                    } else {
-                        delete entry.skladnost;
-                    }
-                    this.latestNonCompliantIds = this.computeNonCompliantIds();
-                    this.persistState(true);
-                },
-                resetSelection() {
-                    this.selectedRequirementIds = [];
-                },
-                rerunSelected() {
-                    if (!this.selectedRequirementIds.length) {
-                        this.setStatus('error', 'Najprej izberite zahteve.');
-                        return;
-                    }
-                    this.runAnalysis({ selectedIds: this.selectedRequirementIds, isRerun: true, actionKey: 'rerunSelected' });
-                },
-                rerunNonCompliant() {
-                    if (!this.latestNonCompliantIds.length) {
-                        this.setStatus('error', 'Ni neskladnih zahtev za ponovno analizo.');
-                        return;
-                    }
-                    this.runAnalysis({ selectedIds: this.latestNonCompliantIds, isRerun: true, actionKey: 'rerunNonCompliant' });
-                },
-                toggleRequirementExclusion(id) {
-                    const key = String(id);
-                    if (this.excludedIds.includes(key)) {
-                        this.excludedIds = this.excludedIds.filter(item => item !== key);
-                    } else {
-                        this.excludedIds = [...this.excludedIds, key];
-                    }
-                    this.persistState(true);
-                },
-                queueRequirementRevision(id, event) {
-                    const files = Array.from(event.target.files || []);
-                    if (!files.length) return;
-                    this.uploadRequirementRevision(id, files);
-                    event.target.value = '';
-                },
-                async uploadRequirementRevision(id, files) {
-                    if (!this.sessionId) {
-                        this.setStatus('error', 'Seja ni aktivna.');
-                        return;
-                    }
-                    const formData = new FormData();
-                    files.forEach(file => formData.append('files', file));
-                    formData.append('note', '');
-                    this.startLoading('Nalaganje popravka za zahtevo...');
-                    try {
-                        const response = await fetch(`/non-compliant/${this.sessionId}/${encodeURIComponent(id)}/upload`, { method: 'POST', body: formData });
-                        if (!response.ok) {
-                            const error = await response.json().catch(() => ({}));
-                            throw new Error(error.detail || 'Nalaganje popravka ni uspelo.');
-                        }
-                        const result = await response.json();
-                        this.requirementRevisions = result.requirement_revisions || this.requirementRevisions;
-                        this.persistState(true);
-                        this.stopLoading('success', result.message || 'Popravek zahteve je shranjen.');
-                    } catch (error) {
-                        console.error(error);
-                        this.stopLoading('error', error.message || 'Popravek ni bil shranjen.');
-                    }
-                },
-                handleRevisionFiles(event) {
-                    this.revisionFiles = Array.from(event.target.files || []);
-                },
-                async uploadRevision() {
-                    if (!this.sessionId) {
-                        this.setStatus('error', 'Seja ni aktivna.');
-                        this.markActionResult('revision', 'error');
-                        return;
-                    }
-                    if (!this.revisionFiles.length) {
-                        this.setStatus('error', 'Izberite popravljene PDF dokumente.');
-                        this.markActionResult('revision', 'error');
-                        return;
-                    }
-                    this.markActionWorking('revision');
-                    const formData = new FormData();
-                    formData.append('session_id', this.sessionId);
-                    this.revisionFiles.forEach(file => formData.append('revision_files', file));
-                    if (this.revisionPages.trim()) {
-                        formData.append('revision_pages', this.revisionPages.trim());
-                    }
-                    this.startLoading('Nalaganje popravljenih dokumentov...');
-                    try {
-                        const response = await fetch('/upload-revision', { method: 'POST', body: formData });
-                        if (!response.ok) {
-                            const error = await response.json().catch(() => ({}));
-                            throw new Error(error.detail || 'Nalaganje popravka ni uspelo.');
-                        }
-                        const result = await response.json();
-                        if (result.last_revision) {
-                            const ts = this.formatTimestamp(result.last_revision.uploaded_at);
-                            const label = Array.isArray(result.last_revision.filenames) && result.last_revision.filenames.length
-                                ? result.last_revision.filenames.join(', ')
-                                : `${this.revisionFiles.length} datotek`;
-                            this.revisionInfo = `Zadnji popravek: ${label}${ts ? ` (${ts})` : ''}`;
-                        } else {
-                            this.revisionInfo = 'Popravek uspešno naložen. Izberite zahteve in ponovno zaženite analizo.';
-                        }
-                        this.revisionFiles = [];
-                        this.persistState(true);
-                        this.markActionResult('revision', 'success');
-                        this.stopLoading('success', result.message || 'Popravek je shranjen.');
-                    } catch (error) {
-                        console.error(error);
-                        this.markActionResult('revision', 'error');
-                        this.stopLoading('error', error.message || 'Napaka pri nalaganju popravka.');
-                    }
-                },
-                async confirmReport() {
-                    if (!this.sessionId) {
-                        this.setStatus('error', 'Seja ni aktivna.');
-                        this.markActionResult('confirm', 'error');
-                        return;
-                    }
-                    this.markActionWorking('confirm');
-                    this.startLoading('Pripravljam Word poročilo...');
-                    try {
-                        const response = await fetch('/confirm-report', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+@@ -1962,85 +2525,89 @@
                             body: JSON.stringify({
                                 session_id: this.sessionId,
                                 excluded_ids: this.excludedIds
@@ -2504,121 +1786,7 @@
                         this.requirementRevisions = state.requirementRevisions || {};
                         this.latestNonCompliantIds = state.latestNonCompliantIds || [];
                         this.analysisSummary = state.analysisSummary || '';
-                        this.downloadReady = state.downloadReady || false;
-                        this.downloadHref = this.downloadReady ? '/download' : '';
-                        this.revisionInfo = state.revisionInfo || '';
-                        this.setStatus('success', 'Obnovljena je bila lokalno shranjena seja.');
-                        if (!this.highlightedSession || this.highlightedSession.source === 'local') {
-                            this.highlightedSession = {
-                                session_id: state.sessionId,
-                                sessionId: state.sessionId,
-                                project_name: state.metadata?.ime_projekta || state.keyData?.glavni_objekt || 'Neimenovan projekt',
-                                updated_at: state.timestamp,
-                                source: 'local'
-                            };
-                        }
-                    } catch (error) {
-                        console.warn('Ni mogoče obnoviti lokalne seje:', error);
-                    }
-                },
-                async saveProgress() {
-                    const state = this.collectState();
-                    if (!state) {
-                        this.setStatus('error', 'Ni podatkov za shranjevanje.');
-                        this.markActionResult('save', 'error');
-                        return;
-                    }
-                    this.markActionWorking('save');
-                    this.persistState(true);
-                    this.startLoading('Shranjujem analizo...');
-                    try {
-                        const response = await fetch('/save-session', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                session_id: this.sessionId,
-                                data: state,
-                                project_name: state.metadata?.ime_projekta || state.keyData?.glavni_objekt || undefined,
-                                summary: this.analysisSummary || undefined
-                            })
-                        });
-                        if (!response.ok) {
-                            const error = await response.json().catch(() => ({}));
-                            throw new Error(error.detail || 'Shranjevanje analize ni uspelo.');
-                        }
-                        await response.json();
-                        this.fetchSavedSessions(true);
-                        this.markActionResult('save', 'success');
-                        this.stopLoading('success', 'Analiza je shranjena.');
-                    } catch (error) {
-                        console.error(error);
-                        this.markActionResult('save', 'error');
-                        this.stopLoading('error', error.message || 'Shranjevanje analize ni uspelo.');
-                    }
-                },
-                async fetchSavedSessions(force = false) {
-                    if (this.savedSessionsLoading) return;
-                    if (!force && this.savedSessions.length) return;
-                    this.savedSessionsLoading = true;
-                    try {
-                        const response = await fetch('/saved-sessions');
-                        if (!response.ok) {
-                            throw new Error('Ni mogoče pridobiti shranjenih analiz.');
-                        }
-                        const data = await response.json();
-                        const sessions = Array.isArray(data.sessions) ? data.sessions : [];
-                        this.savedSessions = sessions.map(session => ({ ...session, source: 'remote' }));
-                        if (this.savedSessions.length) {
-                            this.highlightedSession = this.savedSessions[0];
-                        }
-                    } catch (error) {
-                        console.warn(error);
-                    } finally {
-                        this.savedSessionsLoading = false;
-                    }
-                },
-                openSavedModal() {
-                    this.showSavedModal = true;
-                    this.fetchSavedSessions(true);
-                },
-                async loadSession(sessionId) {
-                    if (!sessionId) return;
-                    this.startLoading('Nalagam shranjeno analizo...');
-                    try {
-                        const response = await fetch(`/saved-sessions/${encodeURIComponent(sessionId)}`);
-                        if (!response.ok) {
-                            const error = await response.json().catch(() => ({}));
-                            throw new Error(error.detail || 'Analize ni mogoče naložiti.');
-                        }
-                        const record = await response.json();
-                        if (!record || !record.data) {
-                            throw new Error('Shranjena analiza je prazna.');
-                        }
-                        localStorage.setItem(this.storageKey, JSON.stringify(record.data));
-                        this.showSavedModal = false;
-                        this.stopLoading('success', 'Shranjena analiza je naložena.');
-                        this.restoreFromLocal();
-                    } catch (error) {
-                        console.error(error);
-                        this.stopLoading('error', error.message || 'Napaka pri nalaganju shranjene analize.');
-                    }
-                },
-                async deleteSession(sessionId) {
-                    if (!sessionId) return;
-                    try {
-                        const response = await fetch(`/saved-sessions/${encodeURIComponent(sessionId)}`, { method: 'DELETE' });
-                        if (!response.ok) {
-                            const error = await response.json().catch(() => ({}));
-                            throw new Error(error.detail || 'Napaka pri brisanju analize.');
-                        }
-                        this.fetchSavedSessions(true);
-                        this.setStatus('success', 'Shranjena analiza je izbrisana.');
-                    } catch (error) {
-                        this.setStatus('error', error.message || 'Brisanje ni uspelo.');
-                    }
-                },
-                restoreHighlighted() {
-                    if (!this.highlightedSession) return;
+@@ -2162,32 +2729,33 @@
                     if (this.highlightedSession.source === 'remote' && this.highlightedSession.session_id) {
                         this.loadSession(this.highlightedSession.session_id);
                     } else {
@@ -2652,3 +1820,899 @@
     </script>
 </body>
 </html>
+app/routes.py
++704
+–119
+
+# -*- coding: utf-8 -*-
+"""
+routes.py
+---------
+Drop-in datoteka z varnim uvodom hibridnega iskanja in citatov.
+- Ohranja 'router = APIRouter()' in doda en POST endpoint /ask (če že obstaja, preimenuj path ali izbriši spodnji endpoint).
+- Če imaš svoj obstoječ endpoint, lahko samo uporabiš funkcijo `prepare_prompt_parts(...)`.
+
+Odvisnosti:
+- ai.py (opcijsko): build_prompt(question, vector_context, extra) in call_llm(prompt) ali ask_llm(prompt).
+  Če ai.py tega nima, endpoint vrne debug JSON (da ne pade).
+- vector_search.py: get_vector_context(...)
+- db_manager: objekt, ki ga že uporabljaš za branje iz baze (predaj v dependency ali ga tu uvozi).
+"""
+
+"""Application routes for the Mnenja assistant UI and API."""
+from __future__ import annotations
+from typing import Any, Dict, Optional, Tuple
+
+import io
+import json
+import logging
+import threading
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, Iterable, List, Optional, Tuple
+from uuid import uuid4
+
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi import (
+    APIRouter,
+    Depends,
+    FastAPI,
+    File,
+    Form,
+    HTTPException,
+    Request,
+    UploadFile,
+)
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from pydantic import BaseModel
+
+from .ai import call_gemini, call_gemini_for_initial_extraction, parse_ai_response
+from .config import DATA_DIR
+from .database import DatabaseManager
+from .files import save_revision_files
+from .frontend import build_homepage
+from .knowledge_base import (
+    IZRAZI_TEXT,
+    UREDBA_TEXT,
+    build_requirements_from_db,
+)
+from .parsers import convert_pdf_pages_to_images, parse_pdf
+from .prompts import build_prompt
+from .reporting import generate_word_report
+from .schemas import ConfirmReportPayload, SaveSessionPayload
+from . import state as state_store
+from .utils import infer_project_name
+from .vector_search import get_vector_context
+
+# ---------------------------------------------------------
+# Logging
+# ---------------------------------------------------------
+logger = logging.getLogger(__name__)
+if not logger.handlers:
+    import sys
+    handler = logging.StreamHandler(sys.stdout)
+    logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
+# ---------------------------------------------------------
+# AI adapter (fleksibilen)
+# ---------------------------------------------------------
+
+LOGGER = logging.getLogger(__name__)
+if not LOGGER.handlers:
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("[%(levelname)s] %(asctime)s %(name)s: %(message)s")
+    handler.setFormatter(formatter)
+    LOGGER.addHandler(handler)
+LOGGER.setLevel(logging.INFO)
+
+
+IN_MEMORY_SAVED_SESSIONS: Dict[str, Dict[str, Any]] = {}
+SESSION_LOCK = threading.Lock()
+REPORTS_DIR = DATA_DIR / "reports"
+REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+
+
+_DB_MANAGER: Optional[DatabaseManager] = None
+_DB_ATTEMPTED = False
+_DB_LOCK = threading.Lock()
+
+
+def get_db_manager() -> Optional[DatabaseManager]:
+    """Return a cached database manager instance, if configuration allows it."""
+
+    global _DB_MANAGER, _DB_ATTEMPTED
+    if _DB_ATTEMPTED:
+        return _DB_MANAGER
+
+    with _DB_LOCK:
+        if _DB_ATTEMPTED:
+            return _DB_MANAGER
+        try:
+            manager = DatabaseManager()
+            manager.init_db()
+        except Exception as exc:  # pragma: no cover - optional runtime dependency
+            LOGGER.warning("Database ni na voljo: %s", exc)
+            _DB_MANAGER = None
+        else:
+            LOGGER.info("Vzpostavljena je bila povezava s podatkovno bazo (%s)", manager.backend)
+            _DB_MANAGER = manager
+        _DB_ATTEMPTED = True
+    return _DB_MANAGER
+
+
+def _ensure_session(session_id: str) -> Dict[str, Any]:
+    with SESSION_LOCK:
+        session = state_store.TEMP_STORAGE.get(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Seja ne obstaja ali je potekla.")
+    return session
+
+
+def _store_session(session_id: str, payload: Dict[str, Any]) -> None:
+    with SESSION_LOCK:
+        state_store.TEMP_STORAGE[session_id] = payload
+
+
+def _update_session(session_id: str, updates: Dict[str, Any]) -> Dict[str, Any]:
+    with SESSION_LOCK:
+        data = state_store.TEMP_STORAGE.get(session_id, {})
+        data.update(updates)
+        state_store.TEMP_STORAGE[session_id] = data
+    return data
+
+
+def _normalise_list(values: Iterable[str]) -> List[str]:
+    result = []
+    for value in values:
+        if value is None:
+            continue
+        text = str(value).strip()
+        if text:
+            result.append(text)
+    return result
+
+
+def _load_revision_images(image_payloads: List[bytes]):
+    from PIL import Image  # Imported lazily to avoid mandatory dependency during cold start
+
+    images = []
+    for payload in image_payloads:
+        try:
+            images.append(Image.open(io.BytesIO(payload)))
+        except Exception:  # pragma: no cover - depends on third party libraries
+            LOGGER.warning("Grafične priloge ni mogoče odpreti.")
+    return images
+
+
+def _collect_analysis_context(
+    db_manager: Optional[DatabaseManager],
+    key_data: Dict[str, Any],
+    eup_list: List[str],
+    raba_list: List[str],
+) -> Dict[str, Any]:
+    if not db_manager:
+        return {"context_text": "", "rows": []}
+
+    eup = eup_list[0] if eup_list else None
+    raba = raba_list[0] if raba_list else None
+    try:
+        context_text, rows = get_vector_context(
+            db_manager=db_manager,
+            key_data=key_data,
+            eup=eup,
+            namenska_raba=raba,
+            k=12,
+        )
+    except Exception as exc:  # pragma: no cover - runtime safeguard
+        LOGGER.warning("Hibridno iskanje ni uspelo: %s", exc)
+        return {"context_text": "", "rows": []}
+    return {"context_text": context_text, "rows": rows}
+
+
+def _append_revision(session: Dict[str, Any], requirement_id: Optional[str], record: Dict[str, Any]) -> None:
+    revisions = session.setdefault("requirement_revisions", {})
+    key = str(requirement_id or "__celotno")
+    revisions.setdefault(key, []).append(record)
+
+
+frontend_router = APIRouter()
+
+
+@frontend_router.get("/", response_class=HTMLResponse)
+def homepage() -> HTMLResponse:
+    """Serve the SPA frontend."""
+
+    return HTMLResponse(build_homepage())
+
+
+def _read_upload(file: UploadFile) -> bytes:
+    try:
+        return file.file.read() if hasattr(file.file, "read") else file.read()
+    finally:
+        try:
+            file.file.close()
+        except Exception:
+            pass
+
+
+@frontend_router.post("/extract-data")
+async def extract_data(
+    pdf_files: List[UploadFile] = File(...),
+    files_meta_json: str = Form("[]"),
+) -> JSONResponse:
+    """Extract key project data and initialise a new analysis session."""
+
+    manifest: List[Dict[str, Any]]
+    try:
+        manifest = json.loads(files_meta_json) if files_meta_json else []
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=400, detail=f"Neveljaven opis datotek: {exc}") from exc
+
+    if not pdf_files:
+        raise HTTPException(status_code=400, detail="Naložite vsaj en PDF dokument.")
+
+    aggregate_text_parts: List[str] = []
+    image_payloads: List[bytes] = []
+    stored_files: List[Dict[str, Any]] = []
+
+    for index, upload in enumerate(pdf_files):
+        file_bytes = _read_upload(upload)
+        if not file_bytes:
+            continue
+        text_content = parse_pdf(file_bytes)
+        if text_content:
+            aggregate_text_parts.append(text_content)
+
+        page_meta = ""
+        if index < len(manifest):
+            page_meta = manifest[index].get("pages", "") or ""
+        for image in convert_pdf_pages_to_images(file_bytes, page_meta):
+            buffer = io.BytesIO()
+            try:
+                image.save(buffer, format="PNG")
+                image_payloads.append(buffer.getvalue())
+            finally:
+                buffer.close()
+
+        stored_files.append(
+            {
+                "filename": upload.filename,
+                "size": len(file_bytes),
+                "pages": page_meta,
+                "content": file_bytes,
+            }
+        )
+
+    project_text = "\n\n".join(part for part in aggregate_text_parts if part)
+    if not project_text.strip():
+        raise HTTPException(status_code=400, detail="Iz PDF datotek ni bilo mogoče prebrati besedila.")
+
+    extraction = call_gemini_for_initial_extraction(project_text, _load_revision_images(image_payloads))
+
+    session_id = uuid4().hex
+    timestamp = datetime.utcnow().isoformat()
+
+    session_payload = {
+        "session_id": session_id,
+        "created_at": timestamp,
+        "updated_at": timestamp,
+        "project_text": project_text,
+        "image_payloads": image_payloads,
+        "files": stored_files,
+        "eup": extraction.get("details", {}).get("eup", []),
+        "namenska_raba": extraction.get("details", {}).get("namenska_raba", []),
+        "key_data": extraction.get("key_data", {}),
+        "metadata": extraction.get("metadata", {}),
+        "requirements": [],
+        "results_map": {},
+        "analysis_scope": None,
+        "total_analyzed": None,
+        "total_available": None,
+        "requirement_revisions": {},
+        "analysis_history": [],
+        "saved_state": None,
+    }
+    _store_session(session_id, session_payload)
+
+    response_payload = {
+        "session_id": session_id,
+        "eup": session_payload["eup"],
+        "namenska_raba": session_payload["namenska_raba"],
+        **session_payload["key_data"],
+        **session_payload["metadata"],
+    }
+    return JSONResponse(response_payload)
+
+
+@frontend_router.post("/analyze-report")
+async def analyze_report(request: Request) -> JSONResponse:
+    form = await request.form()
+    session_id = (form.get("session_id") or "").strip()
+    if not session_id:
+        raise HTTPException(status_code=400, detail="Seja ni podana.")
+
+    session = _ensure_session(session_id)
+
+    eup_list = _normalise_list(form.getlist("final_eup_list")) or session.get("eup", [])
+    raba_list = _normalise_list(form.getlist("final_raba_list")) or session.get("namenska_raba", [])
+
+    key_data = dict(session.get("key_data", {}))
+    for key in key_data.keys():
+        key_data[key] = (form.get(key) or "").strip() or key_data.get(key, "")
+
+    metadata = dict(session.get("metadata", {}))
+    for meta_key in ("ime_projekta", "stevilka_projekta", "datum_projekta", "projektant"):
+        value = form.get(meta_key)
+        if value is not None:
+            metadata[meta_key] = value.strip()
+
+    selected_ids: List[str] = []
+    selected_ids_json = form.get("selected_ids_json")
+    if selected_ids_json:
+        try:
+            selected_ids = [str(item) for item in json.loads(selected_ids_json) if item]
+        except json.JSONDecodeError as exc:
+            raise HTTPException(status_code=400, detail=f"Neveljaven seznam zahtev: {exc}") from exc
+
+    project_text = session.get("project_text", "")
+    if not project_text:
+        raise HTTPException(status_code=400, detail="Seja ne vsebuje projektne dokumentacije.")
+
+    requirements = build_requirements_from_db(eup_list, raba_list, project_text)
+    analysis_scope = "partial" if selected_ids else "full"
+    scoped_requirements = [req for req in requirements if (not selected_ids or req["id"] in selected_ids)]
+
+    db_manager = get_db_manager()
+    hybrid_context = _collect_analysis_context(db_manager, key_data, eup_list, raba_list)
+
+    prompt = build_prompt(
+        project_text=project_text,
+        zahteve=scoped_requirements,
+        izrazi_text=IZRAZI_TEXT,
+        uredba_text=UREDBA_TEXT,
+        vector_context=hybrid_context.get("context_text", ""),
+    )
+
+    images = _load_revision_images(session.get("image_payloads", []))
+    ai_response = call_gemini(prompt, images)
+    parsed_results = parse_ai_response(ai_response, scoped_requirements)
+
+    existing_results = dict(session.get("results_map", {}))
+    existing_results.update(parsed_results)
+
+    non_compliant_ids = [
+        rid
+        for rid, result in existing_results.items()
+        if isinstance(result, dict)
+        and isinstance(result.get("skladnost"), str)
+        and "nesklad" in result["skladnost"].lower()
+    ]
+
+    analysis_summary = (
+        f"Analiziranih {len(scoped_requirements)} od {len(requirements)} zahtev. "
+        f"Neskladnih: {len(non_compliant_ids)}."
+    )
+
+    session_update = {
+        "eup": eup_list,
+        "namenska_raba": raba_list,
+        "key_data": key_data,
+        "metadata": metadata,
+        "requirements": requirements,
+        "results_map": existing_results,
+        "analysis_scope": analysis_scope,
+        "total_analyzed": len(scoped_requirements),
+        "total_available": len(requirements),
+        "latest_context_rows": hybrid_context.get("rows", []),
+        "analysis_summary": analysis_summary,
+        "updated_at": datetime.utcnow().isoformat(),
+    }
+    _update_session(session_id, session_update)
+
+    response_payload = {
+        "session_id": session_id,
+        "zahteve": requirements,
+        "results_map": existing_results,
+        "analysis_scope": analysis_scope,
+        "total_analyzed": len(scoped_requirements),
+        "total_available": len(requirements),
+        "non_compliant_ids": non_compliant_ids,
+        "requirement_revisions": session.get("requirement_revisions", {}),
+        "vector_rows": hybrid_context.get("rows", []),
+        "analysis_summary": analysis_summary,
+    }
+    return JSONResponse(response_payload)
+
+
+@frontend_router.post("/non-compliant/{session_id}/{requirement_id}/upload")
+async def upload_requirement_revision(
+    session_id: str,
+    requirement_id: str,
+    files: List[UploadFile] = File(...),
+    note: str = Form(""),
+) -> JSONResponse:
+    session = _ensure_session(session_id)
+    if not files:
+        raise HTTPException(status_code=400, detail="Ni priloženih datotek.")
+
+    stored_files = []
+    for upload in files:
+        stored_files.append((upload.filename, _read_upload(upload), upload.content_type or "application/pdf"))
+
+    filenames, file_paths, mime_types = save_revision_files(session_id, stored_files, requirement_id=requirement_id)
+    timestamp = datetime.utcnow().isoformat()
+
+    record = {
+        "filenames": filenames,
+        "file_paths": file_paths,
+        "mime_types": mime_types,
+        "note": note,
+        "uploaded_at": timestamp,
+    }
+
+    _append_revision(session, requirement_id, record)
+    _update_session(session_id, {"requirement_revisions": session["requirement_revisions"], "updated_at": timestamp})
+
+    db_manager = get_db_manager()
+    if db_manager:
+        try:
+            db_manager.record_revision(
+                session_id=session_id,
+                filenames=filenames,
+                file_paths=file_paths,
+                requirement_id=requirement_id,
+                note=note,
+                mime_types=mime_types,
+                uploaded_at_override=timestamp,
+            )
+        except Exception as exc:  # pragma: no cover - optional runtime dependency
+            LOGGER.warning("Zapis popravka v bazo ni uspel: %s", exc)
+
+    return JSONResponse(
+        {
+            "message": "Popravek je shranjen.",
+            "requirement_revisions": session["requirement_revisions"],
+        }
+    )
+
+
+@frontend_router.post("/upload-revision")
+async def upload_revision(
+    session_id: str = Form(...),
+    revision_pages: str = Form(""),
+    revision_files: List[UploadFile] = File(...),
+) -> JSONResponse:
+    session = _ensure_session(session_id)
+    if not revision_files:
+        raise HTTPException(status_code=400, detail="Ni izbranih datotek za popravek.")
+
+    stored_files = []
+    image_payloads = []
+    for upload in revision_files:
+        file_bytes = _read_upload(upload)
+        stored_files.append((upload.filename, file_bytes, upload.content_type or "application/pdf"))
+        for image in convert_pdf_pages_to_images(file_bytes, revision_pages):
+            buffer = io.BytesIO()
+            image.save(buffer, format="PNG")
+            image_payloads.append(buffer.getvalue())
+            buffer.close()
+
+    filenames, file_paths, mime_types = save_revision_files(session_id, stored_files)
+    timestamp = datetime.utcnow().isoformat()
+
+    record = {
+        "filenames": filenames,
+        "file_paths": file_paths,
+        "mime_types": mime_types,
+        "note": revision_pages,
+        "uploaded_at": timestamp,
+    }
+    _append_revision(session, None, record)
+
+    existing_images = session.get("image_payloads", [])
+    existing_images.extend(image_payloads)
+
+    session_update = {
+        "image_payloads": existing_images,
+        "requirement_revisions": session["requirement_revisions"],
+        "updated_at": timestamp,
+    }
+    _update_session(session_id, session_update)
+
+    db_manager = get_db_manager()
+    if db_manager:
+        try:
+            db_manager.record_revision(
+                session_id=session_id,
+                filenames=filenames,
+                file_paths=file_paths,
+                requirement_id=None,
+                note=revision_pages,
+                mime_types=mime_types,
+                uploaded_at_override=timestamp,
+            )
+        except Exception as exc:  # pragma: no cover - optional runtime dependency
+            LOGGER.warning("Zapis celotnega popravka v bazo ni uspel: %s", exc)
+
+    return JSONResponse(
+        {
+            "message": "Popravek je shranjen.",
+            "last_revision": record,
+            "requirement_revisions": session["requirement_revisions"],
+        }
+    )
+
+
+@frontend_router.post("/confirm-report")
+async def confirm_report(payload: ConfirmReportPayload) -> JSONResponse:
+    session = _ensure_session(payload.session_id)
+    if not session.get("requirements"):
+        raise HTTPException(status_code=400, detail="Najprej izvedite analizo.")
+
+    excluded_ids = set(payload.excluded_ids or [])
+    filtered_requirements = [req for req in session["requirements"] if req["id"] not in excluded_ids]
+    filtered_results = {
+        rid: result
+        for rid, result in session.get("results_map", {}).items()
+        if rid not in excluded_ids
+    }
+
+    metadata = session.get("metadata", {})
+    project_name = metadata.get("ime_projekta") or infer_project_name(session.get("saved_state", {}) or {})
+
+    filename = f"{payload.session_id}_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.docx"
+    output_path = REPORTS_DIR / filename
+    generate_word_report(filtered_requirements, filtered_results, metadata, str(output_path))
+
+    session_update = {
+        "excluded_ids": list(excluded_ids),
+        "last_report_path": str(output_path),
+        "updated_at": datetime.utcnow().isoformat(),
+    }
+    _update_session(payload.session_id, session_update)
+
+    state_store.LAST_DOCX_PATH = str(output_path)
+    state_store.LAST_XLSX_PATH = None  # rezervirano za prihodnjo nadgradnjo
+    state_store.LATEST_REPORT_CACHE[payload.session_id] = {
+        "docx_path": state_store.LAST_DOCX_PATH,
+        "metadata": metadata,
+        "key_data": session.get("key_data", {}),
+        "analysis_scope": session.get("analysis_scope"),
+        "total_analyzed": session.get("total_analyzed"),
+        "total_available": session.get("total_available"),
+        "excluded_ids": list(excluded_ids),
+    }
+
+    db_manager = get_db_manager()
+    if db_manager:
+        try:
+            db_manager.record_report(
+                session_id=payload.session_id,
+                project_name=project_name,
+                summary=session.get("analysis_summary"),
+                metadata=metadata,
+                key_data=session.get("key_data", {}),
+                excluded_ids=excluded_ids,
+                analysis_scope=session.get("analysis_scope"),
+                total_analyzed=session.get("total_analyzed"),
+                total_available=session.get("total_available"),
+                docx_path=str(output_path.relative_to(Path.cwd())) if output_path.exists() else str(output_path),
+                xlsx_path=None,
+            )
+        except Exception as exc:  # pragma: no cover - optional runtime dependency
+            LOGGER.warning("Zapis poročila v bazo ni uspel: %s", exc)
+
+    return JSONResponse({"message": "Poročilo je pripravljeno za prenos."})
+
+
+@frontend_router.get("/download")
+def download_report() -> FileResponse:
+    session_paths = [
+        item.get("docx_path") for item in state_store.LATEST_REPORT_CACHE.values() if item.get("docx_path")
+    ]
+    latest_path = session_paths[-1] if session_paths else state_store.LAST_DOCX_PATH
+    if not latest_path:
+        raise HTTPException(status_code=404, detail="Poročilo ni pripravljeno.")
+    path = Path(latest_path)
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Poročila ni mogoče najti na strežniku.")
+    return FileResponse(path, media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document", filename=path.name)
+
+
+@frontend_router.post("/save-session")
+async def save_session(payload: SaveSessionPayload) -> JSONResponse:
+    session = _ensure_session(payload.session_id)
+    timestamp = datetime.utcnow().isoformat()
+    session["saved_state"] = payload.data
+    session["updated_at"] = timestamp
+    _store_session(payload.session_id, session)
+
+    IN_MEMORY_SAVED_SESSIONS[payload.session_id] = {
+        "session_id": payload.session_id,
+        "project_name": payload.project_name or infer_project_name(payload.data),
+        "summary": payload.summary,
+        "data": payload.data,
+        "updated_at": timestamp,
+    }
+
+    db_manager = get_db_manager()
+    if db_manager:
+        try:
+            db_manager.save_session(
+                session_id=payload.session_id,
+                project_name=payload.project_name or infer_project_name(payload.data),
+                summary=payload.summary,
+                data=payload.data,
+                updated_at_override=timestamp,
+            )
+        except Exception as exc:  # pragma: no cover - optional runtime dependency
+            LOGGER.warning("Shranjevanje v bazo ni uspelo: %s", exc)
+
+    return JSONResponse({"status": "ok"})
+
+
+@frontend_router.get("/saved-sessions")
+async def list_saved_sessions() -> JSONResponse:
+    db_manager = get_db_manager()
+    if db_manager:
+        try:
+            sessions = db_manager.fetch_sessions()
+            return JSONResponse({"sessions": sessions})
+        except Exception as exc:  # pragma: no cover - optional runtime dependency
+            LOGGER.warning("Branje iz baze ni uspelo: %s", exc)
+
+    sessions = [
+        {
+            "session_id": sid,
+            "project_name": data.get("project_name"),
+            "summary": data.get("summary"),
+            "updated_at": data.get("updated_at"),
+        }
+        for sid, data in sorted(
+            IN_MEMORY_SAVED_SESSIONS.items(), key=lambda item: item[1].get("updated_at", ""), reverse=True
+        )
+    ]
+    return JSONResponse({"sessions": sessions})
+
+
+@frontend_router.get("/saved-sessions/{session_id}")
+async def load_saved_session(session_id: str) -> JSONResponse:
+    db_manager = get_db_manager()
+    if db_manager:
+        try:
+            record = db_manager.fetch_session(session_id)
+            if record:
+                return JSONResponse(record)
+        except Exception as exc:  # pragma: no cover - optional runtime dependency
+            LOGGER.warning("Branje shranjene seje ni uspelo: %s", exc)
+
+    record = IN_MEMORY_SAVED_SESSIONS.get(session_id)
+    if not record:
+        raise HTTPException(status_code=404, detail="Seja ni bila najdena.")
+    return JSONResponse(record)
+
+
+@frontend_router.delete("/saved-sessions/{session_id}")
+async def delete_saved_session(session_id: str) -> JSONResponse:
+    IN_MEMORY_SAVED_SESSIONS.pop(session_id, None)
+
+    db_manager = get_db_manager()
+    if db_manager:
+        try:
+            db_manager.delete_session(session_id)
+        except Exception as exc:  # pragma: no cover - optional runtime dependency
+            LOGGER.warning("Brisanje seje v bazi ni uspelo: %s", exc)
+
+    return JSONResponse({"status": "deleted"})
+
+
+# ---------------------------------------------------------------------------
+# Hibridni /ask endpoint (ohranjen zaradi združljivosti)
+# ---------------------------------------------------------------------------
+
+
+legacy_router = APIRouter()
+
+_build_prompt = None
+_call_llm = None
+try:
+    # Poskusi najti v ai.py tipične funkcije
+try:  # pragma: no cover - dinamično zaznavanje AI adapterja
+    import ai  # type: ignore
+
+    for name in ("build_prompt", "make_prompt", "compose_prompt"):
+        if hasattr(ai, name):
+            _build_prompt = getattr(ai, name)
+            logger.info(f"routes: našel build_prompt v ai.py: {name}()")
+            LOGGER.info("routes: našel build_prompt v ai.py: %s()", name)
+            break
+    for name in ("call_llm", "ask_llm", "generate", "infer"):
+        if hasattr(ai, name):
+            _call_llm = getattr(ai, name)
+            logger.info(f"routes: našel LLM klic v ai.py: {name}()")
+            LOGGER.info("routes: našel LLM klic v ai.py: %s()", name)
+            break
+except Exception as e:
+    logger.debug(f"routes: ai adapter ni na voljo ({e})")
+
+# ---------------------------------------------------------
+# DB manager (sem postavi svojo injekcijo ali import)
+# ---------------------------------------------------------
+
+def get_db_manager() -> Any:
+    """
+    V tvoj projekt vnesi pravi db_manager.
+    Primer:
+        from mydb import DatabaseManager
+        return DatabaseManager(...)
+    Trenutno vrnemo globalni objekt, če obstaja, sicer pa sprožimo napako ob uporabi.
+    """
+    try:
+        # Če imaš svoj global ali provider, sem ga daj.
+        import db  # type: ignore
+        if hasattr(db, "db_manager"):
+            return getattr(db, "db_manager")
+    except Exception:
+        pass
+    # Fallback: uporabnik naj prepiše to funkcijo na svoj vir
+    class _Dummy:
+        def __getattr__(self, item):
+            raise RuntimeError("DB manager ni konfiguriran. Uredi get_db_manager() v routes.py.")
+    return _Dummy()
+
+# ---------------------------------------------------------
+# Pomožne funkcije za pripravo promp­ta
+# ---------------------------------------------------------
+except Exception as exc:  # pragma: no cover - informativno
+    LOGGER.debug("routes: ai adapter ni na voljo (%s)", exc)
+
+
+def prepare_prompt_parts(
+    *,
+    question: str,
+    key_data: Dict[str, Any],
+    eup: Optional[str],
+    namenska_raba: Optional[str],
+    db_manager: Any,
+    db_manager: Optional[DatabaseManager],
+) -> Tuple[str, Dict[str, Any]]:
+    """
+    Pripravi:
+      - prompt_text: končni prompt (če obstaja ai.build_prompt); sicer minimalni prompt.
+      - debug_payload: vsebina za log ali UI.
+    """
+    # 1) Pridobi kontekst iz hibridnega iskanja
+    vector_context_text, rows = get_vector_context(
+        db_manager=db_manager,
+        key_data=key_data or {},
+        eup=eup,
+        namenska_raba=namenska_raba,
+        k=12,
+        embed_fn=None,  # če želiš, lahko podaš svojo embed funkcijo
+    )
+    if not db_manager:
+        context_text, rows = "", []
+    else:
+        context_text, rows = get_vector_context(
+            db_manager=db_manager,
+            key_data=key_data or {},
+            eup=eup,
+            namenska_raba=namenska_raba,
+            k=12,
+            embed_fn=None,
+        )
+
+    # 2) Zgradi prompt (če imaš funkcijo v ai.py), drugače minimalni fallback
+    if _build_prompt:
+        try:
+            prompt_text = _build_prompt(
+            prompt_text = _build_prompt(  # type: ignore[misc]
+                question=question,
+                vector_context=vector_context_text,
+                vector_context=context_text,
+                extra={"key_data": key_data, "eup": eup, "namenska_raba": namenska_raba},
+            )
+        except Exception as e:
+            logger.warning(f"build_prompt padel, uporabim fallback: {e}")
+        except Exception as exc:
+            LOGGER.warning("build_prompt padel, uporabim fallback: %s", exc)
+            prompt_text = (
+                "NAVODILA: Odgovori natančno in citiraj samo vire v razdelku 'Relevantna pravila (citati)'.\n\n"
+                + vector_context_text + "\n\n"
+                + context_text
+                + "\n\n"
+                + f"VPRAŠANJE: {question}"
+            )
+    else:
+        prompt_text = (
+            "NAVODILA: Odgovori natančno in citiraj samo vire v razdelku 'Relevantna pravila (citati)'.\n\n"
+            + vector_context_text + "\n\n"
+            + context_text
+            + "\n\n"
+            + f"VPRAŠANJE: {question}"
+        )
+
+    debug_payload = {
+        "vector_context_preview": vector_context_text,
+        "rows": rows,  # za UI ali log
+        "vector_context_preview": context_text,
+        "rows": rows,
+        "key_data": key_data,
+        "eup": eup,
+        "namenska_raba": namenska_raba,
+    }
+    return prompt_text, debug_payload
+
+# ---------------------------------------------------------
+# FastAPI router
+# ---------------------------------------------------------
+router = APIRouter()
+
+class AskIn(BaseModel):
+    question: str
+    key_data: Dict[str, Any] = {}
+    eup: Optional[str] = None
+    namenska_raba: Optional[str] = None
+
+
+class AskOut(BaseModel):
+    answer: str
+    debug: Dict[str, Any]
+
+@router.post("/ask", response_model=AskOut)
+def ask_endpoint(
+    payload: AskIn,
+    db_manager: Any = Depends(get_db_manager),
+):
+    """
+    Vprašaš model; dobiš odgovor + debug (citati, vrstice).
+    Če v ai.py ni klica modela, vrnemo prompt za debug (da sistem ne pade).
+    """
+    try:
+        prompt_text, debug_payload = prepare_prompt_parts(
+            question=payload.question,
+            key_data=payload.key_data,
+            eup=payload.eup,
+            namenska_raba=payload.namenska_raba,
+            db_manager=db_manager,
+        )
+    except Exception as e:
+        logger.exception("Napaka pri pripravi promp­ta")
+        raise HTTPException(status_code=500, detail=f"Napaka pri pripravi konteksta: {e}")
+
+    # Če obstaja LLM klic v ai.py, ga uporabimo
+@legacy_router.post("/ask", response_model=AskOut)
+def ask_endpoint(payload: AskIn, db_manager: Optional[DatabaseManager] = Depends(get_db_manager)) -> AskOut:
+    prompt_text, debug_payload = prepare_prompt_parts(
+        question=payload.question,
+        key_data=payload.key_data,
+        eup=payload.eup,
+        namenska_raba=payload.namenska_raba,
+        db_manager=db_manager,
+    )
+
+    if _call_llm:
+        try:
+            answer = _call_llm(prompt_text)
+            answer = _call_llm(prompt_text)  # type: ignore[misc]
+            return AskOut(answer=answer, debug=debug_payload)
+        except Exception as e:
+            logger.warning(f"LLM klic padel, vrnem fallback: {e}")
+        except Exception as exc:  # pragma: no cover - varnostni mehanizem
+            LOGGER.warning("LLM klic ni uspel: %s", exc)
+
+    # Fallback: vrni prompt,
+    # da lahko vidiš kontekst in preveriš integracijo brez padca sistema
+    return AskOut(
+        answer="(DEBUG fallback) LLM klic ni konfiguriran. Tukaj je prompt, ki bi ga poslal:\n\n" + prompt_text,
+        debug=debug_payload,
+    )
+
+
+app = FastAPI(title="Mnenja – Poročila o skladnosti")
+app.include_router(frontend_router)
+app.include_router(legacy_router)
+
+
+__all__ = ["app"]
