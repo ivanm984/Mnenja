@@ -690,7 +690,6 @@ legacy_router = APIRouter()
 
 _build_prompt = None
 _call_llm = None
-try:
     # Poskusi najti v ai.py tipične funkcije
 try:  # pragma: no cover - dinamično zaznavanje AI adapterja
     import ai  # type: ignore
