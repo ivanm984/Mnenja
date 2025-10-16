@@ -18,10 +18,8 @@ from typing import Any, Dict, Optional, Tuple
 import time
 
 from fastapi import APIRouter, Depends, FastAPI, HTTPException
-from fastapi.responses import HTMLResponse, Response
 from pydantic import BaseModel
 
-from app.frontend import build_homepage
 from app.logging_config import get_logger
 from app.vector_search import get_vector_context  # naš novi modul
 
@@ -150,27 +148,6 @@ router = APIRouter()
 
 app = FastAPI()
 app.include_router(router)
-
-
-@router.get("/", response_class=HTMLResponse, include_in_schema=False)
-def homepage() -> HTMLResponse:
-    """Serve the embedded single-page frontend."""
-    started = time.perf_counter()
-    html = build_homepage()
-    duration = time.perf_counter() - started
-    logger.info(
-        "homepage: served frontend (chars=%d, duration=%.3fs)",
-        len(html),
-        duration,
-    )
-    return HTMLResponse(content=html)
-
-
-@router.get("/favicon.ico", include_in_schema=False)
-def favicon() -> Response:
-    """Return an empty favicon response to avoid unnecessary 404 noise."""
-    logger.debug("favicon: returning empty response")
-    return Response(status_code=204)
 
 class AskIn(BaseModel):
     question: str
