@@ -40,6 +40,27 @@ def embed_query(text: str) -> List[float]:
         return []
 
 
+def _normalise_string_list(value: Any) -> List[str]:
+    """Pretvori AI odgovor v urejen seznam nizov."""
+
+    if isinstance(value, list):
+        items = value
+    elif isinstance(value, dict):
+        items = list(value.values())
+    elif isinstance(value, str):
+        # Razbij po najpogostejših ločilih, da dobimo posamezne vnose
+        items = re.split(r"[,;\n]+", value)
+    else:
+        items = []
+
+    normalised: List[str] = []
+    for item in items:
+        text = str(item).strip()
+        if text and text.lower() != "ni podatka":
+            normalised.append(text)
+    return normalised
+
+
 def call_gemini_for_initial_extraction(project_text: str, images: List[Image.Image]) -> Dict[str, Any]:
     """
     Izvede en sam klic za ekstrakcijo vseh začetnih podatkov po dogovorjeni strukturi.
@@ -92,15 +113,29 @@ Odgovori SAMO z enim JSON objektom s tremi ključi: "details", "metadata", in "k
         clean_response = _clean_json_string(response.text)
         result = json.loads(clean_response)
 
-        final_result = {
-            "details": result.get("details", {"eup": [], "namenska_raba": []}),
-            "metadata": result.get("metadata", {}),
-            "key_data": result.get("key_data", {}),
+        raw_details = result.get("details") or {}
+        raw_metadata = result.get("metadata") or {}
+        raw_key_data = result.get("key_data") or {}
+
+        details = {
+            "eup": _normalise_string_list(raw_details.get("eup")),
+            "namenska_raba": _normalise_string_list(raw_details.get("namenska_raba")),
         }
-        
-        for key in ["ime_projekta", "stevilka_projekta", "datum_projekta", "projektant"]:
-            final_result["metadata"][key] = str(final_result["metadata"].get(key) or "Ni podatka")
-            
+
+        metadata: Dict[str, Any] = {}
+        for key in ("ime_projekta", "stevilka_projekta", "datum_projekta", "projektant"):
+            metadata[key] = str(raw_metadata.get(key) or "Ni podatka")
+
+        key_data: Dict[str, Any] = {}
+        if isinstance(raw_key_data, dict):
+            key_data = dict(raw_key_data)
+
+        final_result = {
+            "details": details,
+            "metadata": metadata,
+            "key_data": key_data,
+        }
+
         for key in KEY_DATA_PROMPT_MAP.keys():
             final_result["key_data"][key] = str(final_result["key_data"].get(key) or "Ni podatka v dokumentaciji")
 

@@ -672,29 +672,32 @@ class DatabaseManager:
         if not embedding:
             return []
 
-        params = {
-            "embedding": str([float(x) for x in embedding]),  # Vektor pretvorimo v string
-            "limit": int(limit),
-        }
+        clean_embedding = [float(x) for x in embedding]
+
+        # Psycopg privzeto posreduje sezname kot `double precision[]`,
+        # kar povzroči napako operatorja `<->` iz razširitve `pgvector`.
+        # Tukaj vnaprej pripravimo literal vektorja, ki ga lahko eksplicitno
+        # pretvorimo v tip `vector` neposredno v SQL poizvedbi.
+        vector_literal = "[" + ", ".join(str(value) for value in clean_embedding) + "]"
         source_list: List[str] = []
         if sources:
             source_list = [str(item) for item in sources if str(item).strip()]
 
         with self.lock, self.connect() as conn:
             with conn.cursor() as cursor:
-                params: List[Any] = [clean_embedding]
+                params: List[Any] = [vector_literal]
                 where_clause = ""
                 if source_list:
                     where_clause = "WHERE vir = ANY(%s)"
                     params.append(source_list)
-                params.extend([clean_embedding, int(limit)])
+                params.extend([vector_literal, int(limit)])
                 cursor.execute(
                     f"""
                     SELECT id, vir, kljuc, vsebina,
-                           1.0 / (1.0 + (vektor <-> %s)) AS similarity
+                           1.0 / (1.0 + (vektor <-> %s::vector)) AS similarity
                     FROM vektorizirano_znanje
                     {where_clause}
-                    ORDER BY vektor <-> %s
+                    ORDER BY vektor <-> %s::vector
                     LIMIT %s
                     """,
                     params,
