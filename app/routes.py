@@ -1,3 +1,4 @@
+from __future__ import annotations
 # -*- coding: utf-8 -*-
 """
 routes.py
@@ -14,7 +15,6 @@ Odvisnosti:
 """
 
 """Application routes for the Mnenja assistant UI and API."""
-from __future__ import annotations
 from typing import Any, Dict, Optional, Tuple
 
 import io
@@ -736,17 +736,12 @@ def get_db_manager() -> Any:
 # ---------------------------------------------------------
 # Pomožne funkcije za pripravo promp­ta
 # ---------------------------------------------------------
-except Exception as exc:  # pragma: no cover - informativno
-    LOGGER.debug("routes: ai adapter ni na voljo (%s)", exc)
-
-
 def prepare_prompt_parts(
     *,
     question: str,
     key_data: Dict[str, Any],
     eup: Optional[str],
-    namenska_raba: Optional[str],
-    db_manager: Any,
+    namenska_raba: Optional[str],def p
     db_manager: Optional[DatabaseManager],
 ) -> Tuple[str, Dict[str, Any]]:
     """
@@ -777,7 +772,6 @@ def prepare_prompt_parts(
 
     if _build_prompt:
         try:
-            prompt_text = _build_prompt(
             prompt_text = _build_prompt(  # type: ignore[misc]
                 question=question,
                 vector_context=vector_context_text,
