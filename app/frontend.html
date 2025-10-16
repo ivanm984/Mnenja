@@ -1615,22 +1615,22 @@
                                         />
                                     </td>
                                     <td>
-                                        <strong>{{ req.title }}</strong>
-                                        <div class="subtitle">{{ req.description }}</div>
-                                    </td>
+                                        <strong>{{ req.naslov }}</strong>
+                                        <div class="subtitle">{{ req.besedilo }}</div>
+                                        </td>
                                     <td class="status-cell">
                                         <div v-if="resultsMap[req.id]" class="status-control">
                                             <select
                                                 v-model="resultsMap[req.id].skladnost"
                                                 @change="updateRevisionStatus(req.id, resultsMap[req.id].skladnost)"
                                             >
-                                                <option value="skladno">SKLADNO</option>
-                                                <option value="neskladno">NESKLADNO</option>
-                                                <option value="ni-relevantno">NI RELEVANTNO</option>
-                                                <option value="neznano">NEZNANO</option>
+                                                <option value="Skladno">SKLADNO</option>
+                                                <option value="Neskladno">NESKLADNO</option>
+                                                <option value="Ni relevantno">NI RELEVANTNO</option>
+                                                <option value="Neznano">NEZNANO</option>
                                             </select>
-                                            <div class="status-pill" :class="resultsMap[req.id].skladnost">
-                                                {{ displaySkladnost(resultsMap[req.id].skladnost) }}
+                                            <div class="status-pill" :class="resultsMap[req.id].skladnost.toLowerCase()">
+                                                {{ resultsMap[req.id].skladnost }}
                                             </div>
                                         </div>
                                         <div v-else class="status-pill neznano">NI ANALIZIRANO</div>
@@ -1644,8 +1644,8 @@
                                                 </div>
                                                 <div class="analysis-section">
                                                     <div>
-                                                        {{ editableFindings[req.id] || resultsMap[req.id]?.ugotovitve || 'Ni vnesenih ugotovitev.' }}
-                                                    </div>
+                                                        {{ editableFindings[req.id] || resultsMap[req.id]?.obrazlozitev || 'Ni vnesenih ugotovitev.' }}
+                                                        </div>
                                                 </div>
 
                                                 <div class="analysis-header" style="margin-top:10px;">
@@ -1653,8 +1653,8 @@
                                                 </div>
                                                 <div class="analysis-section">
                                                     <div>
-                                                        {{ editableActions[req.id] || resultsMap[req.id]?.ukrepi || 'Ni predlaganih ukrepov.' }}
-                                                    </div>
+                                                        {{ editableActions[req.id] || resultsMap[req.id]?.predlagani_ukrep || 'Ni predlaganih ukrepov.' }}
+                                                        </div>
                                                 </div>
 
                                                 <div class="analysis-hint">Pritisnite ali se postavite nad polje za urejanje.</div>
@@ -1666,10 +1666,10 @@
                                                 </div>
                                                 <div v-else>
                                                     <label :for="`findings-${req.id}`">Ugotovitve</label>
-                                                    <textarea :id="`findings-${req.id}`" v-model="editableFindings[req.id]" @blur="saveEditableResults"></textarea>
+                                                    <textarea :id="`findings-${req.id}`" v-model="editableFindings[req.id]" @input="saveEditableResults"></textarea>
 
                                                     <label :for="`actions-${req.id}`" style="margin-top:10px;">Predlagani ukrepi</label>
-                                                    <textarea :id="`actions-${req.id}`" v-model="editableActions[req.id]" @blur="saveEditableResults"></textarea>
+                                                    <textarea :id="`actions-${req.id}`" v-model="editableActions[req.id]" @input="saveEditableResults"></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -1771,7 +1771,7 @@
         </section>
 
         <footer>
-            <p>&copy; {{ new Date().getFullYear() }} Mnenja AI Studio</p>
+            <p>&copy; YEAR_PLACEHOLDER Mnenja AI Studio</p>
         </footer>
 
         <div v-if="showRevisionModal" class="modal-backdrop" @click.self="showRevisionModal = false">
@@ -1898,7 +1898,6 @@
                     savedSessions: [],
                     savedSessionsLoading: false,
                     highlightedSession: null,
-                    // --- SPREMEMBA: Usklajeno z backendom in novo strukturo ---
                     keyLabels: {
                         'naziv_gradnje': 'Naziv gradnje',
                         'glavni_objekt': 'Glavni objekt',
@@ -1916,7 +1915,6 @@
                         'faktorji_in_ozelenitev': 'Faktorji (FZ, FI) in ozelenitev (FZP)'
                     },
                     longFieldKeys: new Set(['prikljucki_gji']),
-                    // --- KONEC SPREMEMBE ---
                     actionStates: {
                         extract: '',
                         run: '',
@@ -2216,18 +2214,14 @@
                 normalizeResultsMap(map) {
                     for (const id in map) {
                         if (typeof map[id] === 'string') {
-                            map[id] = { skladnost: 'neznano', ugotovitve: map[id], ukrepi: '' };
-                        }
-                        if (map[id].skladnost) {
-                            map[id].skladnost = map[id].skladnost.toLowerCase().replace(/[^a-z]/g, '-').replace(/--+/g, '-');
-                        } else {
-                            map[id].skladnost = 'neznano';
+                            map[id] = { skladnost: 'Neznano', obrazlozitev: map[id], predlagani_ukrep: '' };
                         }
                     }
                     return map;
                 },
+                // --- SPREMEMBA: Usklajeno z backend polji ---
                 prepareEditableResults(options = {}) {
-                    const { editedFindings, editedActions, initialFindings, initialActions, preferStateInitial = false } = options;
+                    const { editedFindings, editedActions, initialFindings, initialActions } = options || {};
 
                     const newEditableFindings = editedFindings || {};
                     const newEditableActions = editedActions || {};
@@ -2239,33 +2233,25 @@
                         const result = this.resultsMap[id];
 
                         // Ugotovitve
-                        if (editedFindings?.[id] !== undefined) {
+                        const aiFinding = result?.obrazlozitev || '';
+                        if (editedFindings && editedFindings[id] !== undefined) {
                             newEditableFindings[id] = editedFindings[id];
                         } else if (this.editableFindings[id] === undefined) {
-                            newEditableFindings[id] = result?.ugotovitve || '';
-                        } else {
-                            newEditableFindings[id] = this.editableFindings[id];
+                            newEditableFindings[id] = aiFinding;
                         }
-
-                        if (preferStateInitial) {
-                            newInitialFindings[id] = initialFindings?.[id] !== undefined ? initialFindings[id] : result?.ugotovitve || '';
-                        } else if (newInitialFindings[id] === undefined) {
-                            newInitialFindings[id] = result?.ugotovitve || '';
+                        if (!initialFindings || initialFindings[id] === undefined) {
+                           newInitialFindings[id] = aiFinding;
                         }
-
+                        
                         // Ukrepi
-                        if (editedActions?.[id] !== undefined) {
+                        const aiAction = result?.predlagani_ukrep || '';
+                         if (editedActions && editedActions[id] !== undefined) {
                             newEditableActions[id] = editedActions[id];
                         } else if (this.editableActions[id] === undefined) {
-                            newEditableActions[id] = result?.ukrepi || '';
-                        } else {
-                            newEditableActions[id] = this.editableActions[id];
+                            newEditableActions[id] = aiAction;
                         }
-
-                        if (preferStateInitial) {
-                            newInitialActions[id] = initialActions?.[id] !== undefined ? initialActions[id] : result?.ukrepi || '';
-                        } else if (newInitialActions[id] === undefined) {
-                            newInitialActions[id] = result?.ukrepi || '';
+                        if (!initialActions || initialActions[id] === undefined) {
+                            newInitialActions[id] = aiAction;
                         }
                     });
 
@@ -2275,13 +2261,25 @@
                     this.initialEditableActions = newInitialActions;
                 },
                 saveEditableResults() {
+                    // Posodobi glavni resultsMap, ki je vir resnice
+                    for (const id in this.editableFindings) {
+                        if (this.resultsMap[id]) {
+                            this.resultsMap[id].obrazlozitev = this.editableFindings[id];
+                        }
+                    }
+                    for (const id in this.editableActions) {
+                        if (this.resultsMap[id]) {
+                            this.resultsMap[id].predlagani_ukrep = this.editableActions[id];
+                        }
+                    }
                     this.persistState(true);
                 },
                 isAnalysisModified(id) {
-                    const findingsChanged = this.editableFindings[id] !== (this.initialEditableFindings[id] || this.resultsMap[id]?.ugotovitve || '');
-                    const actionsChanged = this.editableActions[id] !== (this.initialEditableActions[id] || this.resultsMap[id]?.ukrepi || '');
+                    const findingsChanged = this.editableFindings[id] !== this.initialEditableFindings[id];
+                    const actionsChanged = this.editableActions[id] !== this.initialEditableActions[id];
                     return findingsChanged || actionsChanged;
                 },
+                // --- KONEC SPREMEMBE ---
                 pairModified(pair) {
                     return pair.eup !== pair.originalEup || pair.raba !== pair.originalRaba;
                 },
@@ -2289,13 +2287,12 @@
                     return this.keyData[key] !== this.initialKeyData[key];
                 },
                 displaySkladnost(key) {
-                    switch (key) {
-                        case 'skladno': return 'SKLADNO';
-                        case 'neskladno': return 'NESKLADNO';
-                        case 'ni-relevantno': return 'NI RELEVANTNO';
-                        case 'neznano': return 'NEZNANO';
-                        default: return 'NEZNANO';
-                    }
+                    if (!key) return 'NEZNANO';
+                    const lowerKey = key.toLowerCase();
+                    if (lowerKey.includes('skladno')) return 'SKLADNO';
+                    if (lowerKey.includes('neskladno')) return 'NESKLADNO';
+                    if (lowerKey.includes('relevantno')) return 'NI RELEVANTNO';
+                    return 'NEZNANO';
                 },
                 updateRevisionStatus(id, newStatus) {
                     const result = this.resultsMap[id];
@@ -2309,7 +2306,7 @@
                     if (this.excludeNonCompliant) {
                         this.excludedIds = this.latestNonCompliantIds.filter(id => {
                             const result = this.resultsMap[id];
-                            return result && result.skladnost.includes('neskladno');
+                            return result && result.skladnost.toLowerCase().includes('neskladno');
                         });
                     } else {
                         this.excludedIds = [];
@@ -2318,8 +2315,8 @@
                 },
                 showRevisionSection(id) {
                     const result = this.resultsMap[id];
-                    if (!result) return false;
-                    return result.skladnost.includes('neskladno');
+                    if (!result || !result.skladnost) return false;
+                    return result.skladnost.toLowerCase().includes('neskladno');
                 },
                 openRevisionModal(id) {
                     this.currentRevisionId = id || '__celotno';
@@ -2352,14 +2349,15 @@
 
                     const formData = new FormData();
                     this.revisionFiles.forEach(file => {
-                        formData.append('revision_files', file.file);
+                        formData.append('files', file.file);
                     });
 
-                    let endpoint = `/upload-revision`;
+                    let endpoint;
                     if (this.currentRevisionId !== '__celotno') {
                         endpoint = `/non-compliant/${this.sessionId}/${this.currentRevisionId}/upload`;
                         formData.append('note', this.revisionNote);
                     } else {
+                        endpoint = `/upload-revision`;
                         formData.append('revision_pages', this.revisionPages);
                         formData.append('session_id', this.sessionId);
                     }
@@ -2389,6 +2387,9 @@
                 async confirmReport() {
                     if (!this.sessionId || this.isBusy) return;
                     this.startLoading('Generiram poročilo...', 'confirm');
+                    
+                    // Pred generiranjem shranimo morebitne ročne popravke
+                    this.saveEditableResults();
 
                     try {
                         const response = await fetch('/confirm-report', {
@@ -2398,7 +2399,9 @@
                             },
                             body: JSON.stringify({
                                 session_id: this.sessionId,
-                                excluded_ids: this.excludedIds
+                                excluded_ids: this.excludedIds,
+                                // Posodobitev: Pošljemo tudi ročno spremenjene podatke, če je potrebno
+                                updated_results: this.resultsMap 
                             })
                         });
                         if (!response.ok) {
@@ -2448,21 +2451,25 @@
                     try {
                         localStorage.setItem(this.storageKey, JSON.stringify(state));
                         if (!auto) {
-                            this.saveProgressRemote(state);
+                            this.saveProgressRemote();
                         }
                     } catch (error) {
                         console.warn('Shranjevanje v lokalno hrambo ni uspelo:', error);
                     }
                 },
-                async saveProgressRemote(state) {
+                async saveProgress() {
+                    this.saveEditableResults();
+                    await this.saveProgressRemote();
+                },
+                async saveProgressRemote() {
                     if (!this.sessionId) return;
                     this.startLoading('Shranjujem napredek...', 'save');
                     try {
                         const payload = {
                             session_id: this.sessionId,
                             project_name: this.metadata.ime_projekta || 'Neimenovan projekt',
-                            summary: this.analysisSummary || 'Napredek shranjen',
-                            data: state
+                            summary: this.analysisSummary || `Shranjeno: ${this.formatDateTime(new Date().toISOString())}`,
+                            data: this.collectState()
                         };
                         const response = await fetch('/save-session', {
                             method: 'POST',
@@ -2503,6 +2510,7 @@
                     }
                 },
                 loadState(state) {
+                    if (!state) return;
                     if (state.theme) {
                         this.applyTheme(state.theme);
                     }
@@ -2513,10 +2521,6 @@
                     this.metadata = state.metadata || {};
                     this.requirements = state.requirements || [];
                     this.resultsMap = this.normalizeResultsMap(state.resultsMap || {});
-                    this.editableFindings = state.editableFindings || {};
-                    this.editableActions = state.editableActions || {};
-                    this.initialEditableFindings = state.initialEditableFindings || {};
-                    this.initialEditableActions = state.initialEditableActions || {};
                     this.selectedRequirementIds = state.selectedRequirementIds || [];
                     this.excludedIds = state.excludedIds || [];
                     this.requirementRevisions = state.requirementRevisions || {};
@@ -2525,9 +2529,12 @@
                     this.downloadReady = state.downloadReady || false;
                     this.excludeNonCompliant = state.excludeNonCompliant === false ? false : true;
 
-                    if (!this.initialEditableFindings || Object.keys(this.initialEditableFindings).length === 0) {
-                        this.prepareEditableResults();
-                    }
+                    this.prepareEditableResults({
+                        editedFindings: state.editableFindings,
+                        editedActions: state.editableActions,
+                        initialFindings: state.initialEditableFindings,
+                        initialActions: state.initialEditableActions,
+                    });
                 },
                 openSavedModal() {
                     this.showSavedModal = true;
@@ -2558,7 +2565,9 @@
                             ...s,
                             source: s.source || 'remote'
                         }));
-                        this.highlightedSession = this.savedSessions.length ? this.savedSessions[0] : null;
+                        if (!this.highlightedSession && this.savedSessions.length > 0) {
+                           this.highlightedSession = this.savedSessions[0];
+                        }
 
                     } catch (error) {
                         console.error(error);
@@ -2572,9 +2581,11 @@
                     this.startLoading('Nalagam shranjeno sejo...');
                     this.showSavedModal = false;
                     try {
+                        const sessionToLoad = this.savedSessions.find(s => s.session_id === sessionId);
                         let state = null;
-                        if (this.highlightedSession?.source === 'local' && this.highlightedSession.session_id === sessionId) {
-                            state = this.highlightedSession.data;
+                        
+                        if (sessionToLoad && sessionToLoad.source === 'local') {
+                            state = sessionToLoad.data;
                         } else {
                             const response = await fetch(`/saved-sessions/${sessionId}`);
                             if (!response.ok) throw new Error('Nalaganje seje ni uspelo.');
@@ -2596,8 +2607,15 @@
                 async deleteSession(sessionId) {
                     if (!confirm('Ali res želite izbrisati shranjeno sejo? Te akcije ni mogoče razveljaviti.')) return;
                     try {
+                        // Optimistic UI update
+                        if (this.highlightedSession && this.highlightedSession.session_id === sessionId && this.highlightedSession.source === 'local') {
+                             localStorage.removeItem(this.storageKey);
+                             this.highlightedSession = null;
+                        }
+                        
                         const response = await fetch(`/saved-sessions/${sessionId}`, { method: 'DELETE' });
-                        if (!response.ok) throw new Error('Brisanje seje ni uspelo.');
+                        if (!response.ok) throw new Error('Brisanje seje na strežniku ni uspelo.');
+                        
                         this.fetchSavedSessions();
                         this.setStatus('success', 'Seja je uspešno izbrisana.');
                     } catch (error) {
@@ -2612,23 +2630,7 @@
                 },
                 async discardHighlighted() {
                     if (!this.highlightedSession) return;
-
-                    const isLocal = this.highlightedSession.source === 'local';
-                    const confirmMessage = isLocal ? 'Ali res želite odstraniti samodejno shranjeno sejo?' : 'Ali res želite izbrisati shranjeno sejo na strežniku?';
-
-                    if (!confirm(confirmMessage)) return;
-
-                    if (isLocal) {
-                        localStorage.removeItem(this.storageKey);
-                        this.setStatus('success', 'Shranjena seja je odstranjena.');
-                        this.highlightedSession = null;
-                        if (this.savedSessions.length > 0) {
-                            this.fetchSavedSessions();
-                        }
-                    } else if (this.highlightedSession.session_id) {
-                        await this.deleteSession(this.highlightedSession.session_id);
-                        this.fetchSavedSessions();
-                    }
+                    await this.deleteSession(this.highlightedSession.session_id);
                 },
                 addPair() {
                     this.eupPairs.push({
@@ -2644,6 +2646,13 @@
                 }
             },
             mounted() {
+                this.heroSteps = [
+                    { id: 1, title: 'Naloži PDF datoteke', description: 'Dodaj projektno dokumentacijo za analizo.' },
+                    { id: 2, title: 'Ekstrahiraj podatke', description: 'AI pridobi ključne podatke in EUP/Rabe.' },
+                    { id: 3, title: 'Pregled in potrditev', description: 'Preveri in dopolni ekstrahirane podatke.' },
+                    { id: 4, title: 'Podrobna analiza', description: 'Zaženi analizo skladnosti z zahtevami.' },
+                    { id: 5, title: 'Generiraj poročilo', description: 'Prenesi končno poročilo v DOCX obliki.' },
+                ];
                 this.initializeTheme();
                 this.restoreFromLocal();
                 this.fetchSavedSessions();

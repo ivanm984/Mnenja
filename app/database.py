@@ -672,7 +672,10 @@ class DatabaseManager:
         if not embedding:
             return []
 
-        clean_embedding = [float(x) for x in embedding]
+        params = {
+            "embedding": str([float(x) for x in embedding]),  # Vektor pretvorimo v string
+            "limit": int(limit),
+        }
         source_list: List[str] = []
         if sources:
             source_list = [str(item) for item in sources if str(item).strip()]

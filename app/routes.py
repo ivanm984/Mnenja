@@ -1,3 +1,6 @@
+from __future__ import annotations
+from .ai import embed_query, call_gemini_for_initial_extraction, parse_ai_response
+
 # -*- coding: utf-8 -*-
 """
 routes.py
@@ -14,7 +17,7 @@ Odvisnosti:
 """
 
 """Application routes for the Mnenja assistant UI and API."""
-from __future__ import annotations
+
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 import sys
 import io
@@ -174,8 +177,9 @@ def _collect_analysis_context(
             eup=eup,
             namenska_raba=raba,
             k=12,
+            embed_fn=embed_query
         )
-    except Exception as exc:  # pragma: no cover - runtime safeguard
+    except Exception as exc:
         LOGGER.warning("Hibridno iskanje ni uspelo: %s", exc)
         return {"context_text": "", "rows": []}
     return {"context_text": context_text, "rows": rows}
@@ -271,8 +275,7 @@ async def extract_data(
         "project_text": project_text,
         "image_payloads": image_payloads,
         "files": stored_files,
-        "eup": extraction.get("details", {}).get("eup", []),
-        "namenska_raba": extraction.get("details", {}).get("namenska_raba", []),
+        "details": extraction.get("details", {"eup": [], "namenska_raba": []}),
         "key_data": extraction.get("key_data", {}),
         "metadata": extraction.get("metadata", {}),
         "requirements": [],
@@ -286,12 +289,12 @@ async def extract_data(
     }
     _store_session(session_id, session_payload)
 
+    # Prepare a response for the frontend that preserves the nested structure
     response_payload = {
         "session_id": session_id,
-        "eup": session_payload["eup"],
-        "namenska_raba": session_payload["namenska_raba"],
-        **session_payload["key_data"],
-        **session_payload["metadata"],
+        "details": session_payload["details"],
+        "metadata": session_payload["metadata"],
+        "key_data": session_payload["key_data"],
     }
     return JSONResponse(response_payload)
 
