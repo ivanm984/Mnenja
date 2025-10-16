@@ -14,23 +14,18 @@ Avtor: tvoja bodoča najljubša funkcija ;)
 
 from __future__ import annotations
 import hashlib
-import logging
 import math
 import time
 from dataclasses import dataclass, asdict
 from functools import lru_cache
 from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
+from app.logging_config import get_logger
+
 # ---------------------------------------------------------
 # Logging
 # ---------------------------------------------------------
-logger = logging.getLogger(__name__)
-if not logger.handlers:
-    handler = logging.StreamHandler()
-    fmt = logging.Formatter("[%(levelname)s] %(asctime)s %(name)s: %(message)s")
-    handler.setFormatter(fmt)
-    logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+logger = get_logger(__name__)
 
 # ---------------------------------------------------------
 # Vrste & helperji
@@ -393,7 +388,17 @@ def get_vector_context(
 
     Ta funkcija je namenjena uporabi v routes.py (drop-in zamenjava za dosedanji 'vector_context_text').
     """
+    t0 = time.perf_counter()
     query_text = _build_query_text(key_data or {}, eup, namenska_raba)
+    logger.info(
+        "get_vector_context: building context (query_chars=%d, key_fields=%d, eup=%s, namenska=%s)",
+        len(query_text),
+        len(key_data or {}),
+        eup or "-",
+        namenska_raba or "-",
+    )
+    logger.debug("get_vector_context: query_text=%r", query_text)
+
     q_emb = []
     try:
         q_emb = embed_query(query_text, embed_fn=embed_fn)
@@ -403,5 +408,13 @@ def get_vector_context(
     rows = hybrid_search(db_manager, query_text, q_emb, k=k, alpha=0.6)
     context_text = build_context_block(rows)
     rows_json = [asdict(r) for r in rows]
+    duration = time.perf_counter() - t0
+    logger.info(
+        "get_vector_context: prepared %d rows in %.3fs (context_chars=%d)",
+        len(rows_json),
+        duration,
+        len(context_text),
+    )
+    logger.debug("get_vector_context: context preview=%r", context_text[:500])
     return context_text, rows_json
 
