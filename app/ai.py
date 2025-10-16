@@ -23,8 +23,11 @@ def _clean_json_string(text: str) -> str:
 def call_gemini_for_initial_extraction(project_text: str, images: List[Image.Image]) -> Dict[str, Any]:
     """
     Izvede en sam klic za ekstrakcijo vseh začetnih podatkov:
-    detajlov (EUP, raba), metapodatkov in ključnih tehničnih podatkov.
+    detajlov (EUP, raba), metapodatkov in ključnih tehničnih podatkov,
+    ki so usklajeni s prikazom v uporabniškem vmesniku.
     """
+    # --- ZAČETEK POPRAVKA ---
+    # Ta slovar je bil zamenjan, da se ključi ujemajo s 'keyLabels' v frontend.html.
     KEY_DATA_PROMPT_MAP = {
         "glavni_objekt": "Natančen opis glavnega objekta (npr. enostanovanjska hiša, gospodarski objekt, opiši funkcijo).",
         "vrsta_gradnje": "Vrsta gradnje (npr. novogradnja, dozidava, nadzidava, rekonstrukcija, sprememba namembnosti).",
@@ -38,16 +41,18 @@ def call_gemini_for_initial_extraction(project_text: str, images: List[Image.Ima
         "velikost_obstojecega_objekta": "Velikost in etažnost obstoječih objektov na parceli (npr. hiša 10x8m P+1N, pomožni objekt 5x4m).",
         "tlorisne_dimenzije": "Zunanje tlorisne dimenzije NOVEGA glavnega objekta (npr. 12.0 m x 8.5 m).",
         "gabariti_etaznost": "Navedi etažnost in vertikalni gabarit NOVEGA objekta (npr. K+P+1N+M, višina kolenčnega zidu 1.5 m).",
-        "faktor_zazidanosti_fz": "Vrednost faktorja zazidanosti (npr. 0.35 ali FZ=35%).",
-        "faktor_izrabe_fi": "Vrednost faktorja izrabe (npr. 0.70 ali FI=0.7).",
+        "faktor_zazidanosti": "Vrednost faktorja zazidanosti (FZ) (npr. 0.35 ali FZ=35%).",
+        "faktor_izkoristenosti": "Vrednost faktorja izrabe (FI) (npr. 0.70 ali FI=0.7).",
         "zelene_povrsine": "Velikost in/ali faktor zelenih površin (npr. 700 m2, FZP=0.47).",
         "naklon_strehe": "Naklon strehe v stopinjah in tip (npr. 40° ali simetrična dvokapnica, 40 stopinj).",
         "kritina_barva": "Material in barva strešne kritine (npr. opečna kritina, temno rdeča).",
         "materiali_gradnje": "Tipični materiali (npr. masivna lesena hiša ali opeka, klasična gradnja).",
         "smer_slemena": "Orientacija slemena glede na plastnice (npr. vzporedno s cesto/vrstnim redom gradnje).",
         "visinske_kote": "Pomembne kote (k.n.t., k.p. pritličja, k. slemena) (npr. k.p. = 345.50 m n.m.).",
-        "odmiki_parcel": "Najmanjši in najpomembnejši navedeni odmiki od sosednjih parcelnih meja (npr. Južna meja: 4.5 m; Severna meja: 8.0 m).",
+        "odmik_od_meja": "Najmanjši in najpomembnejši navedeni odmiki od sosednjih parcelnih meja (npr. Južna meja: 4.5 m; Severna meja: 8.0 m).",
         "komunalni_prikljucki": "Opis priključitve na javno komunalno omrežje (elektrika, vodovod, kanalizacija itd.).",
+        "parkirna_mesta": "Število potrebnih ali zagotovljenih parkirnih mest.",
+        "vodovarstveni_rezim": "Ali se objekt nahaja v vodovarstvenem območju in kakšen je režim.",
     }
     prompt_items = "\n".join([f"- **{key}**: {desc}" for key, desc in KEY_DATA_PROMPT_MAP.items()])
 
