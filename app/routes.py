@@ -777,7 +777,6 @@ def prepare_prompt_parts(
             embed_fn=None,
         )
 
-    # 2) Zgradi prompt (če imaš funkcijo v ai.py), drugače minimalni fallback
     if _build_prompt:
         try:
             prompt_text = _build_prompt(
@@ -818,10 +817,6 @@ def prepare_prompt_parts(
     }
     return prompt_text, debug_payload
 
-# ---------------------------------------------------------
-# FastAPI router
-# ---------------------------------------------------------
-router = APIRouter()
 
 class AskIn(BaseModel):
     question: str
@@ -834,26 +829,6 @@ class AskOut(BaseModel):
     answer: str
     debug: Dict[str, Any]
 
-@router.post("/ask", response_model=AskOut)
-def ask_endpoint(
-    payload: AskIn,
-    db_manager: Any = Depends(get_db_manager),
-):
-    """
-    Vprašaš model; dobiš odgovor + debug (citati, vrstice).
-    Če v ai.py ni klica modela, vrnemo prompt za debug (da sistem ne pade).
-    """
-    try:
-        prompt_text, debug_payload = prepare_prompt_parts(
-            question=payload.question,
-            key_data=payload.key_data,
-            eup=payload.eup,
-            namenska_raba=payload.namenska_raba,
-            db_manager=db_manager,
-        )
-    except Exception as e:
-        logger.exception("Napaka pri pripravi promp­ta")
-        raise HTTPException(status_code=500, detail=f"Napaka pri pripravi konteksta: {e}")
 
     # Če obstaja LLM klic v ai.py, ga uporabimo
 @legacy_router.post("/ask", response_model=AskOut)
@@ -876,8 +851,6 @@ def ask_endpoint(payload: AskIn, db_manager: Optional[DatabaseManager] = Depends
         except Exception as exc:  # pragma: no cover - varnostni mehanizem
             LOGGER.warning("LLM klic ni uspel: %s", exc)
 
-    # Fallback: vrni prompt,
-    # da lahko vidiš kontekst in preveriš integracijo brez padca sistema
     return AskOut(
         answer="(DEBUG fallback) LLM klic ni konfiguriran. Tukaj je prompt, ki bi ga poslal:\n\n" + prompt_text,
         debug=debug_payload,

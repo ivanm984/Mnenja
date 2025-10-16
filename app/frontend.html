@@ -8,6 +8,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>IZDELAVA MNENJA O SKADNOSTI S PIA</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -52,7 +55,37 @@
             --shadow-lg: 0 28px 60px rgba(15, 23, 42, 0.16);
             --shadow-md: 0 20px 40px rgba(15, 23, 42, 0.12);
             --shadow-sm: 0 12px 24px rgba(15, 23, 42, 0.08);
-            font-size: 16px;
+        }
+
+        :root[data-theme="dark"] {
+            color-scheme: dark;
+            --bg-gradient: radial-gradient(circle at top left, rgba(96, 165, 250, 0.12), transparent 50%),
+                            radial-gradient(circle at bottom right, rgba(45, 212, 191, 0.12), transparent 60%),
+                            #0b1220;
+            --card: rgba(15, 23, 42, 0.9);
+            --muted: rgba(209, 213, 219, 0.7);
+            --text: #e2e8f0;
+            --text-strong: #f8fafc;
+            --text-soft: rgba(226, 232, 240, 0.86);
+            --text-subtle: rgba(148, 163, 184, 0.9);
+            --border: rgba(51, 65, 85, 0.6);
+            --primary: #60a5fa;
+            --primary-dark: #3b82f6;
+            --danger: #f87171;
+            --success: #34d399;
+            --warning: #fb923c;
+            --glow: rgba(96, 165, 250, 0.28);
+            --hint-bg: rgba(96, 165, 250, 0.12);
+            --table-header-bg: rgba(30, 41, 59, 0.9);
+            --table-row-hover: rgba(37, 99, 235, 0.12);
+            --floating-bg: rgba(15, 23, 42, 0.86);
+            --floating-border: rgba(96, 165, 250, 0.3);
+            --floating-shadow: 0 24px 48px rgba(8, 13, 23, 0.55);
+            --radius-lg: 22px;
+            --radius-md: 16px;
+            --shadow-lg: 0 32px 80px rgba(8, 13, 23, 0.6);
+            --shadow-md: 0 24px 48px rgba(8, 13, 23, 0.5);
+            --shadow-sm: 0 16px 32px rgba(8, 13, 23, 0.45);
         }
 
         :root[data-theme="dark"] {
@@ -1300,11 +1333,8 @@
         }
 
         @media (max-width: 720px) {
-            body { padding: 28px 14px 40px; }
             .section-head { align-items: stretch; }
             .actions-row { flex-direction: column; }
-            .section-layout { grid-template-columns: 1fr; }
-            .section-sidebar { position: static; }
         }
     </style>
 </head>
@@ -1402,11 +1432,6 @@
                 <div class="section-title">
                     <span class="badge">1</span>
                     Priprava dokumentacije
-                </div>
-                <div class="actions-row" style="gap:10px;">
-                    <button class="btn btn-outline" @click="openSavedModal" :disabled="savedSessionsLoading">Odpri shranjeno analizo</button>
-                    <button class="btn btn-secondary" v-if="highlightedSession" @click="restoreHighlighted">Nadaljuj z zadnjo sejo</button>
-                    <button class="btn btn-secondary" v-if="highlightedSession" @click="discardHighlighted">Izbriši shranjeno</button>
                 </div>
             </div>
             <p class="subtitle">Dodajte vse PDF priloge projekta. Za grafične priloge lahko določite strani, ki jih bo sistem pretvoril v slike.</p>
