@@ -15,22 +15,18 @@ Odvisnosti:
 
 from __future__ import annotations
 from typing import Any, Dict, Optional, Tuple
-import logging
+import time
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from vector_search import get_vector_context  # naš novi modul
+from app.logging_config import get_logger
+from app.vector_search import get_vector_context  # naš novi modul
 
 # ---------------------------------------------------------
 # Logging
 # ---------------------------------------------------------
-logger = logging.getLogger(__name__)
-if not logger.handlers:
-    import sys
-    handler = logging.StreamHandler(sys.stdout)
-    logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+logger = get_logger(__name__)
 
 # ---------------------------------------------------------
 # AI adapter (fleksibilen)
@@ -96,6 +92,7 @@ def prepare_prompt_parts(
       - debug_payload: vsebina za log ali UI.
     """
     # 1) Pridobi kontekst iz hibridnega iskanja
+    started = time.perf_counter()
     vector_context_text, rows = get_vector_context(
         db_manager=db_manager,
         key_data=key_data or {},
@@ -127,6 +124,7 @@ def prepare_prompt_parts(
             + f"VPRAŠANJE: {question}"
         )
 
+    prompt_build_duration = time.perf_counter() - started
     debug_payload = {
         "vector_context_preview": vector_context_text,
         "rows": rows,  # za UI ali log
@@ -134,6 +132,13 @@ def prepare_prompt_parts(
         "eup": eup,
         "namenska_raba": namenska_raba,
     }
+    logger.info(
+        "prepare_prompt_parts: prompt ready (prompt_chars=%d, rows=%d, duration=%.3fs)",
+        len(prompt_text),
+        len(rows),
+        prompt_build_duration,
+    )
+    logger.debug("prepare_prompt_parts: prompt preview=%r", prompt_text[:500])
     return prompt_text, debug_payload
 
 # ---------------------------------------------------------
@@ -160,6 +165,15 @@ def ask_endpoint(
     Vprašaš model; dobiš odgovor + debug (citati, vrstice).
     Če v ai.py ni klica modela, vrnemo prompt za debug (da sistem ne pade).
     """
+    request_started = time.perf_counter()
+    logger.info(
+        "ask_endpoint: received question (chars=%d, key_fields=%d, eup=%s, namenska=%s)",
+        len(payload.question or ""),
+        len(payload.key_data or {}),
+        payload.eup or "-",
+        payload.namenska_raba or "-",
+    )
+    logger.debug("ask_endpoint: payload=%s", payload.dict())
     try:
         prompt_text, debug_payload = prepare_prompt_parts(
             question=payload.question,
@@ -175,13 +189,28 @@ def ask_endpoint(
     # Če obstaja LLM klic v ai.py, ga uporabimo
     if _call_llm:
         try:
+            llm_start = time.perf_counter()
             answer = _call_llm(prompt_text)
+            llm_duration = time.perf_counter() - llm_start
+            total_duration = time.perf_counter() - request_started
+            logger.info(
+                "ask_endpoint: LLM answered in %.3fs (total=%.3fs, answer_chars=%d)",
+                llm_duration,
+                total_duration,
+                len(answer or ""),
+            )
+            logger.debug("ask_endpoint: answer preview=%r", (answer or "")[:500])
             return AskOut(answer=answer, debug=debug_payload)
         except Exception as e:
             logger.warning(f"LLM klic padel, vrnem fallback: {e}")
 
     # Fallback: vrni prompt,
     # da lahko vidiš kontekst in preveriš integracijo brez padca sistema
+    total_duration = time.perf_counter() - request_started
+    logger.info(
+        "ask_endpoint: returning fallback prompt (total=%.3fs)",
+        total_duration,
+    )
     return AskOut(
         answer="(DEBUG fallback) LLM klic ni konfiguriran. Tukaj je prompt, ki bi ga poslal:\n\n" + prompt_text,
         debug=debug_payload,
