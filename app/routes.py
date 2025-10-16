@@ -17,7 +17,7 @@ from __future__ import annotations
 from typing import Any, Dict, Optional, Tuple
 import time
 
-from fastapi import APIRouter, Depends, FastAPI, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
 from app.logging_config import get_logger
@@ -145,9 +145,6 @@ def prepare_prompt_parts(
 # FastAPI router
 # ---------------------------------------------------------
 router = APIRouter()
-
-app = FastAPI()
-app.include_router(router)
 
 class AskIn(BaseModel):
     question: str
