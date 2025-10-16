@@ -47,14 +47,22 @@ def _clean(value: Any, fallback: str = "Ni podatka") -> str:
         text = value.strip()
     else:
         text = str(value).strip()
+    
+    # Dodan popravek: če je vrednost specifični AI fallback, vrni splošni fallback
+    if text.lower() == "ni podatka v dokumentaciji":
+        return fallback
+        
     return text or fallback
 
 
 def _format_key_data(key_data: Dict[str, Any]) -> str:
     lines: List[str] = []
     for key, label in KEY_DATA_LABELS:
-        value = _clean(key_data.get(key, ""), "")
-        if value and value.lower() != "ni podatka v dokumentaciji":
+        # Sedaj uporabljamo privzeto vrednost samo za čiščenje
+        original_value = key_data.get(key, "")
+        value = _clean(original_value, "")
+        
+        if value and value.lower() != "ni podatka": # Uporabi "Ni podatka" po čiščenju
             lines.append(f"• {label}: {value}")
     return "\n".join(lines) or "Ni potrjenih ključnih podatkov iz projekta."
 
@@ -209,11 +217,23 @@ def generate_priloga_10a(
     _set_cell_value(worksheet, "B14", _clean(metadata.get("odgovorna_oseba", "Ni podatka")))
 
     _set_cell_value(worksheet, "B34", project_name)
+    
+    # Popravek B35: Preprečitev, da bi bili generični AI fallback-i vstavljeni
+    vrsta_gradnje_clean = _clean(key_data.get("vrsta_gradnje", ""), "")
+    kratek_opis_clean = _clean(metadata.get("kratek_opis", vrsta_gradnje_clean), "")
+    
+    # Če je očiščena vrednost "Ni podatka", pusti polje prazno (če ni podrobnejših info)
+    if kratek_opis_clean == "Ni podatka":
+        kratek_opis_final = ""
+    else:
+        kratek_opis_final = kratek_opis_clean
+        
     _set_cell_value(
         worksheet,
         "B35",
-        _clean(metadata.get("kratek_opis", key_data.get("vrsta_gradnje", "Ni podatka"))),
+        kratek_opis_final,
     )
+    
     _set_cell_value(worksheet, "B37", _clean(metadata.get("stevilka_projekta", "Ni podatka")))
     _set_cell_value(worksheet, "B38", _clean(metadata.get("datum_projekta", "Ni podatka")))
     _set_cell_value(worksheet, "B39", _clean(metadata.get("projektant", "Ni podatka")))
@@ -233,23 +253,3 @@ def generate_priloga_10a(
 
     _set_cell_value(worksheet, "C57", _format_obrazlozitev(total, non_compliant, compliant))
     _set_cell_value(
-        worksheet,
-        "C62",
-        f"Gradnja je {overall_skladnost.lower()} glede na preverjene pogoje." if total else "Analiza pogojev ni bila izvedena."
-    )
-    _set_cell_value(worksheet, "B40", _clean(metadata.get("pvo_status", "Ni podatka")))
-
-    existing_c52 = _get_cell_value(worksheet, "C52") or ""
-    _set_cell_value(
-        worksheet,
-        "C52",
-        f"{existing_c52}\n\nKljučni podatki projekta:\n{_format_key_data(key_data)}",
-    )
-
-    output_file = Path(output_path)
-    output_file.parent.mkdir(parents=True, exist_ok=True)
-    workbook.save(output_file)
-    return str(output_file.resolve())
-
-
-__all__ = ["generate_priloga_10a"]
