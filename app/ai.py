@@ -15,6 +15,11 @@ from .config import API_KEY, GEN_CFG, MODEL_NAME, EXTRACTION_MODEL_NAME
 genai.configure(api_key=API_KEY)
 
 
+def _clean_json_string(text: str) -> str:
+    """Odstrani Markdown tripple-backticks, nevidne znake (kot je BOM) in nepotrebni 'json' napis."""
+    clean = re.sub(r"```(json)?", "", text, flags=re.IGNORECASE).strip()
+    return clean.replace('\ufeff', '') # Odstranitev BOM znaka, če je prisoten
+
 def call_gemini_for_initial_extraction(project_text: str, images: List[Image.Image]) -> Dict[str, Any]:
     """
     Izvede en sam klic za ekstrakcijo vseh začetnih podatkov:
@@ -110,21 +115,35 @@ Odgovori SAMO z enim JSON objektom, ki ima natančno tri ključe na najvišjem n
             content_parts.extend(images)
 
         response = model.generate_content(content_parts)
-        clean_response = re.sub(r"```(json)?", "", response.text, flags=re.IGNORECASE).strip()
+        
+        # Ključna sprememba: Uporaba robustnega čiščenja JSON niza
+        clean_response = _clean_json_string(response.text)
         result = json.loads(clean_response)
 
+        # Ključna sprememba: Normalizacija in zagotavljanje vseh ključev
         final_result = {
             "details": result.get("details", {"eup": [], "namenska_raba": []}),
             "metadata": result.get("metadata", {}),
             "key_data": result.get("key_data", {}),
         }
+        
+        # Zagotavljanje stringov za metapodatke
+        for key in ["ime_projekta", "stevilka_projekta", "datum_projekta", "projektant"]:
+            final_result["metadata"][key] = str(final_result["metadata"].get(key) or "Ni podatka")
+            
+        # Zagotavljanje stringov za vse key_data ključe
+        for key in KEY_DATA_PROMPT_MAP.keys():
+            final_result["key_data"][key] = str(final_result["key_data"].get(key) or "Ni podatka v dokumentaciji")
+
+
         return final_result
 
     except Exception as exc:
         print(f"⚠️ Napaka pri združeni AI ekstrakciji: {exc}.")
+        # Povratni odgovor ob napaki
         return {
             "details": {"eup": [], "namenska_raba": []},
-            "metadata": {"ime_projekta": "Napaka", "stevilka_projekta": "Napaka", "datum_projekta": "Napaka", "projektant": "Napaka"},
+            "metadata": {"ime_projekta": "NAPAKA", "stevilka_projekta": "NAPAKA", "datum_projekta": "NAPAKA", "projektant": "NAPAKA"},
             "key_data": {key: "Napaka pri ekstrakciji" for key in KEY_DATA_PROMPT_MAP.keys()},
         }
 
