@@ -518,6 +518,105 @@ async def upload_revision(
     )
 
 
+@frontend_router.post("/re-analyze")
+async def re_analyze_non_compliant(
+    session_id: str = Form(...),
+    non_compliant_ids_json: str = Form(...),
+    revision_files: List[UploadFile] = File(...),
+) -> JSONResponse:
+    """Handles re-analysis of non-compliant items based on uploaded revision files."""
+
+    session = _ensure_session(session_id)
+
+    try:
+        non_compliant_ids = json.loads(non_compliant_ids_json)
+        if not isinstance(non_compliant_ids, list):
+            raise ValueError("Seznam ID-jev mora biti seznam.")
+    except (json.JSONDecodeError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=f"Neveljaven seznam neskladnih ID-jev: {exc}")
+
+    if not revision_files:
+        raise HTTPException(status_code=400, detail="Naložite vsaj en popravljen PDF dokument.")
+
+    new_text_parts: List[str] = []
+    new_image_payloads: List[bytes] = []
+
+    for upload in revision_files:
+        file_bytes = _read_upload(upload)
+        if not file_bytes:
+            continue
+
+        text_content = parse_pdf(file_bytes)
+        if text_content:
+            new_text_parts.append(text_content)
+
+        # Zaenkrat predpostavimo, da za ponovno analizo besedilo zadošča.
+        # Po potrebi lahko dodamo pretvorbo v slike in jih shranimo v new_image_payloads.
+
+    updated_project_text = session.get("project_text", "")
+    if new_text_parts:
+        updated_project_text = (
+            updated_project_text + "\n\n--- DODATEK IZ POPRAVKA ---\n\n" + "\n\n".join(new_text_parts)
+        )
+
+    all_requirements = session.get("requirements", [])
+    if not all_requirements:
+        raise HTTPException(status_code=400, detail="V seji ni zahtev za analizo. Najprej zaženite polno analizo.")
+
+    scoped_requirements = [req for req in all_requirements if req.get("id") in non_compliant_ids]
+    if not scoped_requirements:
+        raise HTTPException(status_code=400, detail="Ni najdenih neskladnih zahtev za ponovno analizo.")
+
+    db_manager = get_db_manager()
+    hybrid_context = _collect_analysis_context(
+        db_manager,
+        session.get("key_data", {}),
+        session.get("eup", []),
+        session.get("namenska_raba", []),
+    )
+
+    prompt = build_prompt(
+        project_text=updated_project_text,
+        zahteve=scoped_requirements,
+        izrazi_text=IZRAZI_TEXT,
+        uredba_text=UREDBA_TEXT,
+        vector_context=hybrid_context.get("context_text", ""),
+    )
+
+    existing_images = list(session.get("image_payloads", []) or [])
+    existing_images.extend(new_image_payloads)
+    images = _load_revision_images(existing_images)
+    ai_response = call_gemini(prompt, images)
+    new_results = parse_ai_response(ai_response, scoped_requirements)
+
+    existing_results = session.get("results_map", {})
+    existing_results.update(new_results)
+
+    final_non_compliant_ids = [
+        rid
+        for rid, result in existing_results.items()
+        if isinstance(result, dict)
+        and isinstance(result.get("skladnost"), str)
+        and "nesklad" in result["skladnost"].lower()
+    ]
+
+    session_update = {
+        "project_text": updated_project_text,
+        "results_map": existing_results,
+        "image_payloads": existing_images,
+        "updated_at": datetime.utcnow().isoformat(),
+    }
+    _update_session(session_id, session_update)
+
+    return JSONResponse(
+        {
+            "message": "Ponovna analiza je zaključena.",
+            "updated_results": new_results,
+            "non_compliant_ids": final_non_compliant_ids,
+        }
+    )
+
+
 @frontend_router.post("/confirm-report")
 async def confirm_report(payload: ConfirmReportPayload) -> JSONResponse:
     session = _ensure_session(payload.session_id)

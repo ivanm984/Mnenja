@@ -1311,6 +1311,26 @@
             .section-head { align-items: stretch; }
             .actions-row { flex-direction: column; }
         }
+
+        /* DODAJ TA CSS NA KONEC <style> BLOKA */
+
+        .actions-row .btn .icon, .actions-stack .btn .icon {
+            font-size: 1.2rem;
+            margin-right: 6px;
+        }
+
+        /* Prilagoditve za manjše gumbe, ki so bolj zgoščeni */
+        .actions-row .btn, .actions-stack .btn {
+            padding: 12px 18px;
+            border-radius: 12px;
+        }
+
+        /* Spremeni 'floating-actions' v splošen razred, če ga kje še uporabljate */
+        .floating-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
     </style>
 </head>
 <body>
@@ -1339,61 +1359,6 @@
                 </div>
             </div>
         </header>
-
-        <div class="floating-shell">
-            <div class="floating-actions" role="toolbar" aria-label="Glavne akcije">
-                <button type="button" class="btn btn-outline" @click.prevent="$refs.fileInput && $refs.fileInput.click()" :disabled="isBusy">
-                    <span class="action-icon">📄</span>
-                    <strong>Dodaj PDF datoteke</strong>
-                    <small>Naložite projektno dokumentacijo za analizo.</small>
-                </button>
-                <button type="button" class="btn btn-primary" @click="extractData" :disabled="!files.length || isBusy" :data-state="actionStates.extract">
-                    <span class="action-icon">🤖</span>
-                    <strong>Ekstrahiraj podatke</strong>
-                    <small>Pridobi pare EUP/Rabe iz dodanih dokumentov.</small>
-                </button>
-                <button type="button" class="btn btn-primary" @click="runAnalysis()" :disabled="isBusy" :data-state="actionStates.run">
-                    <span class="action-icon">📊</span>
-                    <strong>Izvedi podrobno analizo</strong>
-                    <small>Analiziraj skladnost in pripravi rezultate pregleda.</small>
-                </button>
-                <button type="button" class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">
-                    <span class="action-icon">💾</span>
-                    <strong>Shrani napredek</strong>
-                    <small>Ohrani trenutno stanje in podatke seje.</small>
-                </button>
-                <button type="button" class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy" :data-state="actionStates.reset">
-                    <span class="action-icon">🧹</span>
-                    <strong>Ponastavi analizo</strong>
-                    <small>Začni postopek znova s čistim delovnim prostorom.</small>
-                </button>
-                <button type="button" class="btn btn-secondary" @click="openSavedModal" :disabled="savedSessionsLoading">
-                    <span class="action-icon">📂</span>
-                    <strong>Odpri shranjeno analizo</strong>
-                    <small>Izberi prejšnjo sejo in nadaljuj z urejanjem.</small>
-                </button>
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    v-if="highlightedSession"
-                    @click="restoreHighlighted"
-                >
-                    <span class="action-icon">⏯️</span>
-                    <strong>Nadaljuj z zadnjo sejo</strong>
-                    <small>Ponovno naloži zadnje samodejno shranjeno stanje.</small>
-                </button>
-                <button
-                    type="button"
-                    class="btn btn-secondary"
-                    v-if="highlightedSession"
-                    @click="discardHighlighted"
-                >
-                    <span class="action-icon">🗑️</span>
-                    <strong>Izbriši shranjeno</strong>
-                    <small>Odstrani shranjeno sejo iz zadnjih aktivnosti.</small>
-                </button>
-            </div>
-        </div>
 
         <transition name="fade">
             <div v-if="status.message" class="status-banner" :class="`status-${status.type}`">
@@ -1436,9 +1401,19 @@
             </div>
 
             <div class="actions-row">
-                <button class="btn btn-primary" @click="extractData" :disabled="!files.length || isBusy" :data-state="actionStates.extract">Ekstrahiraj ključne podatke in EUP/Rabe</button>
+                <button class="btn btn-outline" @click.prevent="$refs.fileInput && $refs.fileInput.click()" :disabled="isBusy">
+                    <span class="icon">📄</span> Izberi PDF datoteke
+                </button>
+                <button class="btn btn-primary" @click="extractData" :disabled="!files.length || isBusy" :data-state="actionStates.extract">
+                    <span class="icon">🤖</span> Ekstrahiraj podatke
+                </button>
+                <button class="btn btn-secondary" @click="openSavedModal" :disabled="isBusy">
+                    <span class="icon">📂</span> Odpri shranjeno
+                </button>
+                <button class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy">
+                    <span class="icon">🧹</span> Ponastavi
+                </button>
             </div>
-            <p class="subtitle">Za začetek ekstrakcije uporabite gumbe v zgornji vrstici, ki so vedno vidni med pomikanjem.</p>
         </section>
 
         <section class="surface" v-if="showReview">
@@ -1455,6 +1430,25 @@
                 >
                     <span class="session-label">Seja</span>
                     <span class="session-value">{{ sessionId || 'ni začeta' }}</span>
+                </div>
+            </div>
+
+            <div class="revision-upload-section" v-if="latestNonCompliantIds.length > 0">
+                <h4>Nalaganje popravkov za neskladne zahteve</h4>
+                <p class="subtitle">Če ste odpravili neskladja v novi verziji dokumenta, ga naložite tukaj. Sistem bo ponovno analiziral samo tiste zahteve, ki so bile prej označene kot neskladne.</p>
+                <div class="actions-row">
+                    <input ref="revisionAnalysisInput" type="file" accept="application/pdf" multiple hidden @change="handleRevisionAnalysisFileSelect" />
+                    <button class="btn btn-outline" @click.prevent="$refs.revisionAnalysisInput.click()" :disabled="isBusy">
+                         <span class="icon">📄</span> Izberi popravljene PDF datoteke
+                    </button>
+                    <button class="btn btn-primary" @click="uploadAndReanalyze" :disabled="!revisionAnalysisFiles.length || isBusy" :data-state="actionStates.revision">
+                        <span class="icon">🔄</span> Naloži in ponovno analiziraj
+                    </button>
+                </div>
+                <div class="file-list" v-if="revisionAnalysisFiles.length">
+                    <div class="file-item" v-for="file in revisionAnalysisFiles" :key="file.name">
+                        <strong>{{ file.name }}</strong>
+                    </div>
                 </div>
             </div>
 
@@ -1527,11 +1521,14 @@
                         <h4 class="sidebar-title">Upravljanje analize</h4>
                         <p class="sidebar-hint">Gumbi so razporejeni po pomembnosti. Po kliku se barva spremeni in potrdi izvedbo.</p>
                         <div class="actions-stack">
-                            <button class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy" :data-state="actionStates.reset">Ponastavi analizo</button>
-                            <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">Shrani napredek</button>
-                            <button class="btn btn-primary" @click="runAnalysis()" :disabled="isBusy" :data-state="actionStates.run">Izvedi podrobno analizo</button>
+                            <button class="btn btn-primary" @click="runAnalysis()" :disabled="isBusy" :data-state="actionStates.run">
+                                <span class="icon">📊</span> Izvedi podrobno analizo
+                            </button>
+                            <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">
+                                <span class="icon">💾</span> Shrani napredek
+                            </button>
                         </div>
-                        <p class="sidebar-hint">Glavne akcije so vedno na voljo v zgornji vrstici. Tukaj lahko spremljate ključne kazalnike napredka.</p>
+                        <p class="sidebar-hint">Po zaključku urejanja zaženite analizo ali shranite napredek za kasnejše delo.</p>
                         <ul class="sidebar-list">
                             <li>
                                 <span class="list-label">Dokumenti</span>
@@ -1891,6 +1888,7 @@
                     showRevisionModal: false,
                     currentRevisionId: '__celotno',
                     revisionFiles: [],
+                    revisionAnalysisFiles: [],
                     revisionPages: '',
                     revisionNote: '',
                     isRevisionDragging: false,
@@ -2102,6 +2100,8 @@
                         this.analysisSummary = '';
                         this.downloadReady = false;
                         this.downloadHref = '';
+                        this.revisionFiles = [];
+                        this.revisionAnalysisFiles = [];
                         this.excludeNonCompliant = true;
                         localStorage.removeItem(this.storageKey);
                         this.stopLoading('success', 'Analiza je bila uspešno ponastavljena.', 'reset');
@@ -2343,6 +2343,12 @@
                 removeRevisionFile(fileId) {
                     this.revisionFiles = this.revisionFiles.filter(f => f.id !== fileId);
                 },
+                handleRevisionAnalysisFileSelect(event) {
+                    this.revisionAnalysisFiles = Array.from(event.target.files);
+                    if (event.target) {
+                        event.target.value = '';
+                    }
+                },
                 async uploadRevision() {
                     if (!this.revisionFiles.length || this.isBusy) return;
                     this.startLoading('Nalagam popravek dokumentacije...', 'revision');
@@ -2382,6 +2388,47 @@
                         console.error(error);
                         this.markActionResult('revision', 'error');
                         this.stopLoading('error', error.message || 'Napaka pri nalaganju popravka.', 'revision');
+                    }
+                },
+                async uploadAndReanalyze() {
+                    if (!this.revisionAnalysisFiles.length || this.isBusy || !this.latestNonCompliantIds.length) return;
+                    this.startLoading('Nalagam popravke in ponavljam analizo...', 'revision');
+
+                    const formData = new FormData();
+                    formData.append('session_id', this.sessionId);
+                    formData.append('non_compliant_ids_json', JSON.stringify(this.latestNonCompliantIds));
+                    this.revisionAnalysisFiles.forEach(file => {
+                        formData.append('revision_files', file);
+                    });
+
+                    try {
+                        const response = await fetch('/re-analyze', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (!response.ok) {
+                            const error = await response.json().catch(() => ({}));
+                            throw new Error(error.detail || 'Ponovna analiza ni uspela.');
+                        }
+
+                        const result = await response.json();
+
+                        for (const id in result.updated_results) {
+                            this.resultsMap[id] = result.updated_results[id];
+                        }
+                        this.normalizeResultsMap(this.resultsMap);
+                        this.prepareEditableResults();
+
+                        this.latestNonCompliantIds = result.non_compliant_ids || [];
+
+                        this.revisionAnalysisFiles = [];
+                        this.persistState(true);
+                        this.stopLoading('success', 'Ponovna analiza neskladnih zahtev je zaključena.', 'revision');
+
+                    } catch (error) {
+                        console.error(error);
+                        this.stopLoading('error', error.message, 'revision');
                     }
                 },
                 async confirmReport() {
