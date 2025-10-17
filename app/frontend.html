@@ -2052,18 +2052,63 @@
                             throw new Error(error.detail || 'Ekstrakcija podatkov ni uspela.');
                         }
                         const result = await response.json();
+
                         this.sessionId = result.session_id;
-                        this.eupPairs = (result.details.eup || []).map((eup, index) => ({
-                            id: index,
+
+                        const details = result.details || {};
+                        const eupList = Array.isArray(details.eup) ? details.eup : [];
+                        const rabaList = Array.isArray(details.namenska_raba) ? details.namenska_raba : [];
+                        const extractedPairs = eupList.map((eup, index) => ({
+                            id: Date.now() + index,
                             eup: eup,
-                            raba: (result.details.namenska_raba || [])[index] || '',
+                            raba: rabaList[index] || '',
                             originalEup: eup,
-                            originalRaba: (result.details.namenska_raba || [])[index] || ''
+                            originalRaba: rabaList[index] || ''
                         }));
-                        
-                        this.metadata = result.metadata || {};
-                        this.keyData = result.key_data || {};
-                        this.initialKeyData = { ...result.key_data };
+                        if (!extractedPairs.length) {
+                            extractedPairs.push({
+                                id: Date.now(),
+                                eup: '',
+                                raba: '',
+                                originalEup: '',
+                                originalRaba: ''
+                            });
+                        }
+                        this.eupPairs = extractedPairs;
+
+                        const metadata = result.metadata || {};
+                        this.metadata = {
+                            ime_projekta: metadata.ime_projekta || '',
+                            stevilka_projekta: metadata.stevilka_projekta || '',
+                            datum_projekta: metadata.datum_projekta || '',
+                            projektant: metadata.projektant || ''
+                        };
+
+                        const keyDefaults = {};
+                        Object.keys(this.keyLabels).forEach(key => {
+                            keyDefaults[key] = (result.key_data && result.key_data[key]) || '';
+                        });
+                        this.keyData = keyDefaults;
+                        this.initialKeyData = { ...keyDefaults };
+
+                        this.requirements = [];
+                        this.resultsMap = {};
+                        this.editableFindings = {};
+                        this.editableActions = {};
+                        this.initialEditableFindings = {};
+                        this.initialEditableActions = {};
+                        this.selectedRequirementIds = [];
+                        this.excludedIds = [];
+                        this.requirementRevisions = {};
+                        this.latestNonCompliantIds = [];
+                        this.analysisSummary = '';
+                        this.downloadReady = false;
+                        this.downloadHref = '';
+                        this.revisionFiles = [];
+                        this.revisionAnalysisFiles = [];
+                        this.revisionPages = '';
+                        this.revisionNote = '';
+                        this.currentRevisionId = '__celotno';
 
                         this.persistState(true);
                         this.markActionResult('extract', 'success');
