@@ -163,88 +163,6 @@
             z-index: 1;
         }
 
-        .floating-shell {
-            position: sticky;
-            top: clamp(16px, 4vw, 32px);
-            z-index: 30;
-            display: flex;
-            justify-content: center;
-            pointer-events: none;
-        }
-
-        .floating-actions {
-            pointer-events: auto;
-            width: min(1360px, 100%);
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            padding: 18px;
-            background: var(--floating-bg);
-            border: 1px solid var(--floating-border);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--floating-shadow);
-            backdrop-filter: blur(18px);
-        }
-
-        .floating-actions .btn {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: center;
-            gap: 10px;
-            padding: 18px 20px;
-            min-height: 132px;
-            border-radius: var(--radius-md);
-            text-align: left;
-        }
-
-        .floating-actions .btn .action-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 42px;
-            height: 42px;
-            border-radius: 14px;
-            background: rgba(37, 99, 235, 0.12);
-            color: var(--primary);
-            font-size: 1.4rem;
-        }
-
-        :root[data-theme="dark"] .floating-actions .btn .action-icon {
-            background: rgba(96, 165, 250, 0.16);
-            color: #bfdbfe;
-        }
-
-        .floating-actions .btn strong {
-            font-size: 1.02rem;
-            color: inherit;
-        }
-
-        .floating-actions .btn small {
-            color: inherit;
-            opacity: 0.8;
-            font-size: 0.86rem;
-            line-height: 1.4;
-        }
-
-        .floating-actions .btn.btn-outline strong,
-        .floating-actions .btn.btn-secondary strong,
-        .floating-actions .btn.btn-danger strong {
-            color: var(--text-strong);
-        }
-
-        .floating-actions .btn.btn-outline small,
-        .floating-actions .btn.btn-secondary small,
-        .floating-actions .btn.btn-danger small {
-            color: var(--text-subtle);
-            opacity: 1;
-        }
-
-        .floating-actions .btn:focus-visible {
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18);
-        }
-
         .brand {
             display: inline-flex;
             align-items: center;
@@ -1221,29 +1139,11 @@
         @media (max-width: 1080px) {
             .section-layout { grid-template-columns: 1fr; }
             .section-sidebar { position: static; }
-            .floating-actions { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
-        }
-
-        @media (max-width: 900px) {
-            .floating-actions {
-                border-radius: 28px;
-                gap: 12px;
-                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            }
-            .floating-actions .btn {
-                min-height: 120px;
-            }
         }
 
         @media (max-width: 680px) {
             body {
                 padding: clamp(20px, 6vw, 36px) clamp(16px, 6vw, 36px);
-            }
-            .floating-shell {
-                top: 16px;
-            }
-            .floating-actions {
-                grid-template-columns: 1fr;
             }
         }
 
@@ -1586,6 +1486,25 @@
                 >
                     Prenesi poročilo (DOCX)
                 </a>
+            </div>
+
+            <div class="revision-upload-section" v-if="latestNonCompliantIds.length > 0">
+                <h4>Nalaganje popravkov za neskladne zahteve</h4>
+                <p class="subtitle">Če ste odpravili neskladja v novi verziji dokumenta, ga naložite tukaj. Sistem bo ponovno analiziral samo tiste zahteve, ki so bile prej označene kot neskladne.</p>
+                <div class="actions-row">
+                    <input ref="revisionAnalysisInput" type="file" accept="application/pdf" multiple hidden @change="handleRevisionAnalysisFileSelect" />
+                    <button class="btn btn-outline" @click.prevent="$refs.revisionAnalysisInput.click()" :disabled="isBusy">
+                         <span class="icon">📄</span> Izberi popravljene PDF datoteke
+                    </button>
+                    <button class="btn btn-primary" @click="uploadAndReanalyze" :disabled="!revisionAnalysisFiles.length || isBusy" :data-state="actionStates.revision">
+                        <span class="icon">🔄</span> Naloži in ponovno analiziraj
+                    </button>
+                </div>
+                <div class="file-list" v-if="revisionAnalysisFiles.length">
+                    <div class="file-item" v-for="file in revisionAnalysisFiles" :key="file.name">
+                        <strong>{{ file.name }}</strong>
+                    </div>
+                </div>
             </div>
 
             <div class="section-layout">
@@ -2102,9 +2021,6 @@
                         this.downloadHref = '';
                         this.revisionFiles = [];
                         this.revisionAnalysisFiles = [];
-                        this.revisionPages = '';
-                        this.revisionNote = '';
-                        this.currentRevisionId = '__celotno';
                         this.excludeNonCompliant = true;
                         localStorage.removeItem(this.storageKey);
                         this.stopLoading('success', 'Analiza je bila uspešno ponastavljena.', 'reset');
@@ -2465,7 +2381,7 @@
                         for (const id in result.updated_results) {
                             this.resultsMap[id] = result.updated_results[id];
                         }
-                        this.resultsMap = this.normalizeResultsMap({ ...this.resultsMap });
+                        this.normalizeResultsMap(this.resultsMap);
                         this.prepareEditableResults();
 
                         this.latestNonCompliantIds = result.non_compliant_ids || [];
