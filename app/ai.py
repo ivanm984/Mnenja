@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from typing import Any, Dict, List
 
 from fastapi import HTTPException
@@ -165,6 +166,44 @@ def call_gemini(prompt: str, images: List[Image.Image]) -> str:
         raise HTTPException(status_code=500, detail=f"Gemini napaka (Analitik): {exc}") from exc
 
 
+def _normalise_key(raw_key: str) -> str:
+    """Map arbitrary AI keys to predictable ASCII identifiers."""
+
+    normalized = unicodedata.normalize("NFKD", raw_key or "")
+    without_diacritics = "".join(ch for ch in normalized if not unicodedata.combining(ch))
+    lowered = without_diacritics.lower()
+    collapsed = re.sub(r"[^a-z0-9]+", "_", lowered)
+    return collapsed.strip("_")
+
+
+def _normalise_skladnost(value: Any) -> str:
+    """Coerce AI compliance labels into one of the supported options."""
+
+    text = str(value or "").strip().lower()
+    if not text:
+        return "Neznano"
+
+    if "nesklad" in text:
+        return "Neskladno"
+    if "ni" in text and "relevant" in text:
+        return "Ni relevantno"
+    if "sklad" in text:
+        return "Skladno"
+
+    # Fallback to capitalised original (if AI responded with unexpected value)
+    return text.capitalize()
+
+
+def _prepare_default_result(requirement_id: str) -> Dict[str, Any]:
+    return {
+        "id": requirement_id,
+        "obrazlozitev": "AI ni uspel generirati odgovora.",
+        "evidence": "—",
+        "skladnost": "Neznano",
+        "predlagani_ukrep": "Ročno preverjanje.",
+    }
+
+
 def parse_ai_response(response_text: str, expected_zahteve: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
     clean = re.sub(r"```(json)?", "", response_text, flags=re.IGNORECASE).strip()
     try:
@@ -175,21 +214,68 @@ def parse_ai_response(response_text: str, expected_zahteve: List[Dict[str, Any]]
     if not isinstance(data, list):
         raise HTTPException(status_code=500, detail="AI ni vrnil seznama objektov v JSON formatu.")
 
-    results_map: Dict[str, Dict[str, Any]] = {}
-    for item in data:
-        if isinstance(item, dict) and item.get("id"):
-            results_map[item["id"]] = item
+    canonical_fields = {
+        "id": "id",
+        "obrazlozitev": "obrazlozitev",
+        "obrazložitev": "obrazlozitev",  # direct lookup for clarity
+        "ugotovitev": "obrazlozitev",
+        "evidence": "evidence",
+        "dokazilo": "evidence",
+        "skladnost": "skladnost",
+        "predlagani_ukrep": "predlagani_ukrep",
+        "predlaganiukrep": "predlagani_ukrep",
+        "ukrep": "predlagani_ukrep",
+    }
 
-    for z in expected_zahteve:
-        if z["id"] not in results_map:
-            results_map[z["id"]] = {
-                "id": z["id"],
-                "obrazlozitev": "AI ni uspel generirati odgovora.",
-                "evidence": "—",
-                "skladnost": "Neznano",
-                "predlagani_ukrep": "Ročno preverjanje.",
-            }
-    return results_map
+    normalised_map: Dict[str, Dict[str, Any]] = {}
+    for item in data:
+        if not isinstance(item, dict):
+            continue
+
+        raw_id = item.get("id")
+        if not raw_id:
+            continue
+
+        requirement_id = str(raw_id)
+        normalised_item = _prepare_default_result(requirement_id)
+        normalised_item["id"] = requirement_id
+
+        for key, value in item.items():
+            if key == "id":
+                continue
+
+            canonical_key = canonical_fields.get(key)
+            if canonical_key is None:
+                lookup_key = _normalise_key(str(key))
+                canonical_key = canonical_fields.get(lookup_key)
+
+            if canonical_key == "skladnost":
+                normalised_item[canonical_key] = _normalise_skladnost(value)
+            elif canonical_key == "predlagani_ukrep":
+                text_value = str(value or "").strip() or "—"
+                normalised_item[canonical_key] = text_value
+            elif canonical_key:
+                normalised_item[canonical_key] = str(value or "").strip() or normalised_item[canonical_key]
+
+        # Poskrbi za smiselne privzete vrednosti glede na ugotovljeno skladnost
+        if normalised_item["skladnost"] != "Neskladno":
+            if normalised_item["predlagani_ukrep"].strip().lower() in {"", "—", "rocno preverjanje.", "ročno preverjanje."}:
+                normalised_item["predlagani_ukrep"] = "—"
+        else:
+            if not normalised_item["predlagani_ukrep"].strip():
+                normalised_item["predlagani_ukrep"] = "Ročno preverjanje."
+
+        if not normalised_item["evidence"].strip():
+            normalised_item["evidence"] = "—"
+
+        normalised_map[requirement_id] = normalised_item
+
+    for zahteva in expected_zahteve:
+        req_id = str(zahteva.get("id"))
+        if req_id and req_id not in normalised_map:
+            normalised_map[req_id] = _prepare_default_result(req_id)
+
+    return normalised_map
 
 
 __all__ = [
