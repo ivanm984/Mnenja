@@ -847,6 +847,7 @@
             display: grid;
             gap: 10px;
             transition: opacity 0.2s ease;
+            overflow-wrap: anywhere;
         }
 
         .analysis-header {
@@ -883,7 +884,8 @@
         }
 
         .analysis-section div {
-            white-space: pre-line;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
         }
 
         .analysis-hint {
@@ -934,6 +936,9 @@
             line-height: 1.5;
             background: rgba(255, 255, 255, 0.85);
             transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+            width: 100%;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
         }
 
         .analysis-hover textarea:focus {
@@ -1039,11 +1044,48 @@
             gap: 12px;
         }
 
+        .actions-row.primary-actions {
+            justify-content: flex-start;
+        }
+
+        .analysis-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .analysis-overview .overview-item {
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--card);
+            display: grid;
+            gap: 4px;
+        }
+
+        .analysis-overview .label {
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-subtle);
+        }
+
+        .analysis-overview .value {
+            font-weight: 600;
+            color: var(--text-strong);
+            word-break: break-all;
+        }
+
         .section-layout {
             display: grid;
             grid-template-columns: minmax(0, 1fr) minmax(240px, 280px);
             gap: 32px;
             align-items: start;
+        }
+
+        .section-layout.section-layout--no-sidebar {
+            grid-template-columns: minmax(0, 1fr);
         }
 
         .section-main {
@@ -1352,8 +1394,36 @@
                 </div>
             </div>
 
-            <div class="section-layout">
+            <div class="section-layout section-layout--no-sidebar">
                 <div class="section-main">
+                    <div class="actions-row primary-actions">
+                        <button class="btn btn-primary" @click="runAnalysis()" :disabled="isBusy" :data-state="actionStates.run">
+                            <span class="icon">📊</span> Izvedi podrobno analizo
+                        </button>
+                        <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">
+                            <span class="icon">💾</span> Shrani napredek
+                        </button>
+                    </div>
+
+                    <div class="analysis-overview">
+                        <div class="overview-item">
+                            <span class="label">Dokumenti</span>
+                            <span class="value">{{ files.length }}</span>
+                        </div>
+                        <div class="overview-item">
+                            <span class="label">EUP / Rabe</span>
+                            <span class="value">{{ eupPairs.length }}</span>
+                        </div>
+                        <div class="overview-item">
+                            <span class="label">Ključni podatki</span>
+                            <span class="value">{{ Object.keys(keyData).length }}</span>
+                        </div>
+                        <div class="overview-item">
+                            <span class="label">Seja</span>
+                            <span class="value">{{ sessionId || 'ni aktivna' }}</span>
+                        </div>
+                    </div>
+
                     <div>
                         <h3 style="margin-top:0;">A. EUP in namenske rabe</h3>
                         <p class="subtitle">Sistem predlaga pare EUP/Raba. Po potrebi jih dopolnite ali popravite.</p>
@@ -1415,40 +1485,6 @@
                         </div>
                     </div>
                 </div>
-
-                <aside class="section-sidebar">
-                    <div class="sidebar-card">
-                        <h4 class="sidebar-title">Upravljanje analize</h4>
-                        <p class="sidebar-hint">Gumbi so razporejeni po pomembnosti. Po kliku se barva spremeni in potrdi izvedbo.</p>
-                        <div class="actions-stack">
-                            <button class="btn btn-primary" @click="runAnalysis()" :disabled="isBusy" :data-state="actionStates.run">
-                                <span class="icon">📊</span> Izvedi podrobno analizo
-                            </button>
-                            <button class="btn btn-outline" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">
-                                <span class="icon">💾</span> Shrani napredek
-                            </button>
-                        </div>
-                        <p class="sidebar-hint">Po zaključku urejanja zaženite analizo ali shranite napredek za kasnejše delo.</p>
-                        <ul class="sidebar-list">
-                            <li>
-                                <span class="list-label">Dokumenti</span>
-                                <span class="list-value">{{ files.length }}</span>
-                            </li>
-                            <li>
-                                <span class="list-label">EUP/Rabe</span>
-                                <span class="list-value">{{ eupPairs.length }}</span>
-                            </li>
-                            <li>
-                                <span class="list-label">Ključni podatki</span>
-                                <span class="list-value">{{ Object.keys(keyData).length }}</span>
-                            </li>
-                            <li>
-                                <span class="list-label">Aktivna seja</span>
-                                <span class="list-value">{{ sessionId || 'ni aktivna' }}</span>
-                            </li>
-                        </ul>
-                    </div>
-                </aside>
             </div>
         </section>
 
