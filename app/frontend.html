@@ -89,8 +89,6 @@
             color: var(--text);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
-            padding: clamp(28px, 4vw, 64px) clamp(20px, 4vw, 72px);
             transition: background var(--transition-theme), color var(--transition-theme);
             position: relative;
         }
@@ -116,11 +114,213 @@
 
         a { color: inherit; }
 
-        .app-shell {
-            width: min(1360px, 100%);
+        .app-layout {
+            flex: 1;
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+            position: relative;
+        }
+
+        .sidebar {
+            width: 280px;
+            padding: 32px 28px;
             display: flex;
             flex-direction: column;
             gap: 32px;
+            background: rgba(255, 255, 255, 0.78);
+            border-right: 1px solid var(--border);
+            backdrop-filter: blur(18px);
+        }
+
+        :root[data-theme="dark"] .sidebar {
+            background: rgba(15, 23, 42, 0.82);
+            border-color: rgba(71, 85, 105, 0.6);
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .sidebar-section {
+            display: grid;
+            gap: 12px;
+        }
+
+        .sidebar-label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-subtle);
+            margin: 0;
+        }
+
+        .sidebar-item,
+        .sidebar-action {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            background: transparent;
+            border: 1px solid transparent;
+            color: inherit;
+            cursor: pointer;
+            transition: background 0.2s ease, border 0.2s ease, color 0.2s ease, transform 0.2s ease;
+        }
+
+        .sidebar-item .icon,
+        .sidebar-action .icon {
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-action:hover {
+            background: rgba(37, 99, 235, 0.12);
+            border-color: rgba(37, 99, 235, 0.3);
+            color: var(--primary);
+        }
+
+        .sidebar-item:disabled,
+        .sidebar-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: transparent;
+            border-color: transparent;
+            color: var(--text-subtle);
+        }
+
+        .sidebar-item.is-active {
+            background: rgba(37, 99, 235, 0.16);
+            border-color: rgba(37, 99, 235, 0.4);
+            color: var(--primary);
+        }
+
+        :root[data-theme="dark"] .sidebar-item:hover,
+        :root[data-theme="dark"] .sidebar-action:hover {
+            background: rgba(96, 165, 250, 0.18);
+            border-color: rgba(96, 165, 250, 0.35);
+            color: #bfdbfe;
+        }
+
+        :root[data-theme="dark"] .sidebar-item.is-active {
+            background: rgba(96, 165, 250, 0.22);
+            border-color: rgba(96, 165, 250, 0.38);
+            color: #bfdbfe;
+        }
+
+        .main-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 32px clamp(32px, 5vw, 56px);
+            gap: 24px;
+            overflow: hidden;
+        }
+
+        .main-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+
+        .main-header-text h1 {
+            margin: 0;
+            font-size: clamp(1.8rem, 1.2rem + 1.2vw, 2.4rem);
+        }
+
+        .main-header-text p {
+            margin: 8px 0 0;
+            color: var(--text-soft);
+            max-width: 540px;
+            line-height: 1.6;
+        }
+
+        .main-header-actions {
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .main-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 48px;
+        }
+
+        .content-stack {
+            width: min(1160px, 100%);
+            margin: 0 auto;
+            display: grid;
+            gap: 24px;
+        }
+
+        @media (max-width: 1280px) {
+            .sidebar {
+                width: 248px;
+                padding: 28px 24px;
+            }
+
+            .main-header-actions {
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .app-layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 20px;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .sidebar-section {
+                flex: 1;
+            }
+
+            .main-area {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-header {
+                flex-direction: column;
+            }
+
+            .main-header-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .sidebar {
+                padding: 20px;
+            }
+
+            .sidebar-item,
+            .sidebar-action {
+                font-size: 0.9rem;
+                padding: 10px 12px;
+            }
         }
 
         .hero {
@@ -191,51 +391,47 @@
         }
 
         .theme-toggle {
-            border-radius: 999px;
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            background: rgba(255, 255, 255, 0.18);
+            border-radius: 14px;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            background: rgba(255, 255, 255, 0.72);
             color: var(--text);
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 18px;
-            font-weight: 600;
-            font-size: 0.95rem;
+            justify-content: center;
+            width: 46px;
+            height: 46px;
+            font-size: 1.2rem;
             cursor: pointer;
             transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
             backdrop-filter: blur(12px);
         }
 
-        .theme-toggle span.icon {
-            font-size: 1.2rem;
-        }
-
         .theme-toggle:hover {
             transform: translateY(-1px);
-            background: rgba(255, 255, 255, 0.24);
+            background: rgba(255, 255, 255, 0.9);
         }
 
         :root[data-theme="dark"] .theme-toggle {
             border-color: rgba(148, 163, 184, 0.4);
-            background: rgba(30, 41, 59, 0.65);
+            background: rgba(30, 41, 59, 0.78);
             color: #e2e8f0;
         }
 
         :root[data-theme="dark"] .theme-toggle:hover {
-            background: rgba(30, 41, 59, 0.8);
+            background: rgba(30, 41, 59, 0.88);
         }
 
-        .hero h1 {
+        .hero-header h2 {
             margin: 0;
-            font-size: clamp(2.1rem, 1rem + 2vw, 2.8rem);
-            line-height: 1.1;
+            font-size: clamp(1.4rem, 1rem + 1.2vw, 2rem);
+            line-height: 1.2;
         }
 
-        .hero p {
-            margin: 0;
+        .hero-header p {
+            margin: 12px 0 0;
             max-width: 680px;
             color: var(--text-soft);
-            font-size: 1.05rem;
+            font-size: 1rem;
             line-height: 1.65;
         }
 
@@ -1276,38 +1472,91 @@
     </style>
 </head>
 <body>
-    <div id="app" class="app-shell" v-cloak>
-        <header class="hero">
-            <div>
-            <div class="top-bar">
+    <div id="app" class="app-layout" v-cloak>
+        <aside class="sidebar">
+            <div class="sidebar-header">
                 <div class="brand">
                     <span class="brand-icon">✨</span>
                     <span>Mnenja AI Studio</span>
                 </div>
                 <button class="theme-toggle" @click="toggleTheme" :aria-label="theme === 'dark' ? 'Preklopi na svetli način' : 'Preklopi na temni način'">
                     <span class="icon" v-text="theme === 'dark' ? '🌙' : '☀️'"></span>
-                    <span>{{ theme === 'dark' ? 'Dark' : 'Light' }} mode</span>
                 </button>
             </div>
-            <div style="position:relative; z-index:1;">
-                <h1>IZDELAVA MNENJA O SKADNOSTI S PIA</h1>
-                <p>Napredni pregled projektne dokumentacije, ki združuje AI ekstrakcijo ključnih podatkov, preglednost korakov in jasne povratne informacije za vašo ekipo.</p>
+            <div class="sidebar-section">
+                <p class="sidebar-label">Navigacija</p>
+                <button class="sidebar-item is-active" type="button">
+                    <span class="icon">🗂️</span>
+                    <span>Pregled dokumentacije</span>
+                </button>
+                <button class="sidebar-item" type="button" @click="openSavedModal" :disabled="isBusy">
+                    <span class="icon">📁</span>
+                    <span>Shranjene seje</span>
+                </button>
             </div>
-            <div class="steps">
-                <div class="step-card" v-for="step in heroSteps" :key="step.title" :class="heroStepClass(step.id)">
-                    <strong>{{ step.id }}</strong>
-                    <div>{{ step.title }}</div>
-                    <small class="subtitle">{{ step.description }}</small>
+            <div class="sidebar-section">
+                <p class="sidebar-label">Hitri ukazi</p>
+                <button class="sidebar-action" type="button" @click.prevent="$refs.fileInput && $refs.fileInput.click()" :disabled="isBusy">
+                    <span class="icon">⬆️</span>
+                    <span>Naloži PDF</span>
+                </button>
+                <button class="sidebar-action" type="button" @click="extractData" :disabled="!files.length || isBusy" :data-state="actionStates.extract">
+                    <span class="icon">🤖</span>
+                    <span>Ekstrahiraj podatke</span>
+                </button>
+                <button class="sidebar-action" type="button" @click="saveProgress" :disabled="isBusy || !sessionId" :data-state="actionStates.save">
+                    <span class="icon">💾</span>
+                    <span>Shrani napredek</span>
+                </button>
+                <button class="sidebar-action" type="button" @click="resetAnalysis" :disabled="isBusy">
+                    <span class="icon">🧹</span>
+                    <span>Ponastavi</span>
+                </button>
+            </div>
+        </aside>
+        <main class="main-area">
+            <div class="main-header">
+                <div class="main-header-text">
+                    <h1>IZDELAVA MNENJA O SKADNOSTI S PIA</h1>
+                    <p>Napredni pregled projektne dokumentacije, ki združuje AI ekstrakcijo ključnih podatkov, preglednost korakov in jasne povratne informacije za vašo ekipo.</p>
+                </div>
+                <div class="main-header-actions">
+                    <button class="btn btn-outline" @click.prevent="$refs.fileInput && $refs.fileInput.click()" :disabled="isBusy">
+                        <span class="icon">📄</span> Izberi PDF datoteke
+                    </button>
+                    <button class="btn btn-primary" @click="extractData" :disabled="!files.length || isBusy" :data-state="actionStates.extract">
+                        <span class="icon">🤖</span> Ekstrahiraj podatke
+                    </button>
+                    <button class="btn btn-secondary" @click="openSavedModal" :disabled="isBusy">
+                        <span class="icon">📂</span> Odpri shranjeno
+                    </button>
+                    <button class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy">
+                        <span class="icon">🧹</span> Ponastavi
+                    </button>
                 </div>
             </div>
-        </header>
+            <div class="main-scroll">
+                <div class="content-stack">
+                    <section class="hero">
+                        <div class="hero-header">
+                            <h2>Potek priprave mnenja</h2>
+                            <p>Napredni pregled projektne dokumentacije, ki združuje AI ekstrakcijo ključnih podatkov, preglednost korakov in jasne povratne informacije za vašo ekipo.</p>
+                        </div>
+                        <div class="steps">
+                            <div class="step-card" v-for="step in heroSteps" :key="step.title" :class="heroStepClass(step.id)">
+                                <strong>{{ step.id }}</strong>
+                                <div>{{ step.title }}</div>
+                                <small class="subtitle">{{ step.description }}</small>
+                            </div>
+                        </div>
+                    </section>
 
-        <transition name="fade">
-            <div v-if="status.message" class="status-banner" :class="`status-${status.type}`">
-                <span>{{ status.message }}</span>
-                <button class="btn btn-secondary" @click="status.message = ''">Zapri</button>
-            </div>
-        </transition>
+                    <transition name="fade">
+                        <div v-if="status.message" class="status-banner" :class="`status-${status.type}`">
+                            <span>{{ status.message }}</span>
+                            <button class="btn btn-secondary" @click="status.message = ''">Zapri</button>
+                        </div>
+                    </transition>
 
         <section class="surface">
             <div class="section-head">
@@ -1725,6 +1974,10 @@
         <footer>
             <p>&copy; YEAR_PLACEHOLDER Mnenja AI Studio</p>
         </footer>
+
+                </div>
+            </div>
+        </main>
 
         <div v-if="showRevisionModal" class="modal-backdrop" @click.self="showRevisionModal = false">
             <div class="modal-card">
