@@ -1310,7 +1310,7 @@
                 <button class="btn btn-secondary" @click="openSavedModal" :disabled="isBusy">
                     <span class="icon">📂</span> Odpri shranjeno
                 </button>
-                <button class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy" :data-state="actionStates.reset">
+                <button class="btn btn-danger" @click="resetAnalysis" :disabled="isBusy">
                     <span class="icon">🧹</span> Ponastavi
                 </button>
             </div>
@@ -1330,6 +1330,25 @@
                 >
                     <span class="session-label">Seja</span>
                     <span class="session-value">{{ sessionId || 'ni začeta' }}</span>
+                </div>
+            </div>
+
+            <div class="revision-upload-section" v-if="latestNonCompliantIds.length > 0">
+                <h4>Nalaganje popravkov za neskladne zahteve</h4>
+                <p class="subtitle">Če ste odpravili neskladja v novi verziji dokumenta, ga naložite tukaj. Sistem bo ponovno analiziral samo tiste zahteve, ki so bile prej označene kot neskladne.</p>
+                <div class="actions-row">
+                    <input ref="revisionAnalysisInput" type="file" accept="application/pdf" multiple hidden @change="handleRevisionAnalysisFileSelect" />
+                    <button class="btn btn-outline" @click.prevent="$refs.revisionAnalysisInput.click()" :disabled="isBusy">
+                         <span class="icon">📄</span> Izberi popravljene PDF datoteke
+                    </button>
+                    <button class="btn btn-primary" @click="uploadAndReanalyze" :disabled="!revisionAnalysisFiles.length || isBusy" :data-state="actionStates.revision">
+                        <span class="icon">🔄</span> Naloži in ponovno analiziraj
+                    </button>
+                </div>
+                <div class="file-list" v-if="revisionAnalysisFiles.length">
+                    <div class="file-item" v-for="file in revisionAnalysisFiles" :key="file.name">
+                        <strong>{{ file.name }}</strong>
+                    </div>
                 </div>
             </div>
 
@@ -1409,7 +1428,7 @@
                                 <span class="icon">💾</span> Shrani napredek
                             </button>
                         </div>
-                        <p class="sidebar-hint">Uporabite gumbe nad seznamom za zagon analize ali shranjevanje napredka.</p>
+                        <p class="sidebar-hint">Po zaključku urejanja zaženite analizo ali shranite napredek za kasnejše delo.</p>
                         <ul class="sidebar-list">
                             <li>
                                 <span class="list-label">Dokumenti</span>
@@ -2000,6 +2019,8 @@
                         this.analysisSummary = '';
                         this.downloadReady = false;
                         this.downloadHref = '';
+                        this.revisionFiles = [];
+                        this.revisionAnalysisFiles = [];
                         this.excludeNonCompliant = true;
                         localStorage.removeItem(this.storageKey);
                         this.stopLoading('success', 'Analiza je bila uspešno ponastavljena.', 'reset');
@@ -2242,53 +2263,9 @@
                     this.revisionFiles = this.revisionFiles.filter(f => f.id !== fileId);
                 },
                 handleRevisionAnalysisFileSelect(event) {
-                    this.revisionAnalysisFiles = Array.from(event.target.files || []);
+                    this.revisionAnalysisFiles = Array.from(event.target.files);
                     if (event.target) {
                         event.target.value = '';
-                    }
-                },
-                async uploadAndReanalyze() {
-                    if (!this.revisionAnalysisFiles.length || this.isBusy || !this.latestNonCompliantIds.length) return;
-                    this.startLoading('Nalagam popravke in ponavljam analizo...', 'revision');
-
-                    const formData = new FormData();
-                    formData.append('session_id', this.sessionId);
-                    formData.append('non_compliant_ids_json', JSON.stringify(this.latestNonCompliantIds));
-                    this.revisionAnalysisFiles.forEach(file => {
-                        formData.append('revision_files', file);
-                    });
-
-                    try {
-                        const response = await fetch('/re-analyze', {
-                            method: 'POST',
-                            body: formData
-                        });
-
-                        if (!response.ok) {
-                            const error = await response.json().catch(() => ({}));
-                            throw new Error(error.detail || 'Ponovna analiza ni uspela.');
-                        }
-
-                        const result = await response.json();
-
-                        for (const id in result.updated_results) {
-                            this.resultsMap[id] = result.updated_results[id];
-                        }
-                        this.resultsMap = this.normalizeResultsMap(this.resultsMap);
-                        this.prepareEditableResults();
-
-                        this.latestNonCompliantIds = result.non_compliant_ids || [];
-
-                        this.revisionAnalysisFiles = [];
-                        if (this.$refs.revisionAnalysisInput) {
-                            this.$refs.revisionAnalysisInput.value = '';
-                        }
-                        this.persistState(true);
-                        this.stopLoading('success', 'Ponovna analiza neskladnih zahtev je zaključena.', 'revision');
-
-                    } catch (error) {
-                        console.error(error);
-                        this.stopLoading('error', error.message, 'revision');
                     }
                 },
                 async uploadRevision() {
@@ -2330,6 +2307,47 @@
                         console.error(error);
                         this.markActionResult('revision', 'error');
                         this.stopLoading('error', error.message || 'Napaka pri nalaganju popravka.', 'revision');
+                    }
+                },
+                async uploadAndReanalyze() {
+                    if (!this.revisionAnalysisFiles.length || this.isBusy || !this.latestNonCompliantIds.length) return;
+                    this.startLoading('Nalagam popravke in ponavljam analizo...', 'revision');
+
+                    const formData = new FormData();
+                    formData.append('session_id', this.sessionId);
+                    formData.append('non_compliant_ids_json', JSON.stringify(this.latestNonCompliantIds));
+                    this.revisionAnalysisFiles.forEach(file => {
+                        formData.append('revision_files', file);
+                    });
+
+                    try {
+                        const response = await fetch('/re-analyze', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (!response.ok) {
+                            const error = await response.json().catch(() => ({}));
+                            throw new Error(error.detail || 'Ponovna analiza ni uspela.');
+                        }
+
+                        const result = await response.json();
+
+                        for (const id in result.updated_results) {
+                            this.resultsMap[id] = result.updated_results[id];
+                        }
+                        this.normalizeResultsMap(this.resultsMap);
+                        this.prepareEditableResults();
+
+                        this.latestNonCompliantIds = result.non_compliant_ids || [];
+
+                        this.revisionAnalysisFiles = [];
+                        this.persistState(true);
+                        this.stopLoading('success', 'Ponovna analiza neskladnih zahtev je zaključena.', 'revision');
+
+                    } catch (error) {
+                        console.error(error);
+                        this.stopLoading('error', error.message, 'revision');
                     }
                 },
                 async confirmReport() {

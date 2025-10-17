@@ -524,9 +524,8 @@ async def re_analyze_non_compliant(
     non_compliant_ids_json: str = Form(...),
     revision_files: List[UploadFile] = File(...),
 ) -> JSONResponse:
-    """
-    Handles re-analysis of non-compliant items based on uploaded revision files.
-    """
+    """Handles re-analysis of non-compliant items based on uploaded revision files."""
+
     session = _ensure_session(session_id)
 
     try:
@@ -540,6 +539,7 @@ async def re_analyze_non_compliant(
         raise HTTPException(status_code=400, detail="Naložite vsaj en popravljen PDF dokument.")
 
     new_text_parts: List[str] = []
+    new_image_payloads: List[bytes] = []
 
     for upload in revision_files:
         file_bytes = _read_upload(upload)
@@ -550,7 +550,14 @@ async def re_analyze_non_compliant(
         if text_content:
             new_text_parts.append(text_content)
 
-    updated_project_text = session.get("project_text", "") + "\n\n--- DODATEK IZ POPRAVKA ---\n\n" + "\n\n".join(new_text_parts)
+        # Zaenkrat predpostavimo, da za ponovno analizo besedilo zadošča.
+        # Po potrebi lahko dodamo pretvorbo v slike in jih shranimo v new_image_payloads.
+
+    updated_project_text = session.get("project_text", "")
+    if new_text_parts:
+        updated_project_text = (
+            updated_project_text + "\n\n--- DODATEK IZ POPRAVKA ---\n\n" + "\n\n".join(new_text_parts)
+        )
 
     all_requirements = session.get("requirements", [])
     if not all_requirements:
@@ -565,7 +572,7 @@ async def re_analyze_non_compliant(
         db_manager,
         session.get("key_data", {}),
         session.get("eup", []),
-        session.get("namenska_raba", [])
+        session.get("namenska_raba", []),
     )
 
     prompt = build_prompt(
@@ -576,7 +583,9 @@ async def re_analyze_non_compliant(
         vector_context=hybrid_context.get("context_text", ""),
     )
 
-    images = _load_revision_images(session.get("image_payloads", []))
+    existing_images = list(session.get("image_payloads", []) or [])
+    existing_images.extend(new_image_payloads)
+    images = _load_revision_images(existing_images)
     ai_response = call_gemini(prompt, images)
     new_results = parse_ai_response(ai_response, scoped_requirements)
 
@@ -594,16 +603,18 @@ async def re_analyze_non_compliant(
     session_update = {
         "project_text": updated_project_text,
         "results_map": existing_results,
-        "non_compliant_ids": final_non_compliant_ids,
+        "image_payloads": existing_images,
         "updated_at": datetime.utcnow().isoformat(),
     }
     _update_session(session_id, session_update)
 
-    return JSONResponse({
-        "message": "Ponovna analiza je zaključena.",
-        "updated_results": new_results,
-        "non_compliant_ids": final_non_compliant_ids,
-    })
+    return JSONResponse(
+        {
+            "message": "Ponovna analiza je zaključena.",
+            "updated_results": new_results,
+            "non_compliant_ids": final_non_compliant_ids,
+        }
+    )
 
 
 @frontend_router.post("/confirm-report")
