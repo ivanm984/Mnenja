@@ -3,8 +3,9 @@ from __future__ import annotations
 
 import json
 import re
+import time
 import unicodedata
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 from fastapi import HTTPException
 from PIL import Image
@@ -151,17 +152,44 @@ Odgovori SAMO z enim JSON objektom s tremi ključi: "details", "metadata", in "k
         }
 
 
-def call_gemini(prompt: str, images: List[Image.Image]) -> str:
+def call_gemini(prompt: str, images: List[Image.Image]) -> Tuple[str, Dict[str, Any]]:
     try:
         model = genai.GenerativeModel(MODEL_NAME, generation_config=GEN_CFG)
         content_parts = [prompt]
         content_parts.extend(images)
+
+        started_at = time.perf_counter()
         response = model.generate_content(content_parts)
+        duration = time.perf_counter() - started_at
+
         if not response.parts:
             reason = response.candidates[0].finish_reason if response.candidates else "NEZNAN"
             raise RuntimeError(f"Gemini ni vrnil veljavnega odgovora. Razlog: {reason}")
+
         text = "".join(part.text for part in response.parts)
-        return text
+
+        usage_metadata = getattr(response, "usage_metadata", None)
+        usage: Dict[str, Any] = {}
+        if usage_metadata:
+            usage = {
+                "prompt_tokens": getattr(usage_metadata, "prompt_token_count", None),
+                "candidates_tokens": getattr(usage_metadata, "candidates_token_count", None),
+                "total_tokens": getattr(usage_metadata, "total_token_count", None),
+            }
+
+        finish_reasons = []
+        for candidate in getattr(response, "candidates", []) or []:
+            reason = getattr(candidate, "finish_reason", None)
+            if reason:
+                finish_reasons.append(reason)
+
+        metadata = {
+            "model": MODEL_NAME,
+            "usage": usage,
+            "duration": round(duration, 3),
+            "finish_reasons": finish_reasons,
+        }
+        return text, metadata
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Gemini napaka (Analitik): {exc}") from exc
 

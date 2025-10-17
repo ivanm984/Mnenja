@@ -1,5 +1,5 @@
 from __future__ import annotations
-from .ai import embed_query, call_gemini_for_initial_extraction, parse_ai_response
+from .ai import embed_query, call_gemini, call_gemini_for_initial_extraction, parse_ai_response
 
 # -*- coding: utf-8 -*-
 """
@@ -24,6 +24,7 @@ import io
 import json
 import logging
 import threading
+import time
 from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
@@ -41,7 +42,6 @@ from fastapi import (
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from pydantic import BaseModel
 
-from .ai import call_gemini, call_gemini_for_initial_extraction, parse_ai_response
 from .config import DATA_DIR
 from .database import DatabaseManager
 from .files import save_revision_files
@@ -62,22 +62,22 @@ from .vector_search import get_vector_context
 # ---------------------------------------------------------
 # Logging
 # ---------------------------------------------------------
-logger = logging.getLogger(__name__)
-if not logger.handlers:
-    handler = logging.StreamHandler(sys.stdout)
-    logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+LOG_DIR = DATA_DIR / "logs"
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+LOG_FILE = LOG_DIR / "analysis.log"
 
-# ---------------------------------------------------------
-# AI adapter (fleksibilen)
-# ---------------------------------------------------------
-
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger("mnenja.app")
 if not LOGGER.handlers:
-    handler = logging.StreamHandler()
     formatter = logging.Formatter("[%(levelname)s] %(asctime)s %(name)s: %(message)s")
-    handler.setFormatter(formatter)
-    LOGGER.addHandler(handler)
+
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setFormatter(formatter)
+    LOGGER.addHandler(stream_handler)
+
+    file_handler = logging.FileHandler(LOG_FILE, encoding="utf-8")
+    file_handler.setFormatter(formatter)
+    LOGGER.addHandler(file_handler)
+
 LOGGER.setLevel(logging.INFO)
 
 
@@ -349,8 +349,10 @@ async def analyze_report(request: Request) -> JSONResponse:
     )
 
     images = _load_revision_images(session.get("image_payloads", []))
-    ai_response = call_gemini(prompt, images)
-    parsed_results = parse_ai_response(ai_response, scoped_requirements)
+    started_at = time.perf_counter()
+    ai_response_text, llm_metadata = call_gemini(prompt, images)
+    elapsed = time.perf_counter() - started_at
+    parsed_results = parse_ai_response(ai_response_text, scoped_requirements)
 
     existing_results = dict(session.get("results_map", {}))
     existing_results.update(parsed_results)
@@ -368,6 +370,40 @@ async def analyze_report(request: Request) -> JSONResponse:
         f"Neskladnih: {len(non_compliant_ids)}."
     )
 
+    llm_usage = (llm_metadata or {}).get("usage", {}) if llm_metadata else {}
+    llm_duration = (llm_metadata or {}).get("duration") if llm_metadata else None
+    analysis_history = list(session.get("analysis_history", []))
+    analysis_record = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "session_id": session_id,
+        "scope": analysis_scope,
+        "total_analyzed": len(scoped_requirements),
+        "total_available": len(requirements),
+        "non_compliant": len(non_compliant_ids),
+        "prompt_tokens": llm_usage.get("prompt_tokens"),
+        "response_tokens": llm_usage.get("candidates_tokens"),
+        "total_tokens": llm_usage.get("total_tokens"),
+        "llm_duration": llm_duration,
+        "elapsed_seconds": round(elapsed, 3),
+        "vector_rows": len(hybrid_context.get("rows", [])),
+        "model": (llm_metadata or {}).get("model"),
+        "analysis_summary": analysis_summary,
+    }
+    analysis_history.append(analysis_record)
+
+    LOGGER.info(
+        "Analiza zaključena | session=%s scope=%s zahteve=%s/%s neskladne=%s tokens=%s trajanje=%.3fs llm=%.3fs context=%s",
+        session_id,
+        analysis_scope,
+        len(scoped_requirements),
+        len(requirements),
+        len(non_compliant_ids),
+        llm_usage.get("total_tokens") or "—",
+        elapsed,
+        llm_duration if llm_duration is not None else 0.0,
+        len(hybrid_context.get("rows", [])),
+    )
+
     session_update = {
         "eup": eup_list,
         "namenska_raba": raba_list,
@@ -380,6 +416,7 @@ async def analyze_report(request: Request) -> JSONResponse:
         "total_available": len(requirements),
         "latest_context_rows": hybrid_context.get("rows", []),
         "analysis_summary": analysis_summary,
+        "analysis_history": analysis_history,
         "updated_at": datetime.utcnow().isoformat(),
     }
     _update_session(session_id, session_update)
@@ -395,6 +432,7 @@ async def analyze_report(request: Request) -> JSONResponse:
         "requirement_revisions": session.get("requirement_revisions", {}),
         "vector_rows": hybrid_context.get("rows", []),
         "analysis_summary": analysis_summary,
+        "analysis_history": analysis_history,
     }
     return JSONResponse(response_payload)
 
@@ -586,8 +624,10 @@ async def re_analyze_non_compliant(
     existing_images = list(session.get("image_payloads", []) or [])
     existing_images.extend(new_image_payloads)
     images = _load_revision_images(existing_images)
-    ai_response = call_gemini(prompt, images)
-    new_results = parse_ai_response(ai_response, scoped_requirements)
+    started_at = time.perf_counter()
+    ai_response_text, llm_metadata = call_gemini(prompt, images)
+    elapsed = time.perf_counter() - started_at
+    new_results = parse_ai_response(ai_response_text, scoped_requirements)
 
     existing_results = session.get("results_map", {})
     existing_results.update(new_results)
@@ -600,10 +640,50 @@ async def re_analyze_non_compliant(
         and "nesklad" in result["skladnost"].lower()
     ]
 
+    analysis_summary = (
+        f"Ponovno analiziranih {len(scoped_requirements)} zahtev. "
+        f"Preostalih neskladnih: {len(final_non_compliant_ids)}."
+    )
+
+    llm_usage = (llm_metadata or {}).get("usage", {}) if llm_metadata else {}
+    llm_duration = (llm_metadata or {}).get("duration") if llm_metadata else None
+    analysis_history = list(session.get("analysis_history", []))
+    analysis_record = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "session_id": session_id,
+        "scope": "re-analysis",
+        "total_analyzed": len(scoped_requirements),
+        "total_available": len(all_requirements),
+        "non_compliant": len(final_non_compliant_ids),
+        "prompt_tokens": llm_usage.get("prompt_tokens"),
+        "response_tokens": llm_usage.get("candidates_tokens"),
+        "total_tokens": llm_usage.get("total_tokens"),
+        "llm_duration": llm_duration,
+        "elapsed_seconds": round(elapsed, 3),
+        "vector_rows": len(hybrid_context.get("rows", [])),
+        "model": (llm_metadata or {}).get("model"),
+        "analysis_summary": analysis_summary,
+    }
+    analysis_history.append(analysis_record)
+
+    LOGGER.info(
+        "Ponovna analiza zaključena | session=%s zahteve=%s neskladne=%s tokens=%s trajanje=%.3fs llm=%.3fs context=%s",
+        session_id,
+        len(scoped_requirements),
+        len(final_non_compliant_ids),
+        llm_usage.get("total_tokens") or "—",
+        elapsed,
+        llm_duration if llm_duration is not None else 0.0,
+        len(hybrid_context.get("rows", [])),
+    )
+
     session_update = {
         "project_text": updated_project_text,
         "results_map": existing_results,
         "image_payloads": existing_images,
+        "analysis_summary": analysis_summary,
+        "analysis_history": analysis_history,
+        "latest_context_rows": hybrid_context.get("rows", []),
         "updated_at": datetime.utcnow().isoformat(),
     }
     _update_session(session_id, session_update)
@@ -613,6 +693,8 @@ async def re_analyze_non_compliant(
             "message": "Ponovna analiza je zaključena.",
             "updated_results": new_results,
             "non_compliant_ids": final_non_compliant_ids,
+            "analysis_summary": analysis_summary,
+            "analysis_history": analysis_history,
         }
     )
 
